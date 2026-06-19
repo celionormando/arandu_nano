@@ -33,6 +33,15 @@ tradução, ideias, dúvidas do dia a dia). O projeto inclui um kit para criar
 3. Ajuste o `modelo.txt` com o nome do `.gguf` escolhido.
 4. Rode o `IA_Portatil.vbs` (Windows).
 
+## Base de conhecimento (RAG)
+O Arandu pode responder com base em **documentos que você fornece** (offline):
+1. Baixe o embedding `bge-m3-Q4_K_M.gguf` (repo `gpustack/bge-m3-GGUF`) e coloque em `rag/`.
+2. Inicie pelo **`IA_Arandu_RAG.vbs`** (sobe chat + servidor de embedding na porta 8091).
+3. No chat, abra **Base de conhecimento**, cole textos ou envie `.txt/.md`, clique em
+   **Indexar**, ligue o RAG (botão na barra) e pergunte.
+- Vetores em **int8** (IndexedDB, no perfil da USB). Não busca na internet — só os
+  documentos que você indexar.
+
 ## Criar seu próprio modelo (Arandu Nano)
 Veja `treino/README.md`: notebook no Google Colab (GPU grátis) que faz
 fine-tuning LoRA sobre o Llama-3.2-1B e exporta um `.gguf` Q4_K_M.
