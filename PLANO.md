@@ -2,7 +2,7 @@
 
 ## Objetivo
 Plataforma de IA de chat chamada **Arandu IA**, que roda 100% LOCAL e OFFLINE
-direto do pendrive (D:\IAPortatil\), em português do Brasil, com o MÍNIMO de RAM
+direto do pendrive (D:\Arandu-nano\), em português do Brasil, com o MÍNIMO de RAM
 sem perder velocidade. FOCO: portabilidade na USB (sem instalar nada no PC) e
 evolução com modelos próprios (fine-tuning).
 
@@ -38,7 +38,7 @@ arquivo técnico.
 - (Phi-3.5-mini e 3B-Q3_K_L testados e DESCARTADOS.)
 
 ## Estrutura no pendrive
-D:\IAPortatil\
+D:\Arandu-nano\
   ├── llamafile.exe                       (runtime, ~320 MB)
   ├── arandu-nano-1.0-Q4_K_M.gguf         (modelo PRÓPRIO ativo, ~0,8 GB)
   ├── Llama-3.2-1B-Instruct-Q4_K_M.gguf   (base, ~0,8 GB)

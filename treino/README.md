@@ -17,8 +17,8 @@ suficiente para LoRA de modelos 1B–7B. Treinar na CPU do notebook é inviável
 3. Rode as células em ordem.
 4. Quando pedir, faça upload do seu `dataset.jsonl`.
 5. Ao final, baixe o `.gguf` gerado.
-6. Copie para `D:\IAPortatil\`, renomeie para `arandu-nano-1.0-Q4_K_M.gguf`.
-7. Edite `D:\IAPortatil\modelo.txt` com esse nome (1 linha).
+6. Copie para `D:\Arandu-nano\`, renomeie para `arandu-nano-1.0-Q4_K_M.gguf`.
+7. Edite `D:\Arandu-nano\modelo.txt` com esse nome (1 linha).
 8. Em `chat.html`, no mapa `NOMES_MODELO`, adicione:
    `"arandu-nano-1.0-Q4_K_M.gguf":"Arandu Nano 1.0"`
 9. Rode o `IA_Portatil.vbs` — agora é o seu modelo próprio rodando.
