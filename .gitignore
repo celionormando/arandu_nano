@@ -1,0 +1,16 @@
+# Modelos e runtime — grandes demais para o GitHub (>100 MB)
+*.gguf
+llamafile.exe
+whisperfile*
+diffusionfile*
+
+# Perfil do navegador (gerado em runtime pelo IA_Portatil.vbs)
+.appprofile/
+
+# Saídas de treino locais
+treino/saida/
+treino/*_gguf/
+
+# Temporários
+*.tmp
+*.log
