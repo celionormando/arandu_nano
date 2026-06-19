@@ -273,6 +273,7 @@
     </div>
   </div>
 
+<script src="rag/index.js" onerror="window.ARANDU_INDEX=null"></script>
 <script>
 "use strict";
 /* ============ Estado e persistência ============ */
@@ -714,9 +715,28 @@ function atualizarBotaoRAG(){
 function toggleRAG(){ cfg.ragOn=!cfg.ragOn; save(); atualizarBotaoRAG(); }
 document.getElementById('overlayKB').addEventListener('click',e=>{if(e.target.id==='overlayKB')fecharKB();});
 
+// Carrega o índice pré-construído (rag/index.js) para o IndexedDB, 1x por versão.
+async function kbAutoLoad(){
+  try{
+    if(!window.ARANDU_INDEX || !ARANDU_INDEX.chunks) return;
+    const v=String(ARANDU_INDEX.version||1);
+    if(localStorage.getItem('kb_autoload_v')===v) return;   // já carregado
+    const fontes=[...new Set(ARANDU_INDEX.chunks.map(c=>c.fonte))];
+    for(const f of fontes){ await kbDelFonte(f); }          // evita duplicar em re-deploys
+    for(const c of ARANDU_INDEX.chunks){
+      const bin=atob(c.vec); const u=new Uint8Array(bin.length);
+      for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+      await kbAddChunk(c.fonte,c.texto,new Int8Array(u.buffer));
+    }
+    localStorage.setItem('kb_autoload_v',v);
+    if(localStorage.getItem('kb_first')!=='1'){ cfg.ragOn=true; save(); atualizarBotaoRAG(); localStorage.setItem('kb_first','1'); }
+  }catch(e){ /* indexedDB indisponível: ignora */ }
+}
+
 /* ============ Init ============ */
 renderList();renderChat();checarServidor();setInterval(checarServidor,15000);
 atualizarBotaoRAG();
+kbAutoLoad();
 atualizarBotaoVoz();
 if('speechSynthesis' in window) window.speechSynthesis.getVoices();  // dispara carga das vozes
 </script>
