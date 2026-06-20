@@ -247,6 +247,10 @@
           <input type="checkbox" id="kb-on">
           <label for="kb-on">Usar a base de conhecimento nas respostas (RAG)</label>
         </div>
+        <div class="field check">
+          <input type="checkbox" id="kb-strict">
+          <label for="kb-strict">Responder somente com base na base de conhecimento (evita alucinação)</label>
+        </div>
         <div class="desc" id="kb-status" style="font-size:12px;color:var(--muted);margin:-8px 0 14px"></div>
 
         <div class="sec-title">Adicionar conteúdo</div>
@@ -279,11 +283,12 @@
 /* ============ Estado e persistência ============ */
 const LS_CFG="iaport_cfg", LS_CONV="iaport_convs";
 const DEFAULTS={
-  system:"Você é o Arandu, um assistente de IA de uso geral. Responda sempre em português do Brasil, de forma clara, objetiva e prestativa. Quando não souber algo com certeza, diga que não sabe em vez de inventar.",
+  system:"Você é o Arandu, um assistente de IA de uso geral, executado localmente e offline, em português do Brasil. Responda de forma clara, objetiva e prestativa.\n\nRegras importantes:\n- NÃO invente fatos, datas, números, nomes, leis ou fontes. Se não tiver certeza, diga claramente que não sabe ou que não tem certeza, em vez de preencher a lacuna com suposições.\n- Prefira respostas curtas e diretas. Não apresente palpites como se fossem fatos.\n- Se a pergunta exigir informação específica (uma lei, uma data, um dado) que você não conhece com segurança, diga isso e sugira ativar a Base de conhecimento (RAG) ou consultar uma fonte confiável.\n- Ao usar a Base de conhecimento, baseie-se APENAS nos trechos fornecidos e cite a fonte entre colchetes (ex.: [1]).",
   url:"http://127.0.0.1:8080", enter:true,
-  temp:0.7, topp:0.95, topk:40, max:512, rep:1.1, freq:0, pres:0,
+  temp:0.3, topp:0.9, topk:20, max:512, rep:1.1, freq:0, pres:0,
   falar:false, voz:"",
-  ragOn:false, ragTopK:4, embedUrl:"http://127.0.0.1:8091"
+  ragOn:false, ragTopK:4, embedUrl:"http://127.0.0.1:8091",
+  ragStrict:true, ragMinScore:0.40
 };
 let cfg=Object.assign(structuredClone(DEFAULTS), load(LS_CFG,{}));  // mescla p/ ter chaves novas
 let convs=load(LS_CONV,[]);
@@ -400,8 +405,16 @@ async function stream(c){
       const trechos=await buscarRAG(pergunta,cfg.ragTopK);
       if(trechos.length){
         const ctx=trechos.map((t,i)=>`[${i+1}] (${t.fonte})\n${t.texto}`).join("\n\n");
+        if(cfg.ragStrict){
+          sysContent=cfg.system+
+            "\n\nResponda EXCLUSIVAMENTE com base nos TRECHOS abaixo, citando a fonte entre colchetes (ex.: [1]). Se a resposta não estiver nos trechos, responda apenas: \"Não encontrei isso na base de conhecimento.\" NÃO use conhecimento próprio e NÃO suponha.\n\n=== BASE DE CONHECIMENTO ===\n"+ctx;
+        }else{
+          sysContent=cfg.system+
+            "\n\nResponda usando os TRECHOS abaixo da base de conhecimento quando forem relevantes, citando a fonte entre colchetes (ex.: [1]). Se a resposta não estiver nos trechos, diga isso e use seu conhecimento geral com cautela.\n\n=== BASE DE CONHECIMENTO ===\n"+ctx;
+        }
+      }else if(cfg.ragStrict){
         sysContent=cfg.system+
-          "\n\nResponda usando os TRECHOS abaixo da base de conhecimento quando forem relevantes, citando a fonte entre colchetes (ex.: [1]). Se a resposta não estiver nos trechos, diga isso e use seu conhecimento geral.\n\n=== BASE DE CONHECIMENTO ===\n"+ctx;
+          "\n\nA base de conhecimento NÃO contém trechos relevantes para esta pergunta. Responda apenas: \"Não encontrei isso na base de conhecimento.\" NÃO invente uma resposta.";
       }
     }catch(e){ /* embedding offline: segue sem RAG */ }
   }
@@ -680,13 +693,15 @@ async function kbRenderList(){
 async function kbRemover(fonte){ if(!confirm('Remover "'+fonte+'"?'))return; await kbDelFonte(fonte); kbRenderList(); }
 async function kbLimparTudo(){ if(!confirm("Apagar TODA a base de conhecimento?"))return; await kbClear(); kbRenderList(); }
 
-// busca os trechos mais relevantes para a pergunta
+// busca os trechos mais relevantes para a pergunta (com corte por similaridade)
 async function buscarRAG(pergunta,k){
   const all=await kbAll(); if(!all.length)return [];
   const qv=await embedInt8(pergunta);
-  const scored=all.map(c=>({texto:c.texto,fonte:c.fonte,score:dotInt8(qv,c.vec)}));
-  scored.sort((a,b)=>b.score-a.score);
-  return scored.slice(0,k||4);
+  // vetores int8 normalizados (escala 127): score/127^2 ~ similaridade cosseno (0..1)
+  const scored=all.map(c=>({texto:c.texto,fonte:c.fonte,sim:dotInt8(qv,c.vec)/16129}));
+  scored.sort((a,b)=>b.sim-a.sim);
+  const min=(typeof cfg.ragMinScore==='number')?cfg.ragMinScore:0.40;
+  return scored.filter(s=>s.sim>=min).slice(0,k||4);
 }
 
 async function probarEmbedding(){
@@ -698,13 +713,16 @@ async function probarEmbedding(){
 }
 function abrirKB(){
   document.getElementById('kb-on').checked=cfg.ragOn;
+  document.getElementById('kb-strict').checked=cfg.ragStrict;
   document.getElementById('kb-prog').textContent="";
   probarEmbedding(); kbRenderList();
   document.getElementById('overlayKB').style.display='flex';
 }
 function fecharKB(){document.getElementById('overlayKB').style.display='none';}
 function kbSalvar(){
-  cfg.ragOn=document.getElementById('kb-on').checked; save();
+  cfg.ragOn=document.getElementById('kb-on').checked;
+  cfg.ragStrict=document.getElementById('kb-strict').checked;
+  save();
   atualizarBotaoRAG(); fecharKB();
 }
 function atualizarBotaoRAG(){

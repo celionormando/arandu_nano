@@ -49,6 +49,17 @@ O Arandu pode responder com base em **documentos que você fornece** (offline):
    **Indexar**, ligue o RAG (botão na barra) e pergunte.
 - Vetores em **int8** (IndexedDB, no perfil da USB). Não busca na internet — só os
   documentos que você indexar.
+- **Modo estrito** (ligado por padrão): responde só com base nos documentos e diz
+  "Não encontrei isso na base de conhecimento" quando o tema não está coberto, em vez
+  de inventar. Há um corte por relevância para descartar trechos pouco similares.
+
+### Índice pré-construído (`rag/index.js`)
+Documentos em `rag/docs/*.txt` já vêm indexados e são carregados automaticamente.
+Para regenerar o índice após adicionar/editar documentos, com o servidor RAG no ar:
+
+```sh
+node rag/gerar_indice.mjs
+```
 
 ## Criar seu próprio modelo (Arandu Nano)
 Veja `treino/README.md`: notebook no Google Colab (GPU grátis) que faz
