@@ -197,6 +197,11 @@
           <div class="range-row"><input type="range" id="cfg-topk" min="0" max="100" step="1"><span class="val" id="v-topk"></span></div>
         </div>
         <div class="field">
+          <label>Min-P</label>
+          <div class="range-row"><input type="range" id="cfg-minp" min="0" max="0.5" step="0.01"><span class="val" id="v-minp"></span></div>
+          <div class="desc">Corta tokens improváveis em relação ao mais provável. 0 = desligado. Melhora a coerência sem perder velocidade.</div>
+        </div>
+        <div class="field">
           <label>Máximo de tokens na resposta</label>
           <input type="number" id="cfg-max" min="16" max="4096" step="16">
           <div class="desc">Limite de tamanho da resposta. -1 = sem limite (até o contexto).</div>
@@ -215,6 +220,11 @@
         <div class="field">
           <label>Penalidade de presença</label>
           <div class="range-row"><input type="range" id="cfg-pres" min="0" max="2" step="0.05"><span class="val" id="v-pres"></span></div>
+        </div>
+        <div class="field">
+          <label>DRY (anti-repetição)</label>
+          <div class="range-row"><input type="range" id="cfg-drymult" min="0" max="2" step="0.05"><span class="val" id="v-drymult"></span></div>
+          <div class="desc">Penaliza repetição de sequências de forma inteligente (melhor que a penalidade de repetição). 0 = desligado. Recomendado ~0,8.</div>
         </div>
 
         <div class="sec-title">Voz (síntese local)</div>
@@ -289,7 +299,7 @@ const IDENTIDADE_ARANDU="Você é o Arandu, um assistente de IA de uso geral que
 const DEFAULTS={
   system:"Responda de forma clara, objetiva e prestativa.\n\nRegras importantes:\n- NÃO invente fatos, datas, números, nomes, leis ou fontes. Se não tiver certeza, diga claramente que não sabe ou que não tem certeza, em vez de preencher a lacuna com suposições.\n- Prefira respostas curtas e diretas. Não apresente palpites como se fossem fatos.\n- Se a pergunta exigir informação específica (uma lei, uma data, um dado) que você não conhece com segurança, diga isso e sugira ativar a Base de conhecimento (RAG).\n- Ao usar a Base de conhecimento, baseie-se APENAS nos trechos fornecidos e cite a fonte entre colchetes (ex.: [1]).",
   url:"http://127.0.0.1:8080", enter:true,
-  temp:0.3, topp:0.9, topk:20, max:512, rep:1.1, freq:0, pres:0,
+  temp:0.3, topp:0.9, topk:20, minp:0.05, max:512, rep:1.1, freq:0, pres:0, drymult:0.8,
   falar:false, voz:"",
   ragOn:false, ragTopK:4, embedUrl:"http://127.0.0.1:8091",
   ragStrict:true, ragMinScore:0.40
@@ -427,9 +437,10 @@ async function stream(c){
     c.messages.slice(0,idx).map(m=>({role:m.role,content:m.content})));
   const body={
     messages:msgs,stream:true,
-    temperature:cfg.temp,top_p:cfg.topp,top_k:cfg.topk,
+    temperature:cfg.temp,top_p:cfg.topp,top_k:cfg.topk,min_p:cfg.minp,
     max_tokens:cfg.max,repeat_penalty:cfg.rep,
-    frequency_penalty:cfg.freq,presence_penalty:cfg.pres
+    frequency_penalty:cfg.freq,presence_penalty:cfg.pres,
+    dry_multiplier:cfg.drymult,dry_base:1.75,dry_allowed_length:2
   };
   setStop(true);abortCtl=new AbortController();
   streamEl=document.querySelectorAll('.bubble')[idx];   // referencia fixa (sem requerys por token)
@@ -485,8 +496,8 @@ function abrirConfig(){
   document.getElementById('cfg-system').value=cfg.system;
   document.getElementById('cfg-url').value=cfg.url;
   document.getElementById('cfg-enter').checked=cfg.enter;
-  setRange('temp',cfg.temp);setRange('topp',cfg.topp);setRange('topk',cfg.topk);
-  setRange('rep',cfg.rep);setRange('freq',cfg.freq);setRange('pres',cfg.pres);
+  setRange('temp',cfg.temp);setRange('topp',cfg.topp);setRange('topk',cfg.topk);setRange('minp',cfg.minp);
+  setRange('rep',cfg.rep);setRange('freq',cfg.freq);setRange('pres',cfg.pres);setRange('drymult',cfg.drymult);
   document.getElementById('cfg-max').value=cfg.max;
   document.getElementById('cfg-falar').checked=cfg.falar;
   carregarVozes();
@@ -501,17 +512,19 @@ function salvarConfig(){
   cfg.temp=+document.getElementById('cfg-temp').value;
   cfg.topp=+document.getElementById('cfg-topp').value;
   cfg.topk=+document.getElementById('cfg-topk').value;
+  cfg.minp=+document.getElementById('cfg-minp').value;
   cfg.max=+document.getElementById('cfg-max').value;
   cfg.rep=+document.getElementById('cfg-rep').value;
   cfg.freq=+document.getElementById('cfg-freq').value;
   cfg.pres=+document.getElementById('cfg-pres').value;
+  cfg.drymult=+document.getElementById('cfg-drymult').value;
   cfg.falar=document.getElementById('cfg-falar').checked;
   cfg.voz=document.getElementById('cfg-voz').value;
   save();fecharConfig();checarServidor();atualizarBotaoVoz();
   if(!cfg.falar) window.speechSynthesis.cancel();
 }
 function restaurarPadrao(){cfg=structuredClone(DEFAULTS);abrirConfig();}
-['temp','topp','topk','rep','freq','pres'].forEach(k=>{
+['temp','topp','topk','minp','rep','freq','pres','drymult'].forEach(k=>{
   document.getElementById('cfg-'+k).addEventListener('input',e=>{document.getElementById('v-'+k).textContent=e.target.value;});
 });
 
