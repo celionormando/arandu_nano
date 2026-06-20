@@ -282,8 +282,12 @@
 "use strict";
 /* ============ Estado e persistência ============ */
 const LS_CFG="iaport_cfg", LS_CONV="iaport_convs";
+// Identidade fixa do Arandu — vai SEMPRE no system, independente da config do usuário,
+// do RAG ou do embedding. "Arandu" é nome próprio do projeto: nenhum modelo sabe o que é
+// sem esta injeção, então sem ela a IA inventa (fruta, app, etc.).
+const IDENTIDADE_ARANDU="Você é o Arandu, um assistente de IA de uso geral que funciona 100% local e offline, em português do Brasil, a partir de um pendrive. O Arandu NÃO é o ChatGPT, o Gemini, a Llama nem outro serviço em nuvem: é um projeto próprio e independente, executado na CPU pelo motor llamafile, sem acesso à internet. O modelo de IA ativo por baixo é o Arandu Nano 1.0. Ao perguntarem \"o que é o Arandu\" ou \"quem é você\", responda com base nesta identidade.";
 const DEFAULTS={
-  system:"Você é o Arandu, um assistente de IA de uso geral, executado localmente e offline, em português do Brasil. Responda de forma clara, objetiva e prestativa.\n\nRegras importantes:\n- NÃO invente fatos, datas, números, nomes, leis ou fontes. Se não tiver certeza, diga claramente que não sabe ou que não tem certeza, em vez de preencher a lacuna com suposições.\n- Prefira respostas curtas e diretas. Não apresente palpites como se fossem fatos.\n- Se a pergunta exigir informação específica (uma lei, uma data, um dado) que você não conhece com segurança, diga isso e sugira ativar a Base de conhecimento (RAG) ou consultar uma fonte confiável.\n- Ao usar a Base de conhecimento, baseie-se APENAS nos trechos fornecidos e cite a fonte entre colchetes (ex.: [1]).",
+  system:"Responda de forma clara, objetiva e prestativa.\n\nRegras importantes:\n- NÃO invente fatos, datas, números, nomes, leis ou fontes. Se não tiver certeza, diga claramente que não sabe ou que não tem certeza, em vez de preencher a lacuna com suposições.\n- Prefira respostas curtas e diretas. Não apresente palpites como se fossem fatos.\n- Se a pergunta exigir informação específica (uma lei, uma data, um dado) que você não conhece com segurança, diga isso e sugira ativar a Base de conhecimento (RAG).\n- Ao usar a Base de conhecimento, baseie-se APENAS nos trechos fornecidos e cite a fonte entre colchetes (ex.: [1]).",
   url:"http://127.0.0.1:8080", enter:true,
   temp:0.3, topp:0.9, topk:20, max:512, rep:1.1, freq:0, pres:0,
   falar:false, voz:"",
@@ -398,7 +402,8 @@ function onSend(){
 async function stream(c){
   const idx=c.messages.length-1;
   // RAG: se ativo, busca trechos relevantes e injeta na mensagem do sistema
-  let sysContent=cfg.system;
+  const baseSys=IDENTIDADE_ARANDU+"\n\n"+cfg.system;
+  let sysContent=baseSys;
   if(cfg.ragOn){
     try{
       const pergunta=c.messages[idx-1]?.content||"";
@@ -406,14 +411,14 @@ async function stream(c){
       if(trechos.length){
         const ctx=trechos.map((t,i)=>`[${i+1}] (${rotuloFonte(t.fonte)})\n${t.texto}`).join("\n\n");
         if(cfg.ragStrict){
-          sysContent=cfg.system+
-            "\n\nResponda EXCLUSIVAMENTE com base nos TRECHOS abaixo, citando a fonte entre colchetes (ex.: [1]). Se a resposta não estiver nos trechos, responda apenas: \"Não encontrei isso na base de conhecimento.\" NÃO use conhecimento próprio e NÃO suponha.\n\n=== BASE DE CONHECIMENTO ===\n"+ctx;
+          sysContent=baseSys+
+            "\n\nResponda com base nos TRECHOS abaixo da base de conhecimento, citando a fonte entre colchetes (ex.: [1]). Use somente as informações dos trechos e NÃO acrescente fatos que não estejam neles. Seja direto.\n\n=== BASE DE CONHECIMENTO ===\n"+ctx;
         }else{
-          sysContent=cfg.system+
+          sysContent=baseSys+
             "\n\nResponda usando os TRECHOS abaixo da base de conhecimento quando forem relevantes, citando a fonte entre colchetes (ex.: [1]). Se a resposta não estiver nos trechos, diga isso e use seu conhecimento geral com cautela.\n\n=== BASE DE CONHECIMENTO ===\n"+ctx;
         }
       }else if(cfg.ragStrict){
-        sysContent=cfg.system+
+        sysContent=baseSys+
           "\n\nA base de conhecimento NÃO contém trechos relevantes para esta pergunta. Responda apenas: \"Não encontrei isso na base de conhecimento.\" NÃO invente uma resposta.";
       }
     }catch(e){ /* embedding offline: segue sem RAG */ }
