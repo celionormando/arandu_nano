@@ -45,7 +45,10 @@ D:\Arandu-nano\
   ├── Llama-3.2-3B-Instruct-Q4_K_M.gguf   (base qualidade, ~2,0 GB)
   ├── modelo.txt                          (define o modelo ativo - 1 linha)
   ├── chat.html                           (interface Arandu IA, pt-BR, offline, com VOZ)
-  ├── IA_Portatil.vbs                     (PRINCIPAL: janela mínima, lê modelo.txt)
+  ├── IA_Portatil.vbs                     (Windows: abre navegador padrão, lê modelo.txt)
+  ├── IA_Arandu_RAG.vbs                   (Windows: chat + embedding/RAG)
+  ├── iniciar.sh / iniciar_rag.sh         (Linux/macOS: navegador padrão)
+  ├── desligar.sh                         (Linux/macOS: encerra servidores)
   ├── Usar_1B_Rapido.bat / Usar_3B_Qualidade.bat (trocam o modelo ativo)
   ├── Desligar_IA.bat
   ├── iniciar.bat / iniciar_original.bat  (alternativas com console)
@@ -54,12 +57,15 @@ D:\Arandu-nano\
   └── PLANO.md
 
 ## Como usar
-- RECOMENDADO: duplo clique em IA_Portatil.vbs -> sobe o servidor ESCONDIDO
-  (sem console) e abre a janela MÍNIMA (modo app Edge, sem abas). Independe da
-  letra do drive. Desligar: Desligar_IA.bat.
+- Windows: duplo clique em IA_Portatil.vbs -> sobe o servidor ESCONDIDO
+  (sem console) e abre no navegador padrão. Independe da letra do drive.
+  Desligar: Desligar_IA.bat.
+- Linux/macOS: `chmod +x iniciar.sh iniciar_rag.sh desligar.sh` uma vez; depois
+  `./iniciar.sh` para chat normal ou `./iniciar_rag.sh` para RAG. A interface abre
+  no navegador padrão via `xdg-open` (Linux) ou `open` (macOS).
 - Trocar modelo: editar modelo.txt (ou usar os .bat de troca). Reabrir a IA.
-- Voz: botão na barra do chat ou Configurações -> lê as respostas (voz offline
-  do Edge, pt-BR).
+- Voz: botão na barra do chat ou Configurações -> lê as respostas com a síntese
+  de voz disponível no navegador/sistema.
 
 ## Flags otimizadas (servidor)
   -c 2048   contexto / -t 3 threads (1 núcleo livre = mais rápido aqui) / -fa on
@@ -97,7 +103,7 @@ D:\Arandu-nano\
 
 ## Status
 1. [x] Motor llamafile + interface Arandu IA (chat.html, pt-BR, voz, streaming fluido)
-2. [x] Lançador 1 clique (IA_Portatil.vbs, janela mínima) + troca de modelo (modelo.txt)
+2. [x] Lançador 1 clique (IA_Portatil.vbs, navegador padrão) + troca de modelo (modelo.txt)
 3. [x] Otimizações (KV q8_0, flash attn, -t 3) e benchmarks documentados
 4. [x] Nomenclatura de famílias (Arandu/Katu/Vera/Taba) definida
 5. [x] MARCO: 1º modelo próprio treinado e implantado — **Arandu Nano 1.0** rodando na USB

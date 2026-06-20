@@ -1,0 +1,70 @@
+#!/usr/bin/env sh
+set -eu
+
+BASE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+MODEL="Llama-3.2-1B-Instruct-Q4_K_M.gguf"
+
+if [ -f "$BASE/modelo.txt" ]; then
+  MODEL=$(head -n 1 "$BASE/modelo.txt" | tr -d '\r')
+fi
+
+if [ -x "$BASE/llamafile.exe" ] || [ -f "$BASE/llamafile.exe" ]; then
+  EXE="$BASE/llamafile.exe"
+elif [ -x "$BASE/llamafile" ] || [ -f "$BASE/llamafile" ]; then
+  EXE="$BASE/llamafile"
+else
+  echo "llamafile nao encontrado em $BASE"
+  exit 1
+fi
+
+chmod +x "$EXE" 2>/dev/null || true
+
+server_up() {
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsS "http://127.0.0.1:8080/props" >/dev/null 2>&1
+  else
+    return 1
+  fi
+}
+
+open_url() {
+  if command -v xdg-open >/dev/null 2>&1; then
+    xdg-open "$1" >/dev/null 2>&1 &
+  elif command -v open >/dev/null 2>&1; then
+    open "$1" >/dev/null 2>&1 &
+  else
+    echo "Abra no navegador: $1"
+  fi
+}
+
+if ! server_up; then
+  "$EXE" --server \
+    -m "$BASE/$MODEL" \
+    --host 127.0.0.1 \
+    --port 8080 \
+    -c 2048 \
+    -t 3 \
+    -fa on \
+    -ctk q8_0 \
+    -ctv q8_0 \
+    -ub 256 \
+    -b 512 \
+    --gpu disable > "$BASE/llamafile-chat.log" 2>&1 &
+
+  i=0
+  while [ "$i" -lt 40 ]; do
+    if server_up; then
+      break
+    fi
+    i=$((i + 1))
+    sleep 1
+  done
+
+  if ! server_up; then
+    echo "Nao consegui iniciar o servidor. Veja $BASE/llamafile-chat.log"
+    exit 1
+  fi
+fi
+
+open_url "file://$BASE/chat.html"
+echo "Arandu IA iniciado no navegador padrao."

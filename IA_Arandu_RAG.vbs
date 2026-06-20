@@ -53,17 +53,9 @@ If Not okChat Then
     WScript.Quit
 End If
 
-' abre a interface em janela minima
+' abre a interface no navegador padrao
 chatUrl = "file:///" & Replace(base, "\", "/") & "/chat.html"
-Dim navExe
-navExe = CaminhoNavegador("msedge.exe")
-If navExe = "" Then navExe = CaminhoNavegador("chrome.exe")
-If navExe <> "" Then
-    sh.Run """" & navExe & """ --app=""" & chatUrl & """ --window-size=460,780 " & _
-           "--user-data-dir=""" & base & "\.appprofile"" --no-first-run --no-default-browser-check", 1, False
-Else
-    sh.Run chatUrl, 1, False
-End If
+sh.Run chatUrl, 1, False
 
 ' ---------- funcoes ----------
 Function PortaNoAr(porta)
@@ -76,16 +68,4 @@ Function PortaNoAr(porta)
         If http.status = 200 Then PortaNoAr = True
     End If
     On Error GoTo 0
-End Function
-
-Function CaminhoNavegador(exeName)
-    Dim p
-    CaminhoNavegador = ""
-    On Error Resume Next
-    p = sh.RegRead("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\" & exeName & "\")
-    If p = "" Then p = sh.RegRead("HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\" & exeName & "\")
-    On Error GoTo 0
-    If Not IsNull(p) Then
-        If fso.FileExists(p) Then CaminhoNavegador = p
-    End If
 End Function

@@ -1,7 +1,7 @@
 ' ============================================================
 '  IA Portatil - lancador "1 clique"
 '  - Sobe o servidor llamafile SEM janela de console (escondido)
-'  - Abre a IA numa JANELA MINIMA (modo app: sem abas/barra)
+'  - Abre a IA no navegador padrao do sistema
 '  - Funciona em QUALQUER letra de drive (usa a propria pasta)
 ' ============================================================
 Option Explicit
@@ -51,22 +51,8 @@ End If
 ' URL local da interface (modo arquivo)
 chatUrl = "file:///" & Replace(base, "\", "/") & "/chat.html"
 
-' abre numa JANELA MINIMA via modo app (Edge -> Chrome -> navegador padrao)
-Dim navExe
-navExe = CaminhoNavegador("msedge.exe")
-If navExe = "" Then navExe = CaminhoNavegador("chrome.exe")
-
-If navExe <> "" Then
-    ' --user-data-dir (perfil proprio na USB) forca uma janela APP isolada,
-    ' mesmo com o Edge/Chrome ja aberto. Mantem tudo portatil.
-    Dim perfil
-    perfil = base & "\.appprofile"
-    sh.Run """" & navExe & """ --app=""" & chatUrl & """" & _
-           " --window-size=460,780 --user-data-dir=""" & perfil & """" & _
-           " --no-first-run --no-default-browser-check", 1, False
-Else
-    sh.Run chatUrl, 1, False   ' fallback: navegador padrao (com abas)
-End If
+' abre no navegador padrao configurado no sistema
+sh.Run chatUrl, 1, False
 
 ' ---------- funcoes ----------
 Function ServidorNoAr()
@@ -79,17 +65,4 @@ Function ServidorNoAr()
         If http.status = 200 Then ServidorNoAr = True
     End If
     On Error GoTo 0
-End Function
-
-' descobre o caminho completo do navegador pelo registro (App Paths)
-Function CaminhoNavegador(exeName)
-    Dim p
-    CaminhoNavegador = ""
-    On Error Resume Next
-    p = sh.RegRead("HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\" & exeName & "\")
-    If p = "" Then p = sh.RegRead("HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\" & exeName & "\")
-    On Error GoTo 0
-    If Not IsNull(p) Then
-        If fso.FileExists(p) Then CaminhoNavegador = p
-    End If
 End Function
