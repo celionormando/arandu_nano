@@ -34,8 +34,8 @@ nomeie o .gguf e adicione a entrada no mapa.
 
 | Arquivo GGUF | Nome exibido | Observação |
 |---|---|---|
-| Qwen_Qwen3-1.7B-Q4_K_M.gguf | Arandu Mini 1.0 | Qwen3-1.7B, **padrão atual** (non-thinking) |
-| arandu-nano-1.0-Q4_K_M.gguf | Arandu Nano 1.0 | fine-tune próprio sobre Llama-1B |
+| Qwen_Qwen3-1.7B-Q4_K_M.gguf | Arandu Nano 1.1 | Qwen3-1.7B, **padrão atual** (non-thinking) |
+| arandu-nano-1.0-Q4_K_M.gguf | Arandu Nano 1.0 | fine-tune próprio sobre Llama-1B (versão anterior) |
 | Llama-3.2-1B-Instruct-Q4_K_M.gguf | Llama 1B (base) | base, rápido/leve |
 | Llama-3.2-3B-Instruct-Q4_K_M.gguf | Llama 3B (base) | base, mais qualidade |
 

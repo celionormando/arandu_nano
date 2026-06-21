@@ -11,11 +11,13 @@ tradução, ideias, dúvidas do dia a dia). O projeto inclui um kit para criar
 | Arquivo | Função |
 |---|---|
 | `chat.html` | Interface web em pt-BR (offline): streaming, histórico, voz (TTS) |
+| `Iniciar_Arandu.vbs` | Lançador com **menu de escolha de versão** (Nano 1.1 / 1.0 / Llama 3B) |
 | `IA_Portatil.vbs` | Lançador 1 clique: sobe o servidor oculto e abre o navegador padrão |
 | `iniciar.sh` | Lançador Linux/macOS: sobe o servidor e abre o navegador padrão |
 | `iniciar_rag.sh` | Lançador Linux/macOS com RAG (chat + embeddings) |
 | `modelo.txt` | Define o modelo ativo (1 linha) |
-| `Usar_1B_Rapido.bat` / `Usar_3B_Qualidade.bat` | Trocam o modelo ativo |
+| `Usar_Nano_1.1.bat` / `Usar_Nano_1.0.bat` | Trocam entre as versões do Arandu |
+| `Usar_1B_Rapido.bat` / `Usar_3B_Qualidade.bat` | Trocam para os modelos Llama base |
 | `Desligar_IA.bat` | Encerra o servidor |
 | `desligar.sh` | Encerra os servidores no Linux/macOS |
 | `iniciar.bat` / `iniciar_original.bat` | Alternativas com console |
