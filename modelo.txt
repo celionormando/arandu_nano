@@ -1,1 +1,1 @@
-arandu-nano-1.0-Q4_K_M.gguf
+Qwen_Qwen3-1.7B-Q4_K_M.gguf

@@ -30,12 +30,18 @@ A interface mostra o NOME DO PROJETO (mapa NOMES_MODELO no chat.html), nunca o
 arquivo técnico.
 
 ## Modelo ATIVO
-- **arandu-nano-1.0-Q4_K_M.gguf** — 1º modelo PRÓPRIO (fine-tunado), ~0,8 GB,
-  ~9-14 tok/s. Apontado no modelo.txt. Exibido como "Arandu Nano 1.0".
+- **Qwen_Qwen3-1.7B-Q4_K_M.gguf** — PADRÃO atual, exibido como "Arandu Mini 1.0".
+  Qwen3-1.7B (~1,2 GB), ~12 tok/s, em modo non-thinking (/no_think injetado pelo
+  chat.html só p/ Qwen). Escolhido após teste A/B: melhor qualidade que o 1B
+  (e-mail, contas, explicações) mantendo velocidade e RAM. Troca: Usar_Arandu_Mini.bat.
+- **arandu-nano-1.0-Q4_K_M.gguf** — 1º modelo PRÓPRIO (fine-tune do Llama-1B), ~0,8 GB,
+  ~14-17 tok/s. Exibido como "Arandu Nano 1.0". Troca: Usar_Arandu_Nano.bat.
 - Modelos de base disponíveis para fallback/treino:
   - Llama-3.2-1B-Instruct-Q4_K_M.gguf  (base do Arandu Nano)
   - Llama-3.2-3B-Instruct-Q4_K_M.gguf  (mais qualidade, ~6 tok/s)
-- (Phi-3.5-mini e 3B-Q3_K_L testados e DESCARTADOS.)
+- DESCARTADOS: Phi-3.5-mini, 3B-Q3_K_L e Gemma-2-2B (este incompatível com
+  flash-attn por causa do "attention softcapping" — só roda bem sem -fa, perdendo
+  velocidade e RAM).
 
 ## Estrutura no pendrive
 D:\Arandu-nano\

@@ -32,9 +32,11 @@ Agentes autônomos, unindo todas as capacidades.
 Definido em chat.html (const NOMES_MODELO). Ao criar/fine-tunar um modelo,
 nomeie o .gguf e adicione a entrada no mapa.
 
-| Arquivo GGUF (base atual) | Nome exibido | Observação |
+| Arquivo GGUF | Nome exibido | Observação |
 |---|---|---|
-| Llama-3.2-1B-Instruct-Q4_K_M.gguf | Arandu Nano 1.0 | 1B, rápido/leve (padrão) |
-| Llama-3.2-3B-Instruct-Q4_K_M.gguf | Arandu Base 1.0 | 3B, mais qualidade |
+| Qwen_Qwen3-1.7B-Q4_K_M.gguf | Arandu Mini 1.0 | Qwen3-1.7B, **padrão atual** (non-thinking) |
+| arandu-nano-1.0-Q4_K_M.gguf | Arandu Nano 1.0 | fine-tune próprio sobre Llama-1B |
+| Llama-3.2-1B-Instruct-Q4_K_M.gguf | Llama 1B (base) | base, rápido/leve |
+| Llama-3.2-3B-Instruct-Q4_K_M.gguf | Llama 3B (base) | base, mais qualidade |
 
 O nome técnico do modelo NÃO aparece na interface — só o nome do projeto.

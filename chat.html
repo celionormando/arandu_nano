@@ -318,6 +318,7 @@ function cur(){return convs.find(c=>c.id===currentId);}
 /* ============ Markdown mínimo (offline) ============ */
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function md(src){
+  src=src.replace(/<think>[\s\S]*?<\/think>/gi,"").trim();  // remove raciocinio do Qwen3, se houver
   src=src.replace(/\r\n/g,"\n");
   const blocks=[];
   src=src.replace(/```(\w*)\n?([\s\S]*?)```/g,(m,lang,code)=>{
@@ -412,7 +413,9 @@ function onSend(){
 async function stream(c){
   const idx=c.messages.length-1;
   // RAG: se ativo, busca trechos relevantes e injeta na mensagem do sistema
-  const baseSys=IDENTIDADE_ARANDU+"\n\n"+cfg.system;
+  // Qwen3 tem "modo pensamento" que custa velocidade na CPU; desliga com /no_think (so p/ Qwen).
+  const noThink=/qwen3/i.test(modeloArquivo)?" /no_think":"";
+  const baseSys=IDENTIDADE_ARANDU+"\n\n"+cfg.system+noThink;
   let sysContent=baseSys;
   if(cfg.ragOn){
     try{
@@ -580,16 +583,19 @@ if('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged=carregarV
 // Mapa: arquivo GGUF -> nome do MODELO DO PROJETO (familias Arandu/Katu/Vera/Taba).
 // Ao criar um modelo proprio, adicione o nome do arquivo aqui.
 const NOMES_MODELO={
+  "Qwen_Qwen3-1.7B-Q4_K_M.gguf":"Arandu Mini 1.0",      // Qwen3-1.7B (padrao atual)
   "arandu-nano-1.0-Q4_K_M.gguf":"Arandu Nano 1.0",      // modelo proprio (fine-tunado)
   "Llama-3.2-1B-Instruct-Q4_K_M.gguf":"Llama 1B (base)",
   "Llama-3.2-3B-Instruct-Q4_K_M.gguf":"Llama 3B (base)"
 };
+let modeloArquivo="";   // nome do .gguf ativo (preenchido por checarServidor)
 function nomeProjeto(arquivo){return NOMES_MODELO[arquivo]||"Modelo do Projeto";}
 async function checarServidor(){
   const dot=document.getElementById('statusDot'),txt=document.getElementById('statusTxt');
   try{
     const r=await fetch(cfg.url.replace(/\/$/,'')+"/props");const j=await r.json();
     const arq=(j.model_path||j.default_generation_settings?.model||"").split(/[\\/]/).pop();
+    modeloArquivo=arq;
     dot.className='dot ok';txt.textContent="Conectado · "+nomeProjeto(arq);
   }catch(e){dot.className='dot bad';txt.textContent="Servidor offline";}
 }
