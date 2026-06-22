@@ -79,3 +79,31 @@ fine-tuning LoRA sobre o Llama-3.2-1B e exporta um `.gguf` Q4_K_M.
 ## Famílias de modelos
 Arandu (G1 eficiência) → Katu (G2 raciocínio) → Vera (G3 multimodal) →
 Taba (G4 agentes). Detalhes em `NOMENCLATURA_MODELOS.md`.
+
+## Para testar (pacote pronto)
+Quem só quer **experimentar** não precisa montar nada: use o `.zip` da página de
+[Releases](https://github.com/celionormando/arandu_nano/releases) — baixe,
+extraia e clique em `IA_Portatil.vbs`. Passo a passo em `GUIA_DO_TESTADOR.md`.
+
+Para **gerar** esse pacote a partir do projeto (mantenedores):
+```powershell
+powershell -ExecutionPolicy Bypass -File empacotar.ps1            # leve (sem RAG)
+powershell -ExecutionPolicy Bypass -File empacotar.ps1 -ComRAG    # completo (com RAG)
+```
+
+## Licença e créditos
+O código do **Arandu** (interface, lançadores, scripts, RAG) é distribuído sob a
+licença **Apache-2.0** — veja `LICENSE`.
+
+O Arandu **redistribui** componentes de terceiros, cada um sob a própria licença:
+
+| Componente | Autor | Licença |
+|---|---|---|
+| **llamafile** (motor) | Mozilla Ocho | Apache-2.0 |
+| **Qwen3-1.7B** (modelo padrão) | Alibaba Cloud | Apache-2.0 |
+| **bge-m3** (embeddings do RAG) | BAAI | MIT |
+| **Llama 3.2** (modelos base, opcionais) | Meta | Llama 3.2 Community License |
+
+> Os pesos da **Llama 3.2** têm licença própria da Meta (com restrições de uso);
+> por isso o pacote de teste padrão usa o **Qwen3** (Apache-2.0), de
+> redistribuição livre.

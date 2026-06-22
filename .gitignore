@@ -11,6 +11,9 @@ diffusionfile*
 treino/saida/
 treino/*_gguf/
 
+# Pacotes de distribuição gerados pelo empacotar.ps1
+dist/
+
 # Temporários
 *.tmp
 *.log
