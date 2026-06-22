@@ -51,7 +51,8 @@ if ! port_up 8080; then
     -ctv q8_0 \
     -ub 256 \
     -b 512 \
-    --gpu disable > "$BASE/llamafile-chat.log" 2>&1 &
+    --gpu disable \
+    --sleep-idle-seconds 180 > "$BASE/llamafile-chat.log" 2>&1 &
 fi
 
 if ! port_up 8091; then
@@ -65,7 +66,8 @@ if ! port_up 8091; then
     --port 8091 \
     -c 2048 \
     -t 3 \
-    --gpu disable > "$BASE/llamafile-embedding.log" 2>&1 &
+    --gpu disable \
+    --sleep-idle-seconds 180 > "$BASE/llamafile-embedding.log" 2>&1 &
 fi
 
 i=0

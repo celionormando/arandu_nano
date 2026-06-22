@@ -26,14 +26,15 @@ sh.CurrentDirectory = base
 ' 1) servidor de CHAT (8080)
 If Not PortaNoAr(8080) Then
     sh.Run """" & exe & """ --server -m """ & modelo & """ --host 127.0.0.1 --port 8080 " & _
-           "-c 2048 -t 3 -fa on -ctk q8_0 -ctv q8_0 -ub 256 -b 512 --gpu disable", 0, False
+           "-c 2048 -t 3 -fa on -ctk q8_0 -ctv q8_0 -ub 256 -b 512 --gpu disable " & _
+           "--sleep-idle-seconds 180", 0, False
 End If
 
 ' 2) servidor de EMBEDDING (8091)
 If Not PortaNoAr(8091) Then
     If fso.FileExists(embed) Then
         sh.Run """" & exe & """ --server --embedding -m """ & embed & """ --host 127.0.0.1 --port 8091 " & _
-               "-c 2048 -t 3 --gpu disable", 0, False
+               "-c 2048 -t 3 --gpu disable --sleep-idle-seconds 180", 0, False
     Else
         MsgBox "Modelo de embedding nao encontrado:" & vbCrLf & embed, vbExclamation, "Arandu IA - RAG"
     End If

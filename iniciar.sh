@@ -49,7 +49,8 @@ if ! server_up; then
     -ctv q8_0 \
     -ub 256 \
     -b 512 \
-    --gpu disable > "$BASE/llamafile-chat.log" 2>&1 &
+    --gpu disable \
+    --sleep-idle-seconds 180 > "$BASE/llamafile-chat.log" 2>&1 &
 
   i=0
   while [ "$i" -lt 40 ]; do

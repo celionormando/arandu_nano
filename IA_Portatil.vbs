@@ -28,9 +28,12 @@ modelo = base & "\" & nomeModelo
 
 ' se ja houver servidor respondendo, so abre a janela
 If Not ServidorNoAr() Then
+    ' --sleep-idle-seconds 180: apos 3 min sem uso, o servidor "dorme" e
+    ' libera a RAM de trabalho; a proxima mensagem o reacorda em ~2s.
     cmd = """" & exe & """ --server -m """ & modelo & """" & _
           " --host 127.0.0.1 --port 8080 -c 2048 -t 3 -fa on" & _
-          " -ctk q8_0 -ctv q8_0 -ub 256 -b 512 --gpu disable"
+          " -ctk q8_0 -ctv q8_0 -ub 256 -b 512 --gpu disable" & _
+          " --sleep-idle-seconds 180"
     sh.CurrentDirectory = base
     ' 0 = janela oculta (sem console preto); False = nao espera
     sh.Run cmd, 0, False

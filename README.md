@@ -75,6 +75,9 @@ fine-tuning LoRA sobre o Llama-3.2-1B e exporta um `.gguf` Q4_K_M.
   veja `treino/imatrix/`)
 - Modelos base: **Llama 3.2** (1B/3B) quantizados Q4_K_M
 - Treino: **Unsloth** (LoRA/QLoRA) no Google Colab
+- Economia de RAM: os lançadores usam `--sleep-idle-seconds 180` — após 3 min
+  ocioso o servidor **dorme** (libera a memória de trabalho) e **reacorda em
+  ~2s** na mensagem seguinte. Útil quando o navegador é fechado sem desligar.
 
 ## Famílias de modelos
 Arandu (G1 eficiência) → Katu (G2 raciocínio) → Vera (G3 multimodal) →

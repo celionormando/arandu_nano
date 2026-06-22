@@ -69,6 +69,11 @@ tradução, tirar uma dúvida do dia a dia. Tudo em português.
 Quando terminar, dê dois cliques em **`Desligar_IA.bat`**. Isso encerra o
 programa e libera a memória. (Fechar só o navegador **não** desliga o motor.)
 
+> **Economia automática de memória:** mesmo sem desligar, depois de **3 minutos
+> sem uso** o Arandu entra em modo de descanso e libera boa parte da memória
+> sozinho. A próxima mensagem o reativa em ~2 segundos. Ou seja: se você fechar
+> o navegador e esquecer, ele para de consumir RAM ativa por conta própria.
+
 ---
 
 ## 6. Problemas comuns
@@ -79,6 +84,7 @@ programa e libera a memória. (Fechar só o navegador **não** desliga o motor.)
 | "Não consegui iniciar o servidor" | Veja se o `llamafile.exe` foi desbloqueado (passo 3). |
 | O chat diz que não conecta | O motor ainda está carregando — espere alguns segundos e recarregue a página. |
 | Está lento | Normal em PCs mais antigos. A 1ª resposta é a mais lenta; as seguintes melhoram. |
+| 1ª resposta após uma pausa demora ~2s a mais | Normal: o Arandu "cochila" após 3 min parado para poupar memória e acorda sozinho. |
 | Antivírus bloqueou | Adicione a pasta do Arandu como exceção (passo 3). |
 
 ---
