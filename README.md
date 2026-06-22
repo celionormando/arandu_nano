@@ -1,7 +1,46 @@
-# Arandu IA
+<h1 align="center">🌱 Arandu IA</h1>
 
-Plataforma de IA de chat **100% local e offline**, portátil em pendrive, em
-português do Brasil. Roda na CPU, com mínimo de RAM, sem instalar nada no PC.
+<p align="center">
+  <strong>Uma IA que conversa com você 100% offline — em português, na CPU, direto de um pendrive.</strong><br>
+  Sem internet. Sem instalar nada. Sem que uma palavra saia do seu computador.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/licença-Apache--2.0-blue" alt="Licença Apache-2.0">
+  <img src="https://img.shields.io/github/v/release/celionormando/arandu_nano?include_prereleases&label=download" alt="Release">
+  <img src="https://img.shields.io/badge/plataforma-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey" alt="Plataformas">
+  <img src="https://img.shields.io/badge/CPU-only-success" alt="CPU-only">
+  <img src="https://img.shields.io/badge/RAM-~1.2%20GB-success" alt="RAM">
+</p>
+
+<!-- 📸 Adicione um GIF/print do Arandu respondendo em docs/demo.gif e descomente:
+<p align="center"><img src="docs/demo.gif" alt="Arandu em ação" width="720"></p>
+-->
+<p align="center"><em>📸 Demo em GIF/vídeo em breve.</em></p>
+
+> **Arandu** vem do tupi-guarani e significa *sabedoria* — **Ára** (tempo, cosmos)
+> + **Andu** (sentir, ouvir). Um nome ancestral brasileiro para uma IA que mantém
+> os pés no chão: útil, acessível e que respeita a sua privacidade.
+
+## ✨ Por que o Arandu
+
+- 🔒 **Privacidade total** — roda 100% local; nada é enviado para nuvem alguma
+- 💻 **Leve** — funciona na CPU com ~1,2 GB de RAM (sem placa de vídeo)
+- 🇧🇷 **Português do Brasil** — modelo calibrado para o nosso idioma (imatrix pt-BR)
+- 🔌 **Clica e roda** — baixe, extraia e dê um clique; cabe num pendrive
+- 📚 **Base de conhecimento offline (RAG)** — responde a partir dos *seus* documentos, sem inventar
+- 🗣️ **Voz (TTS)**, histórico e streaming de respostas
+- 💸 **Livre e aberto** (Apache-2.0)
+
+## ⬇️ Testar agora (Windows)
+
+Baixe o pacote pronto, extraia e clique em `IA_Portatil.vbs`:
+
+👉 **[Download — Arandu Nano 1.1](https://github.com/celionormando/arandu_nano/releases/latest)**
+
+Passo a passo (e o aviso do SmartScreen) no `GUIA_DO_TESTADOR.md` dentro do pacote.
+
+---
 
 O **Arandu** é um assistente de IA de **uso geral** (conversa, redação, resumos,
 tradução, ideias, dúvidas do dia a dia). O projeto inclui um kit para criar

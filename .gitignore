@@ -14,6 +14,9 @@ treino/*_gguf/
 # Pacotes de distribuição gerados pelo empacotar.ps1
 dist/
 
+# Rascunhos de divulgação (uso local; não expor no repo público)
+divulgacao/
+
 # Temporários
 *.tmp
 *.log
