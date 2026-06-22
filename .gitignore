@@ -17,6 +17,11 @@ dist/
 # Rascunhos de divulgação (uso local; não expor no repo público)
 divulgacao/
 
+# Build do GIF de demo — versiona só o gerador, não o node_modules/PNGs
+tools_gif/node_modules/
+tools_gif/inspect_*.png
+tools_gif/package*.json
+
 # Temporários
 *.tmp
 *.log

@@ -13,10 +13,9 @@
   <img src="https://img.shields.io/badge/RAM-~1.2%20GB-success" alt="RAM">
 </p>
 
-<!-- 📸 Adicione um GIF/print do Arandu respondendo em docs/demo.gif e descomente:
-<p align="center"><img src="docs/demo.gif" alt="Arandu em ação" width="720"></p>
--->
-<p align="center"><em>📸 Demo em GIF/vídeo em breve.</em></p>
+<p align="center">
+  <img src="docs/demo.gif" alt="Arandu em ação — assistente de IA offline em português" width="760">
+</p>
 
 > **Arandu** vem do tupi-guarani e significa *sabedoria* — **Ára** (tempo, cosmos)
 > + **Andu** (sentir, ouvir). Um nome ancestral brasileiro para uma IA que mantém
