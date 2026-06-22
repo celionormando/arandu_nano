@@ -1,0 +1,49 @@
+A inteligência artificial é um campo da computação que busca criar sistemas capazes de realizar tarefas que normalmente exigem inteligência humana. Entre essas tarefas estão o reconhecimento de voz, a compreensão de linguagem natural, a tomada de decisões e a tradução de idiomas.
+
+O aprendizado de máquina é uma subcategoria da inteligência artificial que permite que os sistemas aprendam e melhorem automaticamente com a experiência, sem serem explicitamente programados para isso. Os modelos de linguagem de grande escala, conhecidos como LLMs, são treinados em enormes quantidades de texto e aprendem a prever a próxima palavra em uma sequência.
+
+Santos Dumont foi um inventor e aviador brasileiro nascido em Minas Gerais. Em 23 de outubro de 1906, realizou o voo do 14-Bis em Paris, percorrendo cerca de 60 metros. Este voo é reconhecido no Brasil como o primeiro voo oficial com decolagem por meios próprios. Santos Dumont também foi o responsável por popularizar o relógio de pulso, encomendado ao joalheiro Louis Cartier para facilitar a cronometragem de seus voos.
+
+O Brasil é o maior país da América do Sul e o quinto maior do mundo em área territorial. A capital federal é Brasília, inaugurada em 1960. Antes disso, a capital era o Rio de Janeiro. O país é formado por 26 estados e o Distrito Federal, totalizando 27 unidades federativas, divididas em cinco regiões: Norte, Nordeste, Centro-Oeste, Sudeste e Sul.
+
+A língua portuguesa é falada por mais de 250 milhões de pessoas no mundo, sendo o idioma oficial do Brasil, Portugal, Angola, Moçambique, Cabo Verde, Guiné-Bissau, São Tomé e Príncipe e Timor-Leste. No Brasil, o português tem características próprias que o diferenciam do português europeu, incluindo variações fonéticas, lexicais e gramaticais.
+
+A Constituição Federal de 1988, também conhecida como Constituição Cidadã, é a lei fundamental do Brasil. Ela estabelece os direitos e deveres dos cidadãos brasileiros, a organização do Estado e os princípios que regem a república. Foi promulgada após o fim da ditadura militar, marcando a redemocratização do país.
+
+A independência do Brasil foi proclamada em 7 de setembro de 1822 por Dom Pedro I às margens do Riacho do Ipiranga, em São Paulo. Este evento ficou conhecido como o Grito do Ipiranga. O Brasil foi colônia portuguesa por mais de três séculos, desde a chegada de Pedro Álvares Cabral em 22 de abril de 1500.
+
+A Lei Áurea foi assinada pela Princesa Isabel em 13 de maio de 1888, abolindo definitivamente a escravidão no Brasil. O país foi o último das Américas a abolir a escravidão. Antes da Lei Áurea, houve a Lei do Ventre Livre, de 1871, e a Lei dos Sexagenários, de 1885.
+
+A matemática é a ciência que estuda estruturas abstratas como números, formas, sequências e relações. A aritmética trata das operações básicas com números. A álgebra estuda estruturas e relações usando símbolos. A geometria analisa formas e espaços. O cálculo diferencial e integral é fundamental para a física e a engenharia.
+
+A física é a ciência natural que estuda a matéria, a energia e as forças que atuam entre elas. As leis de Newton descrevem o movimento dos corpos. A teoria da relatividade de Einstein revolucionou a compreensão do espaço, do tempo e da gravidade. A mecânica quântica descreve o comportamento das partículas subatômicas.
+
+O Cerrado é o segundo maior bioma do Brasil e um dos mais biodiversos do planeta. Ele ocupa cerca de 25% do território nacional e é caracterizado por uma vegetação de savana tropical. O Cerrado é considerado um hotspot de biodiversidade e está ameaçado pela expansão agrícola.
+
+A Amazônia é a maior floresta tropical do mundo e cobre cerca de 60% do território brasileiro. Ela abriga milhões de espécies de plantas, animais e insetos, muitos ainda não descobertos pela ciência. O Rio Amazonas, que atravessa a floresta, é o maior rio do mundo em volume de água.
+
+O sistema solar é composto pelo Sol e todos os corpos celestes que orbitam ao seu redor, incluindo oito planetas: Mercúrio, Vênus, Terra, Marte, Júpiter, Saturno, Urano e Netuno. A Terra é o terceiro planeta mais próximo do Sol e o único com condições conhecidas para suportar vida.
+
+A química é a ciência que estuda a composição, a estrutura, as propriedades e as transformações da matéria. Os átomos são as unidades fundamentais da matéria. A tabela periódica organiza os elementos químicos de acordo com suas propriedades. As reações químicas envolvem a quebra e formação de ligações entre átomos.
+
+A história do Brasil começa com a chegada dos portugueses em 1500. O período colonial durou até 1822, quando o Brasil se tornou independente. O Império durou até 1889, quando foi proclamada a República. O século XX foi marcado por períodos de democracia e ditadura, culminando na redemocratização de 1985.
+
+Tiradentes, cujo nome verdadeiro era Joaquim José da Silva Xavier, foi o líder simbólico da Inconfidência Mineira, movimento que defendia a independência do Brasil em relação a Portugal no final do século XVIII. Preso e condenado, foi enforcado em 21 de abril de 1792. Hoje, essa data é feriado nacional em sua homenagem.
+
+O sistema imunológico é o conjunto de mecanismos biológicos que protegem o organismo contra doenças e infecções. Ele é composto por células, tecidos e órgãos que trabalham em conjunto para reconhecer e destruir agentes patogênicos como vírus, bactérias e fungos. As vacinas estimulam o sistema imunológico a produzir anticorpos.
+
+A economia brasileira é a maior da América Latina e uma das maiores do mundo. O país é um grande produtor e exportador de commodities agrícolas como soja, milho, café, cana-de-açúcar e carne bovina. O setor de serviços é o maior da economia em termos de participação no PIB.
+
+O português brasileiro tem diversas variantes regionais. No Nordeste, o sotaque e o vocabulário são diferentes do Sul ou do Sudeste. Expressões populares variam de estado para estado. O idioma incorporou palavras de origem indígena, africana, italiana, alemã, japonesa e de outras línguas de imigrantes.
+
+A educação no Brasil é dividida em educação básica, que inclui educação infantil, ensino fundamental e ensino médio, e educação superior. A Constituição garante a educação como direito fundamental. As universidades federais são gratuitas e financiadas pelo governo. O ENEM é o principal exame de acesso ao ensino superior.
+
+Machado de Assis é considerado o maior escritor da literatura brasileira. Nascido no Rio de Janeiro em 1839, foi fundador e primeiro presidente da Academia Brasileira de Letras. Entre suas obras mais famosas estão Dom Casmurro, Memórias Póstumas de Brás Cubas e Quincas Borba. Faleceu em 1908.
+
+O futebol é o esporte mais popular do Brasil. A seleção brasileira é a que mais vezes conquistou o título da Copa do Mundo FIFA, com cinco títulos: 1958, 1962, 1970, 1994 e 2002. Jogadores como Pelé, Ronaldo, Ronaldinho e Neymar são ícones do futebol mundial.
+
+A tecnologia da informação transformou a sociedade nas últimas décadas. A internet conecta bilhões de pessoas ao redor do mundo. Os smartphones permitem acesso à informação a qualquer momento. As redes sociais mudaram a forma como as pessoas se comunicam e consomem conteúdo.
+
+O clima do Brasil varia de acordo com a região. O Norte tem clima equatorial, com altas temperaturas e muita chuva durante o ano todo. O Nordeste tem clima semiárido em grande parte de seu território. O Sul tem clima subtropical, com estações bem definidas e possibilidade de neve em algumas cidades.
+
+A saúde pública no Brasil é garantida pelo Sistema Único de Saúde, o SUS, criado pela Constituição de 1988. O SUS oferece atendimento gratuito a todos os cidadãos, incluindo consultas, exames, cirurgias e distribuição de medicamentos. Oswaldo Cruz foi um pioneiro da saúde pública no Brasil no início do século XX.

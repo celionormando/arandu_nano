@@ -22,6 +22,7 @@ tradução, ideias, dúvidas do dia a dia). O projeto inclui um kit para criar
 | `desligar.sh` | Encerra os servidores no Linux/macOS |
 | `iniciar.bat` / `iniciar_original.bat` | Alternativas com console |
 | `treino/` | Kit de fine-tuning (notebook Colab + datasets) |
+| `treino/imatrix/` | Calibração pt-BR + guia de re-quantização com **imatrix** |
 | `NOMENCLATURA_MODELOS.md` | Famílias de modelos (Arandu/Katu/Vera/Taba) |
 | `PLANO.md` | Documentação completa do projeto |
 
@@ -69,7 +70,10 @@ fine-tuning LoRA sobre o Llama-3.2-1B e exporta um `.gguf` Q4_K_M.
 
 ## Stack
 - Motor: **llamafile** / llama.cpp (Apache-2.0), CPU-only
-- Modelo base: **Llama 3.2** (1B/3B) quantizado Q4_K_M
+- Modelo padrão: **Qwen3-1.7B** quantizado Q4_K_M com **imatrix** pt-BR
+  (matriz de importância — mais qualidade sem custo de RAM/velocidade;
+  veja `treino/imatrix/`)
+- Modelos base: **Llama 3.2** (1B/3B) quantizados Q4_K_M
 - Treino: **Unsloth** (LoRA/QLoRA) no Google Colab
 
 ## Famílias de modelos
