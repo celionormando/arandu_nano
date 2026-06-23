@@ -4,6 +4,11 @@ llamafile.exe
 whisperfile*
 diffusionfile*
 
+# Voz natural (Piper TTS) — binário + modelo de voz, baixados à parte
+ferramentas/piper/
+*.onnx
+*.wav
+
 # Perfil do navegador (gerado em runtime pelo IA_Portatil.vbs)
 .appprofile/
 

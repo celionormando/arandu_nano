@@ -256,6 +256,42 @@ function Get-Email {
     }
 }
 
+# ---------- voz natural (Piper TTS, opcional) ----------
+# Sintetiza fala pt-BR offline. Spawn-por-requisicao: so usa RAM enquanto fala.
+# Binario + voz em ferramentas\piper\ (nao versionados, baixados a parte).
+$script:PIPER_DIR = Join-Path $PSScriptRoot 'piper'
+
+function Piper-Falar([string]$texto) {
+    if ([string]::IsNullOrWhiteSpace($texto)) { return $null }
+    $exe   = Join-Path $script:PIPER_DIR 'piper.exe'
+    $model = Join-Path $script:PIPER_DIR 'pt_BR-faber-medium.onnx'
+    if (-not (Test-Path $exe) -or -not (Test-Path $model)) { return $null }
+    if ($texto.Length -gt 1500) { $texto = $texto.Substring(0, 1500) }  # limite p/ latencia
+    $tmp = Join-Path $env:TEMP ('arandu_voz_' + [guid]::NewGuid().ToString('N') + '.wav')
+    try {
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName  = $exe
+        $psi.Arguments = '--model "' + $model + '" --output_file "' + $tmp + '"'
+        $psi.WorkingDirectory     = $script:PIPER_DIR
+        $psi.UseShellExecute      = $false
+        $psi.CreateNoWindow       = $true
+        $psi.RedirectStandardInput = $true
+        $p = [System.Diagnostics.Process]::Start($psi)
+        # envia o texto em UTF-8 (acentos pt-BR) pela entrada padrao
+        $inBytes = [System.Text.Encoding]::UTF8.GetBytes($texto + "`n")
+        $p.StandardInput.BaseStream.Write($inBytes, 0, $inBytes.Length)
+        $p.StandardInput.BaseStream.Flush()
+        $p.StandardInput.Close()
+        if (-not $p.WaitForExit(30000)) { try { $p.Kill() } catch {}; return $null }
+        if (Test-Path $tmp) { return [System.IO.File]::ReadAllBytes($tmp) }
+    } catch {
+        return $null
+    } finally {
+        Remove-Item $tmp -Force -ErrorAction SilentlyContinue
+    }
+    return $null
+}
+
 # ---------- servidor HTTP ----------
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://127.0.0.1:$PORTA/")
@@ -284,6 +320,29 @@ while ($listener.IsListening) {
         }
 
         $rota = $req.Url.AbsolutePath.ToLower()
+
+        # /falar: POST com o texto no corpo -> devolve WAV (audio binario, nao JSON)
+        if ($rota -eq '/falar') {
+            $texto = ''
+            try {
+                $sr = New-Object System.IO.StreamReader($req.InputStream, [System.Text.Encoding]::UTF8)
+                $texto = $sr.ReadToEnd(); $sr.Close()
+            } catch {}
+            $wav = Piper-Falar $texto
+            if ($wav) {
+                $res.ContentType = 'audio/wav'
+                $res.ContentLength64 = $wav.Length
+                $res.OutputStream.Write($wav, 0, $wav.Length)
+            } else {
+                $res.StatusCode = 503
+                $b = [System.Text.Encoding]::UTF8.GetBytes('{"erro":"voz indisponivel (piper ausente?)"}')
+                $res.ContentType = 'application/json; charset=utf-8'
+                $res.OutputStream.Write($b, 0, $b.Length)
+            }
+            $res.Close()
+            continue
+        }
+
         $obj = $null
         switch ($rota) {
             '/saude'   { $obj = Get-Saude }

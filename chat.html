@@ -589,18 +589,38 @@ function limparParaVoz(t){
           .replace(/[*_`#>]/g,"").replace(/\[(.*?)\]\(.*?\)/g,"$1")
           .replace(/\s+/g," ").trim();
 }
-function falar(texto){
+let aranduAudio=null;   // <audio> da voz natural (Piper), p/ poder interromper
+function pararFala(){
+  try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+  if(aranduAudio){ try{ aranduAudio.pause(); }catch(e){} aranduAudio=null; }
+}
+async function falar(texto){
+  pararFala();
+  const limpo=limparParaVoz(texto);
+  if(!limpo)return;
+  // 1) voz NATURAL (Piper, via ajudante na 8099). Se indisponivel, cai pra Web Speech.
+  try{
+    const r=await fetch("http://127.0.0.1:8099/falar",{method:"POST",headers:{"Content-Type":"text/plain; charset=utf-8"},body:limpo,signal:AbortSignal.timeout(30000)});
+    if(r.ok && (r.headers.get("Content-Type")||"").indexOf("audio")>=0){
+      const url=URL.createObjectURL(new Blob([await r.arrayBuffer()],{type:"audio/wav"}));
+      aranduAudio=new Audio(url);
+      aranduAudio.onended=()=>{URL.revokeObjectURL(url);aranduAudio=null;};
+      await aranduAudio.play();
+      return;
+    }
+  }catch(e){ /* ajudante off / sem piper -> usa a voz do sistema */ }
+  // 2) fallback: Web Speech (voz do sistema)
   if(!('speechSynthesis' in window))return;
-  window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(limparParaVoz(texto));
+  const u=new SpeechSynthesisUtterance(limpo);
   const v=vozEscolhida();
   if(v){u.voice=v;u.lang=v.lang;}else{u.lang="pt-BR";}
   u.rate=1.05;
   window.speechSynthesis.speak(u);
 }
+
 function toggleVoz(){
   cfg.falar=!cfg.falar;save();atualizarBotaoVoz();
-  if(!cfg.falar)window.speechSynthesis.cancel();
+  if(!cfg.falar)pararFala();
 }
 function atualizarBotaoVoz(){
   const b=document.getElementById('ttsBtn');

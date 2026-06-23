@@ -30,6 +30,7 @@ O **frontend é o mesmo em todo SO** (só navegador + `fetch`). O único pedaço
   - `/limpeza` → arquivos limpáveis com tamanho (TEMP, Windows Update, lixeira, prefetch…)
   - `/agenda`  → próximos 14 dias do **Outlook** (assunto, horário, local)
   - `/email`   → e-mails recentes do **Outlook** (remetente, assunto, horário, não lido)
+  - `/falar`   → **POST** com texto no corpo → devolve **WAV** (voz natural via Piper)
   - `/ping`    → teste de vida
 - **`Painel_Saude.html`** — painel visual (tema do Arandu). Mostra os medidores,
   a limpeza, a **agenda** e os **e-mails**, com botões **"Pedir análise / Resumir
@@ -56,6 +57,33 @@ um perfil configurado (o "novo Outlook" do Windows não expõe COM).
 > **cultura do sistema** (pt-BR = `dd/MM/yyyy`). Usar `InvariantCulture` (MM/dd)
 > faz a janela virar vazia. E `IncludeRecurrences` deve ser ligado **depois** do
 > `Sort`, senão os eventos recorrentes somem.
+
+## Voz natural (Piper TTS)
+
+O chat usa a **Web Speech API** (voz do sistema) por padrão. Se o ajudante tiver o
+**Piper** instalado, o `chat.html` passa a usar uma **voz neural pt-BR offline** —
+mais natural — e cai de volta na Web Speech se o Piper não estiver disponível.
+
+- Motor: **Piper** (neural, CPU, offline), voz **`pt_BR-faber-medium`** (~63 MB, masculina).
+- **Spawn por requisição**: o Piper só usa RAM enquanto fala e libera ao terminar
+  (fiel à premissa de pouca RAM). Latência ~2 s por fala (após o 1º uso, que aquece
+  o cache de disco). RTF ~0,45 (sintetiza mais rápido que o tempo real).
+- O modelo `narra`; a rota `/falar` recebe o texto e devolve o áudio.
+
+**Instalar (Windows)** — o binário e a voz não vão no Git (grandes; ver `.gitignore`):
+1. Baixe `piper_windows_amd64.zip` em
+   https://github.com/rhasspy/piper/releases e extraia em `ferramentas/piper/`.
+2. Baixe a voz em
+   https://huggingface.co/rhasspy/piper-voices/tree/main/pt/pt_BR/faber/medium
+   (`pt_BR-faber-medium.onnx` + `.onnx.json`) e coloque em `ferramentas/piper/`.
+
+Resultado: `ferramentas/piper/` com `piper.exe`, `onnxruntime.dll`, a voz `.onnx`/`.json`
+e a pasta `espeak-ng-data/`. (Linux/macOS: baixe o binário do SO correspondente; a rota
+`/falar` no `saude_sistema.py` é um próximo passo.)
+
+> Vozes pt-BR alternativas no mesmo repositório: `cadu`, `jeff` (medium) e `edresson`
+> (low, menor/mais rápida). Voz **feminina** pt-BR ainda é lacuna do Piper — para isso,
+> o **Kokoro-82M** seria a alternativa (mais natural, porém ~300 MB).
 
 ## Multiplataforma (Linux e macOS)
 
