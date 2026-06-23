@@ -22,6 +22,9 @@ tools_gif/node_modules/
 tools_gif/inspect_*.png
 tools_gif/package*.json
 
+# Config local do Claude Code / preview (não portátil)
+.claude/
+
 # Temporários
 *.tmp
 *.log

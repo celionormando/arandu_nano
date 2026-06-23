@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arandu — Painel de Saúde do Sistema</title>
+<style>
+  :root{
+    --bg:#0d0e10; --panel:#161718; --panel2:#212225; --border:#2a2c30;
+    --text:#ececec; --muted:#8e9297; --accent:#4b8bf5; --accent2:#3b7ae0;
+    --danger:#e5534b; --warn:#d29922; --ok:#3fb950; --code:#0a0b0c;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    font-size:15px; line-height:1.45; padding:0 0 60px;
+  }
+  .wrap{max-width:900px; margin:0 auto; padding:0 20px}
+  header{
+    padding:22px 0 14px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  header h1{font-size:20px; font-weight:600; margin:0}
+  header .sub{color:var(--muted); font-size:13px}
+  .spacer{flex:1}
+  .status-pills{display:flex; gap:8px; flex-wrap:wrap}
+  .pill{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted);
+        background:var(--panel); border:1px solid var(--border); border-radius:20px; padding:5px 11px}
+  .dot{width:8px; height:8px; border-radius:50%; background:#666; flex-shrink:0}
+  .dot.ok{background:var(--ok)} .dot.bad{background:var(--danger)}
+
+  .toolbar{display:flex; gap:10px; margin:18px 0 6px; flex-wrap:wrap}
+  .btn{padding:9px 16px; border-radius:9px; border:1px solid var(--border);
+       background:var(--panel2); color:var(--text); cursor:pointer; font-size:14px; font-family:inherit}
+  .btn:hover{background:var(--border)}
+  .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff}
+  .btn.primary:hover{background:var(--accent2)}
+  .btn:disabled{opacity:.5; cursor:default}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px; margin-top:16px}
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px 18px}
+  .card h3{margin:0 0 4px; font-size:13px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.4px}
+  .big{font-size:26px; font-weight:600; font-variant-numeric:tabular-nums}
+  .big small{font-size:14px; color:var(--muted); font-weight:400}
+  .bar{height:9px; background:var(--panel2); border-radius:6px; overflow:hidden; margin:10px 0 6px}
+  .bar > i{display:block; height:100%; border-radius:6px; transition:width .4s}
+  .fill-ok > i{background:var(--ok)} .fill-warn > i{background:var(--warn)} .fill-danger > i{background:var(--danger)}
+  .sub2{font-size:12px; color:var(--muted)}
+
+  .section-title{margin:30px 0 6px; font-size:16px; font-weight:600}
+  .section-note{font-size:12px; color:var(--muted); margin-bottom:12px}
+
+  table{width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--border); border-radius:12px; overflow:hidden}
+  th,td{padding:11px 14px; text-align:left; font-size:14px; border-bottom:1px solid var(--border)}
+  th{color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.3px}
+  tr:last-child td{border-bottom:none}
+  td.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+  .tag{font-size:11px; padding:2px 8px; border-radius:20px; border:1px solid var(--border)}
+  .tag.ok{color:var(--ok); border-color:#1f4a2a}
+  .tag.rev{color:var(--warn); border-color:#4a3c12}
+  .total-row td{font-weight:600; background:var(--panel2)}
+
+  #analise{margin-top:14px; background:var(--panel); border:1px solid var(--border);
+           border-radius:14px; padding:16px 18px; white-space:pre-wrap; display:none}
+  #analise .who{font-size:12px; color:var(--accent); font-weight:600; margin-bottom:8px; text-transform:uppercase; letter-spacing:.4px}
+  .muted-box{color:var(--muted); font-size:13px; margin-top:10px}
+  .err{color:var(--danger); font-size:13px; margin-top:8px}
+  footer{max-width:900px; margin:30px auto 0; padding:0 20px; color:var(--muted); font-size:12px; text-align:center}
+  code{background:var(--code); padding:2px 6px; border-radius:5px; font-family:Consolas,Monaco,monospace; font-size:12px}
+  .src{font-size:11px; color:var(--muted); font-weight:400; border:1px solid var(--border); border-radius:20px; padding:2px 9px; margin-left:8px; vertical-align:middle}
+  .toolbar.compact{margin:10px 0 4px}
+  .resumo{margin-top:12px; background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:14px 16px; white-space:pre-wrap; display:none}
+  .resumo .who{font-size:12px; color:var(--accent); font-weight:600; margin-bottom:8px; text-transform:uppercase; letter-spacing:.4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>🩺 Arandu · Saúde do Sistema</h1>
+      <div class="sub">Diagnóstico local do seu PC — 100% offline, somente leitura.</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="status-pills">
+      <span class="pill"><span class="dot" id="dotAju"></span> Ajudante</span>
+      <span class="pill"><span class="dot" id="dotIA"></span> Arandu (IA)</span>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn" id="btnAtualizar">↻ Atualizar</button>
+    <button class="btn primary" id="btnAnalisar">💬 Pedir análise ao Arandu</button>
+    <div class="spacer"></div>
+  </div>
+
+  <div id="erroTopo" class="err"></div>
+
+  <!-- Cartões de saúde -->
+  <div class="grid" id="cards"></div>
+
+  <!-- Análise da IA -->
+  <div id="analise"><div class="who">Arandu diz:</div><div id="analiseTxt"></div></div>
+
+  <!-- Limpeza -->
+  <div class="section-title">🧹 Arquivos que podem ser liberados</div>
+  <div class="section-note">O Arandu <b>não apaga nada</b> automaticamente — apenas mede e sugere. Você decide e confirma cada limpeza.</div>
+  <table id="tabLimpeza">
+    <thead><tr><th>Local</th><th>O que é</th><th class="num">Tamanho</th><th>Segurança</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Agenda (Outlook local) -->
+  <div class="section-title">📅 Próximos compromissos <span class="src">Outlook local</span></div>
+  <div class="section-note">Lido só quando você pede. Os dados <b>não saem do seu PC</b>. Pode iniciar o Outlook em segundo plano.</div>
+  <div class="toolbar compact">
+    <button class="btn" id="btnAgenda">📥 Carregar agenda (14 dias)</button>
+    <button class="btn primary" id="btnAgendaResumo" disabled>💬 Resumir com Arandu</button>
+  </div>
+  <div id="agendaMsg" class="muted-box"></div>
+  <table id="tabAgenda" hidden>
+    <thead><tr><th>Quando</th><th>Compromisso</th><th>Local</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <div id="agendaResumo" class="resumo"><div class="who">Arandu · resumo da agenda</div><div id="agendaResumoTxt"></div></div>
+
+  <!-- E-mail (Outlook local) -->
+  <div class="section-title">✉️ E-mails recentes <span class="src">Outlook local</span></div>
+  <div class="section-note">Mostra remetente, assunto e horário — <b>não abre o conteúdo</b> das mensagens. Tudo local.</div>
+  <div class="toolbar compact">
+    <button class="btn" id="btnEmail">📥 Carregar e-mails</button>
+    <button class="btn primary" id="btnEmailResumo" disabled>💬 Resumir com Arandu</button>
+  </div>
+  <div id="emailMsg" class="muted-box"></div>
+  <table id="tabEmail" hidden>
+    <thead><tr><th>Quando</th><th>De</th><th>Assunto</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <div id="emailResumo" class="resumo"><div class="who">Arandu · resumo dos e-mails</div><div id="emailResumoTxt"></div></div>
+</div>
+
+<footer>
+  Arandu · ferramenta local de diagnóstico. Ajudante em <code>127.0.0.1:8099</code> · IA em <code>127.0.0.1:8080</code>.
+</footer>
+
+<script>
+const AJU = "http://127.0.0.1:8099";   // ajudante PowerShell (saúde)
+const IA  = "http://127.0.0.1:8080";   // llamafile (modelo)
+let ultimaSaude = null, ultimaLimpeza = null, modeloArquivo = "";
+
+function classePct(p){ return p >= 90 ? "fill-danger" : (p >= 70 ? "fill-warn" : "fill-ok"); }
+function fmtMB(mb){
+  if(mb >= 1024) return (mb/1024).toFixed(2) + " GB";
+  return (mb||0).toFixed(1) + " MB";
+}
+
+function setDot(id, ok){ document.getElementById(id).className = "dot " + (ok ? "ok" : "bad"); }
+
+async function carregarSaude(){
+  const r = await fetch(AJU + "/saude", {cache:"no-store"});
+  const s = await r.json();
+  ultimaSaude = s;
+  setDot("dotAju", true);
+  const cards = document.getElementById("cards");
+  let html = "";
+
+  // RAM
+  const ram = s.ram;
+  html += `<div class="card">
+    <h3>Memória RAM</h3>
+    <div class="big">${ram.usado_pct}% <small>usada</small></div>
+    <div class="bar ${classePct(ram.usado_pct)}"><i style="width:${ram.usado_pct}%"></i></div>
+    <div class="sub2">${ram.usado_gb} GB de ${ram.total_gb} GB · livre: ${ram.livre_gb} GB</div>
+  </div>`;
+
+  // CPU
+  html += `<div class="card">
+    <h3>Processador (CPU)</h3>
+    <div class="big">${s.cpu_pct}% <small>em uso</small></div>
+    <div class="bar ${classePct(s.cpu_pct)}"><i style="width:${s.cpu_pct}%"></i></div>
+    <div class="sub2">Ligado há ${s.uptime_horas} h · ${s.hostname}</div>
+  </div>`;
+
+  // Discos
+  for(const d of s.discos){
+    html += `<div class="card">
+      <h3>Disco ${d.unidade}</h3>
+      <div class="big">${d.usado_pct}% <small>cheio</small></div>
+      <div class="bar ${classePct(d.usado_pct)}"><i style="width:${d.usado_pct}%"></i></div>
+      <div class="sub2">${d.usado_gb} GB de ${d.total_gb} GB · livre: ${d.livre_gb} GB</div>
+    </div>`;
+  }
+  cards.innerHTML = html;
+}
+
+async function carregarLimpeza(){
+  const r = await fetch(AJU + "/limpeza", {cache:"no-store"});
+  const l = await r.json();
+  ultimaLimpeza = l;
+  const tb = document.querySelector("#tabLimpeza tbody");
+  let html = "";
+  for(const it of l.itens){
+    const tag = it.seguro
+      ? `<span class="tag ok">seguro</span>`
+      : `<span class="tag rev">revisar</span>`;
+    html += `<tr>
+      <td>${it.nome}<div class="sub2"><code>${it.caminho}</code></div></td>
+      <td class="sub2">${it.descricao}</td>
+      <td class="num">${fmtMB(it.tamanho_mb)}</td>
+      <td>${tag}</td>
+    </tr>`;
+  }
+  html += `<tr class="total-row">
+    <td colspan="2">Total recuperável com segurança</td>
+    <td class="num">${fmtMB(l.total_seguro_mb)}</td>
+    <td></td>
+  </tr>`;
+  tb.innerHTML = html;
+}
+
+async function detectarModelo(){
+  try{
+    const r = await fetch(IA + "/props", {cache:"no-store", signal: AbortSignal.timeout(2500)});
+    const j = await r.json();
+    modeloArquivo = (j.default_generation_settings && j.default_generation_settings.model) || j.model || "";
+    setDot("dotIA", true);
+    return true;
+  }catch(e){ setDot("dotIA", false); return false; }
+}
+
+async function atualizar(){
+  document.getElementById("erroTopo").textContent = "";
+  try{
+    await carregarSaude();
+    await carregarLimpeza();
+  }catch(e){
+    setDot("dotAju", false);
+    document.getElementById("erroTopo").innerHTML =
+      "⚠️ Não consegui falar com o ajudante. Ele está rodando? Abra o <code>Painel_Saude.vbs</code>.";
+  }
+  detectarModelo();
+}
+
+function montarResumo(){
+  const s = ultimaSaude, l = ultimaLimpeza;
+  if(!s) return "";
+  let txt = `Estado do computador (${s.hostname}):\n`;
+  txt += `- RAM: ${s.ram.usado_gb} GB usados de ${s.ram.total_gb} GB (${s.ram.usado_pct}% usada, ${s.ram.livre_gb} GB livres).\n`;
+  txt += `- CPU: ${s.cpu_pct}% em uso. Ligado há ${s.uptime_horas} horas.\n`;
+  for(const d of s.discos){
+    txt += `- Disco ${d.unidade}: ${d.usado_pct}% cheio (${d.livre_gb} GB livres de ${d.total_gb} GB).\n`;
+  }
+  if(l){
+    txt += `Arquivos limpáveis (medidos, nada foi apagado):\n`;
+    for(const it of l.itens){
+      txt += `- ${it.nome}: ${fmtMB(it.tamanho_mb)} (${it.seguro ? "seguro" : "revisar antes"}).\n`;
+    }
+    txt += `- Total recuperável com segurança: ${fmtMB(l.total_seguro_mb)}.\n`;
+  }
+  return txt;
+}
+
+async function analisar(){
+  if(!ultimaSaude){ await atualizar(); }
+  const ok = await detectarModelo();
+  const box = document.getElementById("analise");
+  const alvo = document.getElementById("analiseTxt");
+  box.style.display = "block";
+  if(!ok){
+    alvo.innerHTML = `<span class="err">O Arandu (IA) não está rodando na porta 8080. Inicie o chat normal do Arandu e tente de novo.</span>`;
+    return;
+  }
+  alvo.textContent = "Analisando…";
+  document.getElementById("btnAnalisar").disabled = true;
+
+  const noThink = /qwen3/i.test(modeloArquivo) ? " /no_think" : "";
+  const sys = "Você é o Arandu, um assistente local em português do Brasil. "
+    + "Você recebe a leitura real do computador do usuário. Faça um diagnóstico CURTO e PRÁTICO: "
+    + "1) uma frase dizendo se a situação está ok, atenção ou crítica; "
+    + "2) o que limpar primeiro para liberar espaço; "
+    + "3) 1 ou 2 dicas para liberar memória RAM. "
+    + "Seja direto, use no máximo 8 linhas. Não invente números além dos fornecidos.";
+  const user = montarResumo() + "\nDê seu diagnóstico e recomendações." + noThink;
+
+  try{
+    const r = await fetch(IA + "/v1/chat/completions", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model: "arandu",
+        messages:[{role:"system",content:sys},{role:"user",content:user}],
+        temperature:0.4, stream:true
+      })
+    });
+    const reader = r.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "", saida = "";
+    alvo.textContent = "";
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+      buf += dec.decode(value, {stream:true});
+      const linhas = buf.split("\n");
+      buf = linhas.pop();
+      for(const ln of linhas){
+        const t = ln.trim();
+        if(!t.startsWith("data:")) continue;
+        const payload = t.slice(5).trim();
+        if(payload === "[DONE]") continue;
+        try{
+          const j = JSON.parse(payload);
+          const delta = j.choices?.[0]?.delta?.content || "";
+          if(delta){ saida += delta; alvo.textContent = saida; }
+        }catch(e){}
+      }
+    }
+    if(!saida) alvo.textContent = "(O Arandu não retornou texto. Tente novamente.)";
+  }catch(e){
+    alvo.innerHTML = `<span class="err">Erro ao falar com a IA: ${e.message}</span>`;
+  }finally{
+    document.getElementById("btnAnalisar").disabled = false;
+  }
+}
+
+/* ===== Agenda & E-mail (Outlook local) ===== */
+let dadosAgenda = null, dadosEmail = null;
+
+function esc(s){ return (s||"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+function fmtQuando(iso, diaTodo){
+  const d = new Date(String(iso).replace(" ","T"));
+  if(isNaN(d)) return iso;
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const dia = new Date(d); dia.setHours(0,0,0,0);
+  const dif = Math.round((dia - hoje)/86400000);
+  const dd = String(d.getDate()).padStart(2,"0"), mm = String(d.getMonth()+1).padStart(2,"0");
+  const hh = String(d.getHours()).padStart(2,"0"), mi = String(d.getMinutes()).padStart(2,"0");
+  const pref = dif===0 ? "Hoje" : (dif===1 ? "Amanhã" : (dif===-1 ? "Ontem" : dd+"/"+mm));
+  return diaTodo ? pref+" (dia todo)" : pref+" "+hh+":"+mi;
+}
+
+async function streamArandu(sys, user, alvo){
+  const ok = await detectarModelo();
+  if(!ok){ alvo.innerHTML = `<span class="err">O Arandu (IA) não está na porta 8080. Abra o chat do Arandu e tente de novo.</span>`; return; }
+  const noThink = /qwen3/i.test(modeloArquivo) ? " /no_think" : "";
+  alvo.textContent = "Pensando…";
+  try{
+    const r = await fetch(IA + "/v1/chat/completions", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ model:"arandu", messages:[{role:"system",content:sys},{role:"user",content:user+noThink}], temperature:0.4, stream:true })
+    });
+    const reader = r.body.getReader(); const dec = new TextDecoder();
+    let buf = "", saida = ""; alvo.textContent = "";
+    while(true){
+      const {done, value} = await reader.read(); if(done) break;
+      buf += dec.decode(value, {stream:true});
+      const linhas = buf.split("\n"); buf = linhas.pop();
+      for(const ln of linhas){
+        const t = ln.trim(); if(!t.startsWith("data:")) continue;
+        const p = t.slice(5).trim(); if(p === "[DONE]") continue;
+        try{ const j = JSON.parse(p); const delta = j.choices?.[0]?.delta?.content || ""; if(delta){ saida += delta; alvo.textContent = saida; } }catch(e){}
+      }
+    }
+    if(!saida) alvo.textContent = "(O Arandu não retornou texto.)";
+  }catch(e){ alvo.innerHTML = `<span class="err">Erro: ${e.message}</span>`; }
+}
+
+async function carregarAgenda(){
+  const msg = document.getElementById("agendaMsg"), tab = document.getElementById("tabAgenda");
+  const btn = document.getElementById("btnAgenda"); btn.disabled = true;
+  msg.textContent = "Lendo a agenda do Outlook… (pode iniciar o Outlook em segundo plano)";
+  try{
+    const a = await (await fetch(AJU + "/agenda", {cache:"no-store"})).json();
+    if(a.erro){ msg.innerHTML = `<span class="err">${esc(a.erro)}</span><div class="sub2">${esc(a.dica||"")}</div>`; tab.hidden = true; return; }
+    dadosAgenda = a;
+    if(!a.eventos || a.eventos.length === 0){ msg.textContent = `Nenhum compromisso nos próximos ${a.janela_dias} dias.`; tab.hidden = true; document.getElementById("btnAgendaResumo").disabled = true; return; }
+    let html = "";
+    for(const e of a.eventos){ html += `<tr><td class="num">${fmtQuando(e.inicio, e.dia_todo)}</td><td>${esc(e.assunto)}</td><td class="sub2">${esc(e.local||"")}</td></tr>`; }
+    tab.querySelector("tbody").innerHTML = html; tab.hidden = false;
+    msg.textContent = `${a.total} compromisso(s) nos próximos ${a.janela_dias} dias.`;
+    document.getElementById("btnAgendaResumo").disabled = false;
+  }catch(e){ msg.innerHTML = `<span class="err">Não consegui falar com o ajudante (porta 8099). Ele está rodando?</span>`; }
+  finally{ btn.disabled = false; }
+}
+
+async function carregarEmail(){
+  const msg = document.getElementById("emailMsg"), tab = document.getElementById("tabEmail");
+  const btn = document.getElementById("btnEmail"); btn.disabled = true;
+  msg.textContent = "Lendo a caixa de entrada do Outlook…";
+  try{
+    const m = await (await fetch(AJU + "/email", {cache:"no-store"})).json();
+    if(m.erro){ msg.innerHTML = `<span class="err">${esc(m.erro)}</span><div class="sub2">${esc(m.dica||"")}</div>`; tab.hidden = true; return; }
+    dadosEmail = m;
+    let html = "";
+    for(const x of m.mensagens){
+      const novo = x.nao_lido ? `<span class="tag rev">novo</span> ` : "";
+      const peso = x.nao_lido ? ' style="font-weight:600"' : "";
+      html += `<tr${peso}><td class="num">${fmtQuando(x.recebido, false)}</td><td>${esc(x.de)}</td><td>${novo}${esc(x.assunto)}</td></tr>`;
+    }
+    tab.querySelector("tbody").innerHTML = html; tab.hidden = false;
+    msg.textContent = `${esc(m.caixa)}: ${m.nao_lidos} não lidos de ${m.total_caixa}. Mostrando ${m.mensagens.length} recentes.`;
+    document.getElementById("btnEmailResumo").disabled = false;
+  }catch(e){ msg.innerHTML = `<span class="err">Não consegui falar com o ajudante (porta 8099). Ele está rodando?</span>`; }
+  finally{ btn.disabled = false; }
+}
+
+function resumirAgenda(){
+  if(!dadosAgenda || !dadosAgenda.eventos) return;
+  document.getElementById("agendaResumo").style.display = "block";
+  let txt = "Meus próximos compromissos (agenda do Outlook):\n";
+  for(const e of dadosAgenda.eventos){ txt += `- ${e.inicio} a ${e.fim}: ${e.assunto}${e.local ? " ("+e.local+")" : ""}\n`; }
+  const sys = "Você é o Arandu, assistente local em português do Brasil. Recebe a agenda real do usuário. "
+    + "Resuma de forma CURTA e útil: destaque hoje e amanhã, agrupe por dia, aponte choques de horário se existirem. "
+    + "Máximo 10 linhas. Não invente compromissos.";
+  streamArandu(sys, txt + "\nResuma minha agenda.", document.getElementById("agendaResumoTxt"));
+}
+
+function resumirEmail(){
+  if(!dadosEmail || !dadosEmail.mensagens) return;
+  document.getElementById("emailResumo").style.display = "block";
+  let txt = `Caixa de entrada: ${dadosEmail.nao_lidos} não lidos. E-mails recentes:\n`;
+  for(const x of dadosEmail.mensagens){ txt += `- ${x.recebido} ${x.nao_lido?"(não lido)":""} de ${x.de}: ${x.assunto}\n`; }
+  const sys = "Você é o Arandu, assistente local em português do Brasil. Recebe a lista de e-mails recentes do usuário "
+    + "(só remetente, assunto e horário). Resuma de forma CURTA: o que parece importante ou urgente, o que é informativo/newsletter, "
+    + "e se algo pede resposta. Máximo 10 linhas. Não invente conteúdo além do assunto.";
+  streamArandu(sys, txt + "\nResuma meus e-mails recentes.", document.getElementById("emailResumoTxt"));
+}
+
+document.getElementById("btnAtualizar").onclick = atualizar;
+document.getElementById("btnAnalisar").onclick = analisar;
+document.getElementById("btnAgenda").onclick = carregarAgenda;
+document.getElementById("btnAgendaResumo").onclick = resumirAgenda;
+document.getElementById("btnEmail").onclick = carregarEmail;
+document.getElementById("btnEmailResumo").onclick = resumirEmail;
+atualizar();
+</script>
+</body>
+</html>

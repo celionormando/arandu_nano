@@ -30,6 +30,7 @@
 - 🔌 **Clica e roda** — baixe, extraia e dê um clique; cabe num pendrive
 - 📚 **Base de conhecimento offline (RAG)** — responde a partir dos *seus* documentos, sem inventar
 - 🗣️ **Voz (TTS)**, histórico e streaming de respostas
+- 🩺 **Assistente do sistema** — vê a saúde do PC (RAM/disco/CPU), sugere arquivos para limpar e, no Windows, lê agenda e e-mails do Outlook local — tudo offline
 - 💸 **Livre e aberto** (Apache-2.0)
 
 ## ⬇️ Testar agora (Windows)
@@ -62,6 +63,9 @@ tradução, ideias, dúvidas do dia a dia). O projeto inclui um kit para criar
 | `Usar_1B_Rapido.bat` / `Usar_3B_Qualidade.bat` | Trocam para os modelos Llama base |
 | `Desligar_IA.bat` | Encerra o servidor |
 | `desligar.sh` | Encerra os servidores no Linux/macOS |
+| `Painel_Saude.html` | Painel do assistente: saúde do sistema, limpeza, agenda e e-mail |
+| `Painel_Saude.vbs` | Lançador 1 clique do painel (Windows) |
+| `ferramentas/` | Ajudante do sistema: `saude_sistema.ps1` (Windows) e `saude_sistema.py` (Linux/macOS) |
 | `iniciar.bat` / `iniciar_original.bat` | Alternativas com console |
 | `treino/` | Kit de fine-tuning (notebook Colab + datasets) |
 | `treino/imatrix/` | Calibração pt-BR + guia de re-quantização com **imatrix** |
@@ -105,6 +109,30 @@ Para regenerar o índice após adicionar/editar documentos, com o servidor RAG n
 ```sh
 node rag/gerar_indice.mjs
 ```
+
+## 🩺 Assistente do sistema
+Além de conversar, o Arandu pode **enxergar o seu PC** — tudo **local e somente leitura**:
+
+- **Saúde** — RAM, disco, CPU e tempo ligado, num painel completo e num **mini painel**
+  fixo no canto superior direito do chat (aparece sozinho quando o ajudante está no ar).
+- **Limpeza** — lista os arquivos que podem ser liberados (temporários, cache, lixeira…)
+  com tamanho. O Arandu **mede e sugere; nunca apaga** — você decide e confirma.
+- **Agenda e e-mail (Windows)** — lê os próximos compromissos e os e-mails recentes do
+  **Outlook** local (via COM) e o Arandu resume. Só metadados; **o conteúdo das mensagens
+  não é aberto**.
+
+Como funciona: um pequeno **ajudante** roda ao lado (porta 8099) e responde por HTTP ao
+navegador — `saude_sistema.ps1` (PowerShell) no Windows e `saude_sistema.py` (Python 3) no
+Linux/macOS, com o **mesmo contrato**, então o painel é idêntico em todo SO. O modelo
+**narra/resume**; os números vêm sempre do código (à prova de alucinação).
+
+| Função | Windows | Linux | macOS |
+|---|:---:|:---:|:---:|
+| Saúde / Limpeza | ✅ | ✅ | ✅ |
+| Agenda / E-mail | ✅ Outlook | 🔜 | 🔜 |
+
+Abre junto com o chat (`IA_Portatil.vbs` / `./iniciar.sh`) ou sozinho pelo `Painel_Saude.vbs`.
+Detalhes e arquitetura em [`ferramentas/README.md`](ferramentas/README.md).
 
 ## Criar seu próprio modelo (Arandu Nano)
 Veja `treino/README.md`: notebook no Google Colab (GPU grátis) que faz

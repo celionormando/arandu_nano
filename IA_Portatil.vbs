@@ -51,6 +51,18 @@ If Not ServidorNoAr() Then
     End If
 End If
 
+' tambem sobe o AJUDANTE de saude do sistema (mini painel no canto superior).
+' Somente leitura (RAM/disco/arquivos limpaveis); NUNCA apaga nada. O mini painel
+' no chat aparece sozinho quando este ajudante responde na porta 8099.
+Dim ps1
+ps1 = base & "\ferramentas\saude_sistema.ps1"
+If fso.FileExists(ps1) Then
+    If Not AjudanteNoAr() Then
+        sh.CurrentDirectory = base
+        sh.Run "powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & ps1 & """", 0, False
+    End If
+End If
+
 ' URL local da interface (modo arquivo)
 chatUrl = "file:///" & Replace(base, "\", "/") & "/chat.html"
 
@@ -66,6 +78,19 @@ Function ServidorNoAr()
     http.send
     If Err.Number = 0 Then
         If http.status = 200 Then ServidorNoAr = True
+    End If
+    On Error GoTo 0
+End Function
+
+Function AjudanteNoAr()
+    AjudanteNoAr = False
+    On Error Resume Next
+    Dim h2
+    Set h2 = CreateObject("MSXML2.XMLHTTP")
+    h2.open "GET", "http://127.0.0.1:8099/ping", False
+    h2.send
+    If Err.Number = 0 Then
+        If h2.status = 200 Then AjudanteNoAr = True
     End If
     On Error GoTo 0
 End Function

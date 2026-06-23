@@ -89,5 +89,15 @@ if ! port_up 8091; then
   exit 1
 fi
 
+# tambem sobe o AJUDANTE de saude do sistema (mini painel no canto do chat),
+# se houver python3. Somente leitura (RAM/disco/limpeza); NUNCA apaga nada.
+# Mesmo contrato HTTP do helper Windows (porta 8099) -> o painel funciona igual.
+PY=$(command -v python3 2>/dev/null || command -v python 2>/dev/null || true)
+if [ -n "$PY" ] && [ -f "$BASE/ferramentas/saude_sistema.py" ]; then
+  if ! curl -fsS "http://127.0.0.1:8099/ping" >/dev/null 2>&1; then
+    "$PY" "$BASE/ferramentas/saude_sistema.py" > "$BASE/ajudante-saude.log" 2>&1 &
+  fi
+fi
+
 open_url "file://$BASE/chat.html"
 echo "Arandu IA com RAG iniciado no navegador padrao."

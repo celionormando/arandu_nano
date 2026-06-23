@@ -117,6 +117,36 @@
 </style>
 </head>
 <body>
+  <!-- ===== Mini painel de saúde (injetado) ===== -->
+  <style id="miniSaudeCss">
+    #miniSaude{position:fixed;top:54px;right:16px;z-index:40;display:flex;align-items:center;gap:8px;
+      padding:7px 11px;border-radius:13px;background:rgba(22,23,24,.82);-webkit-backdrop-filter:blur(8px);
+      backdrop-filter:blur(8px);border:1px solid var(--border);box-shadow:0 8px 22px rgba(0,0,0,.38);
+      cursor:pointer;font-size:12px;color:var(--text);user-select:none;
+      transition:opacity .25s,transform .2s,border-color .2s}
+    #miniSaude:hover{transform:translateY(1px);border-color:var(--accent)}
+    #miniSaude .ms-row{display:flex;gap:13px;align-items:center}
+    #miniSaude .ms-item{display:flex;align-items:center;gap:5px;font-variant-numeric:tabular-nums}
+    #miniSaude .ms-item b{font-weight:600}
+    #miniSaude .ms-lab{color:var(--muted);font-size:10px;letter-spacing:.3px}
+    #miniSaude .ms-dot{width:7px;height:7px;border-radius:50%;background:#666;flex-shrink:0}
+    #miniSaude .ms-dot.ok{background:#3fb950}
+    #miniSaude .ms-dot.warn{background:#d29922}
+    #miniSaude .ms-dot.bad{background:var(--danger)}
+    #miniSaude #msClose{background:none;border:none;color:var(--muted);cursor:pointer;
+      font-size:15px;line-height:1;padding:0 1px 0 3px;margin-left:1px}
+    #miniSaude #msClose:hover{color:var(--danger)}
+    @media(max-width:760px){#miniSaude{display:none!important}}
+  </style>
+  <div id="miniSaude" title="Saúde do sistema — clique para abrir o painel completo" hidden>
+    <div class="ms-row">
+      <span class="ms-item"><i class="ms-dot" id="msRamDot"></i><b id="msRam">--</b><span class="ms-lab">RAM</span></span>
+      <span class="ms-item"><i class="ms-dot" id="msCpuDot"></i><b id="msCpu">--</b><span class="ms-lab">CPU</span></span>
+      <span class="ms-item"><i class="ms-dot" id="msDiskDot"></i><b id="msDisk">--</b><span class="ms-lab" id="msDiskLab">C:</span></span>
+    </div>
+    <button id="msClose" title="Ocultar (volta ao reabrir o chat)">×</button>
+  </div>
+
   <!-- ===== Sidebar ===== -->
   <aside id="sidebar">
     <div class="brand">Arandu IA</div>
@@ -795,5 +825,44 @@ kbAutoLoad();
 atualizarBotaoVoz();
 if('speechSynthesis' in window) window.speechSynthesis.getVoices();  // dispara carga das vozes
 </script>
+  <!-- ===== Mini painel de saúde: lógica (injetado) ===== -->
+  <script>
+  (function(){
+    var AJU = "http://127.0.0.1:8099";          // ajudante (somente leitura)
+    var el = document.getElementById('miniSaude');
+    if(!el) return;
+    function $(id){ return document.getElementById(id); }
+    var dismissed = false, falhas = 0, temDados = false;
+    function cls(p){ return p >= 90 ? 'bad' : (p >= 70 ? 'warn' : 'ok'); }
+    function setItem(dotId, valId, pct){
+      $(dotId).className = 'ms-dot ' + cls(pct);
+      $(valId).textContent = Math.round(pct) + '%';
+    }
+    function schedule(){ setTimeout(tick, falhas >= 2 ? 30000 : 8000); }  // backoff se ajudante off
+    async function tick(){
+      if(dismissed) return;
+      if(document.hidden && temDados){ return schedule(); }   // pausa coleta quando a aba nao esta visivel
+      try{
+        var r = await fetch(AJU + '/saude', {cache:'no-store', signal: AbortSignal.timeout(2500)});
+        var s = await r.json();
+        falhas = 0; temDados = true;
+        setItem('msRamDot','msRam', s.ram.usado_pct);
+        setItem('msCpuDot','msCpu', s.cpu_pct);
+        var d0 = s.discos && s.discos[0];
+        if(d0){ setItem('msDiskDot','msDisk', d0.usado_pct); $('msDiskLab').textContent = d0.unidade; }
+        el.hidden = false;
+      }catch(e){
+        falhas++;
+        if(falhas >= 2) el.hidden = true;          // ajudante nao esta no ar -> some
+      }
+      schedule();
+    }
+    el.addEventListener('click', function(e){
+      if(e.target.id === 'msClose'){ dismissed = true; el.hidden = true; return; }
+      window.open('Painel_Saude.html', '_blank');   // abre o painel completo
+    });
+    tick();
+  })();
+  </script>
 </body>
 </html>
