@@ -38,8 +38,9 @@ arquivo técnico.
   ~14-17 tok/s. Exibido como "Arandu Nano 1.0". Troca: Usar_Nano_1.0.bat.
 - Numeração: o 3º número marca a evolução da linha de entrada (Nano 1.0 -> 1.1 -> ...).
   "Mini"/"Base" ficam reservados para portes maiores (3-4B+) no futuro.
-- O usuário escolhe a versão na abertura via **Iniciar_Arandu.vbs** (menu) — ou pela
-  raiz, no **Arandu.vbs**, que chama esse menu. Só reinicia o servidor se a versão mudar.
+- **Iniciar_Arandu.vbs** abre direto no **Nano 1.1** (sem menu): garante o modelo padrão
+  em modelo.txt e só reinicia o servidor se a versão estiver diferente. Para trocar de
+  modelo manualmente, use os .bat (Usar_Nano_1.0.bat etc.).
 - Modelos de base disponíveis para fallback/treino:
   - Llama-3.2-1B-Instruct-Q4_K_M.gguf  (base do Arandu Nano)
   - Llama-3.2-3B-Instruct-Q4_K_M.gguf  (mais qualidade, ~6 tok/s)

@@ -54,7 +54,7 @@ tradução, ideias, dúvidas do dia a dia). O projeto inclui um kit para criar
 | Arquivo | Função |
 |---|---|
 | `chat.html` | Interface web em pt-BR (offline): streaming, histórico, voz (TTS) |
-| `Iniciar_Arandu.vbs` | Lançador com **menu de escolha de versão** (Nano 1.1 / 1.0 / Llama 3B) |
+| `Iniciar_Arandu.vbs` | Lançador padrão — abre direto no **Arandu Nano 1.1** (sem menu) |
 | `IA_Portatil.vbs` | Lançador 1 clique: sobe o servidor oculto e abre o navegador padrão |
 | `iniciar.sh` | Lançador Linux/macOS: sobe o servidor e abre o navegador padrão |
 | `iniciar_rag.sh` | Lançador Linux/macOS com RAG (chat + embeddings) |
