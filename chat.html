@@ -137,6 +137,22 @@
       font-size:15px;line-height:1;padding:0 1px 0 3px;margin-left:1px}
     #miniSaude #msClose:hover{color:var(--danger)}
     @media(max-width:760px){#miniSaude{display:none!important}}
+    #falarBtn{display:inline-flex;align-items:center;justify-content:center;gap:2px;width:46px;height:46px;background:var(--panel2);border:1px solid var(--border);border-radius:50%;cursor:pointer;box-sizing:border-box;flex-shrink:0;align-self:flex-end}
+    #falarBtn:hover{background:var(--border)}
+    #falarBtn .eqbar{display:block;width:3px;border-radius:2px;background:#c2c6cc}
+    #falarBtn .eqbar:nth-child(1){height:8px}
+    #falarBtn .eqbar:nth-child(2){height:14px}
+    #falarBtn .eqbar:nth-child(3){height:20px}
+    #falarBtn .eqbar:nth-child(4){height:14px}
+    #falarBtn .eqbar:nth-child(5){height:8px}
+    #falarBtn.ativo{border-color:var(--accent)}
+    #falarBtn.ativo .eqbar{background:var(--accent);animation:eqanim .9s ease-in-out infinite}
+    #falarBtn.ativo .eqbar:nth-child(1){animation-delay:0s}
+    #falarBtn.ativo .eqbar:nth-child(2){animation-delay:.15s}
+    #falarBtn.ativo .eqbar:nth-child(3){animation-delay:.3s}
+    #falarBtn.ativo .eqbar:nth-child(4){animation-delay:.15s}
+    #falarBtn.ativo .eqbar:nth-child(5){animation-delay:0s}
+    @keyframes eqanim{0%,100%{height:6px}50%{height:20px}}
   </style>
   <div id="miniSaude" title="Saúde do sistema — clique para abrir o painel completo" hidden>
     <div class="ms-row">
@@ -183,6 +199,7 @@
         <textarea id="input" rows="1" placeholder="Digite sua mensagem..."></textarea>
         <button id="sendBtn" onclick="onSend()" title="Enviar">
           <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+        <button id="falarBtn" onclick="ttsStop()" title="Voz do Arandu - clique para parar"><span class="eqbar"></span><span class="eqbar"></span><span class="eqbar"></span><span class="eqbar"></span><span class="eqbar"></span></button>
       </div>
       <div class="hint">A IA roda localmente no seu dispositivo. As respostas podem conter erros.</div>
     </div>
@@ -475,7 +492,7 @@ async function stream(c){
     frequency_penalty:cfg.freq,presence_penalty:cfg.pres,
     dry_multiplier:cfg.drymult,dry_base:1.75,dry_allowed_length:2
   };
-  setStop(true);abortCtl=new AbortController();
+  setStop(true);abortCtl=new AbortController();if(cfg.falar) ttsStart();
   streamEl=document.querySelectorAll('.bubble')[idx];   // referencia fixa (sem requerys por token)
   let aborted=false;
   try{
@@ -492,7 +509,7 @@ async function stream(c){
         const t=line.trim();if(!t.startsWith("data:"))continue;
         const data=t.slice(5).trim();if(data==="[DONE]")continue;
         try{const j=JSON.parse(data);const delta=j.choices?.[0]?.delta?.content||"";
-          if(delta){c.messages[idx].content+=delta;agendarRender(c.messages[idx].content);}}catch(e){}
+          if(delta){c.messages[idx].content+=delta;agendarRender(c.messages[idx].content);if(cfg.falar)ttsFeed(delta);}}catch(e){}
       }
     }
   }catch(e){
@@ -500,7 +517,7 @@ async function stream(c){
     else c.messages[idx].content+=(c.messages[idx].content?"\n\n":"")+"Erro: "+e.message+"\n\n(O servidor está rodando? Inicie o iniciar.bat.)";
   }finally{
     abortCtl=null;streamEl=null;setStop(false);save();renderChat();
-    if(cfg.falar && !aborted && c.messages[idx].content) falar(c.messages[idx].content);
+    if(cfg.falar){ if(aborted) ttsStop(); else ttsFlush(); }
   }
 }
 /* Durante o streaming, atualiza TEXTO PURO 1x por frame (rapido).
@@ -589,34 +606,101 @@ function limparParaVoz(t){
           .replace(/[*_`#>]/g,"").replace(/\[(.*?)\]\(.*?\)/g,"$1")
           .replace(/\s+/g," ").trim();
 }
-let aranduAudio=null;   // <audio> da voz natural (Piper), p/ poder interromper
-function pararFala(){
-  try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
-  if(aranduAudio){ try{ aranduAudio.pause(); }catch(e){} aranduAudio=null; }
+/* ===== Voz natural (Piper) — fala SINCRONIZADA, sentenca a sentenca ===== */
+const VOZ_URL="http://127.0.0.1:8099/falar";
+let ttsBuf="", ttsTextQ=[], ttsAudioQ=[];
+let ttsStreaming=false, ttsSynth=false, ttsPlaying=false, ttsCur=null;
+const ttsAborters=new Set();
+
+function setFalando(on){ const b=document.getElementById('falarBtn'); if(b) b.classList.toggle('ativo', !!on); }
+function ttsAtivo(){ return ttsStreaming||ttsSynth||ttsPlaying||ttsAudioQ.length>0||ttsTextQ.length>0||!!ttsCur||(('speechSynthesis' in window)&&speechSynthesis.speaking); }
+function ttsEstado(){ setFalando(ttsAtivo()); }
+
+function ttsStop(){
+  ttsBuf=""; ttsTextQ=[];
+  ttsAudioQ.forEach(u=>{try{URL.revokeObjectURL(u)}catch(e){}}); ttsAudioQ=[];
+  ttsAborters.forEach(a=>{try{a.abort()}catch(e){}}); ttsAborters.clear();
+  if(ttsCur){try{ttsCur.pause()}catch(e){} ttsCur=null;}
+  try{ if('speechSynthesis' in window) speechSynthesis.cancel(); }catch(e){}
+  ttsStreaming=false; ttsSynth=false; ttsPlaying=false;
+  setFalando(false);
 }
-async function falar(texto){
-  pararFala();
+function pararFala(){ ttsStop(); }   // compatibilidade
+
+function ttsStart(){ ttsStop(); ttsStreaming=true; }   // inicio de uma resposta
+function ttsFeed(delta){
+  if(!ttsStreaming) return;
+  ttsBuf += delta;
+  const ABREV=/(^|\s)(sr|sra|srta|dr|dra|prof|profa|exmo|exma|sto|sta|ltda|av|pe|fl|art)\.$/i;
+  const re=/([.!?…]+["')\]]?\s)|([;]\s)|(\n+)/g;   // fim de frase (nao parte 3.5 / 10:30)
+  let last=0, m;
+  while((m=re.exec(ttsBuf))!==null){
+    const fim=m.index+m[0].length;
+    if(m[1] && m[1].trim()==='.' && ABREV.test(ttsBuf.slice(last, m.index+1))) continue;  // nao corta em Dr./Sr.
+    const sent=ttsBuf.slice(last, fim).trim();
+    if(sent) ttsEnfileira(sent);
+    last=fim;
+  }
+  ttsBuf=ttsBuf.slice(last);
+  if(ttsBuf.length>280){ const v=ttsBuf.lastIndexOf(', '); if(v>40){ const s=ttsBuf.slice(0,v+1).trim(); if(s) ttsEnfileira(s); ttsBuf=ttsBuf.slice(v+2); } }
+}
+function ttsFlush(){                                     // fim do streaming: fala o resto
+  ttsStreaming=false;
+  const resto=ttsBuf.trim(); ttsBuf="";
+  if(resto) ttsEnfileira(resto);
+  ttsEstado();
+}
+function ttsEnfileira(texto){
   const limpo=limparParaVoz(texto);
-  if(!limpo)return;
-  // 1) voz NATURAL (Piper, via ajudante na 8099). Se indisponivel, cai pra Web Speech.
-  try{
-    const r=await fetch("http://127.0.0.1:8099/falar",{method:"POST",headers:{"Content-Type":"text/plain; charset=utf-8"},body:limpo,signal:AbortSignal.timeout(30000)});
-    if(r.ok && (r.headers.get("Content-Type")||"").indexOf("audio")>=0){
-      const url=URL.createObjectURL(new Blob([await r.arrayBuffer()],{type:"audio/wav"}));
-      aranduAudio=new Audio(url);
-      aranduAudio.onended=()=>{URL.revokeObjectURL(url);aranduAudio=null;};
-      await aranduAudio.play();
-      return;
+  if(!limpo) return;
+  ttsTextQ.push(limpo); ttsSynthLoop(); ttsEstado();
+}
+async function ttsSynthLoop(){            // sintetiza as sentencas em ordem (1 piper por vez)
+  if(ttsSynth) return;
+  ttsSynth=true;
+  while(ttsTextQ.length){
+    const texto=ttsTextQ.shift();
+    const ab=new AbortController(); ttsAborters.add(ab);
+    try{
+      const r=await fetch(VOZ_URL,{method:"POST",headers:{"Content-Type":"text/plain; charset=utf-8"},body:texto,signal:ab.signal});
+      ttsAborters.delete(ab);
+      if(r.ok && (r.headers.get("Content-Type")||"").indexOf("audio")>=0){
+        ttsAudioQ.push(URL.createObjectURL(new Blob([await r.arrayBuffer()],{type:"audio/wav"})));
+        ttsPlayLoop();
+      } else { ttsWebSpeech(texto); }     // sem piper -> voz do sistema
+    }catch(e){
+      ttsAborters.delete(ab);
+      if(e && e.name!=='AbortError') ttsWebSpeech(texto);
     }
-  }catch(e){ /* ajudante off / sem piper -> usa a voz do sistema */ }
-  // 2) fallback: Web Speech (voz do sistema)
-  if(!('speechSynthesis' in window))return;
-  const u=new SpeechSynthesisUtterance(limpo);
+    ttsEstado();
+  }
+  ttsSynth=false; ttsEstado();
+}
+async function ttsPlayLoop(){             // toca os audios prontos, em ordem
+  if(ttsPlaying) return;
+  ttsPlaying=true; ttsEstado();
+  while(ttsAudioQ.length){
+    const url=ttsAudioQ.shift();
+    await new Promise(res=>{
+      ttsCur=new Audio(url);
+      const fim=()=>{ try{URL.revokeObjectURL(url)}catch(e){} ttsCur=null; res(); };
+      ttsCur.onended=fim; ttsCur.onerror=fim;
+      const p=ttsCur.play(); if(p&&p.catch) p.catch(fim);
+    });
+    ttsEstado();
+  }
+  ttsPlaying=false; ttsEstado();
+}
+function ttsWebSpeech(texto){             // fallback: voz do sistema
+  if(!('speechSynthesis' in window)) return;
+  const u=new SpeechSynthesisUtterance(texto);
   const v=vozEscolhida();
   if(v){u.voice=v;u.lang=v.lang;}else{u.lang="pt-BR";}
-  u.rate=1.05;
-  window.speechSynthesis.speak(u);
+  u.rate=1.05; u.onstart=ttsEstado; u.onend=ttsEstado;
+  speechSynthesis.speak(u);
 }
+function falar(texto){ ttsStart(); ttsFeed(texto); ttsFlush(); }   // fala avulsa (nao-streaming)
+
 
 function toggleVoz(){
   cfg.falar=!cfg.falar;save();atualizarBotaoVoz();
