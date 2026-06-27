@@ -4,6 +4,10 @@ llamafile.exe
 whisperfile*
 diffusionfile*
 
+# Motor llama.cpp (.exe comum) — alternativa ao llamafile p/ Windows com AppLocker;
+# baixado à parte (github.com/ggml-org/llama.cpp/releases, win-cpu-x64)
+llama/
+
 # Voz natural (Piper TTS) — binário + modelo de voz, baixados à parte
 ferramentas/piper/
 *.onnx
@@ -11,6 +15,10 @@ ferramentas/piper/
 
 # Perfil do navegador (gerado em runtime pelo IA_Portatil.vbs)
 .appprofile/
+
+# Memória do Arandu — dados PRIVADOS do usuário (perfil, índice e itens).
+# Criada em runtime pelo ajudante (saude_sistema.ps1); nunca versionar.
+memoria/
 
 # Saídas de treino locais
 treino/saida/

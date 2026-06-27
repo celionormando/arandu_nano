@@ -292,6 +292,110 @@ function Piper-Falar([string]$texto) {
     return $null
 }
 
+# ---------- memoria do Arandu (perfil + indice + itens) ----------
+# Camada de aprendizado local: tudo gravado em <raiz>\memoria\ no proprio USB.
+#   perfil.md     -> essencial do usuario (vai SEMPRE no prompt; curto)
+#   indice.json   -> mapa de itens [{id,titulo,resumo,palavras,tipo,atualizado}]
+#   itens\<id>.md -> detalhe completo de cada item (hidratado SOB DEMANDA)
+# So grava DENTRO de memoria\; ids validados (sem path traversal). Nunca toca em outro lugar.
+$script:MEM_DIR    = Join-Path (Split-Path $PSScriptRoot -Parent) 'memoria'
+$script:MEM_ITENS  = Join-Path $script:MEM_DIR 'itens'
+$script:MEM_PERFIL = Join-Path $script:MEM_DIR 'perfil.md'
+$script:MEM_INDICE = Join-Path $script:MEM_DIR 'indice.json'
+$script:UTF8NB     = New-Object System.Text.UTF8Encoding($false)   # UTF-8 sem BOM
+
+function Mem-Garantir {
+    if (-not (Test-Path $script:MEM_DIR))    { New-Item -ItemType Directory -Path $script:MEM_DIR    -Force | Out-Null }
+    if (-not (Test-Path $script:MEM_ITENS))  { New-Item -ItemType Directory -Path $script:MEM_ITENS  -Force | Out-Null }
+    if (-not (Test-Path $script:MEM_PERFIL)) { [System.IO.File]::WriteAllText($script:MEM_PERFIL, '', $script:UTF8NB) }
+    if (-not (Test-Path $script:MEM_INDICE)) { [System.IO.File]::WriteAllText($script:MEM_INDICE, '[]', $script:UTF8NB) }
+}
+function Mem-IdValido([string]$id) { return ($id -match '^[A-Za-z]\d{1,6}$') }
+
+function Mem-LerPerfil {
+    Mem-Garantir
+    try { return [System.IO.File]::ReadAllText($script:MEM_PERFIL, [System.Text.Encoding]::UTF8) } catch { return '' }
+}
+function Mem-GravarPerfil([string]$txt) {
+    Mem-Garantir
+    if ($null -eq $txt) { $txt = '' }
+    if ($txt.Length -gt 4000) { $txt = $txt.Substring(0, 4000) }   # teto de seguranca
+    [System.IO.File]::WriteAllText($script:MEM_PERFIL, $txt, $script:UTF8NB)
+}
+
+function Mem-LerIndice {
+    Mem-Garantir
+    try {
+        $raw = [System.IO.File]::ReadAllText($script:MEM_INDICE, [System.Text.Encoding]::UTF8)
+        if ([string]::IsNullOrWhiteSpace($raw)) { return @() }
+        $arr = $raw | ConvertFrom-Json
+        if ($null -eq $arr) { return @() }
+        return @($arr)
+    } catch { return @() }
+}
+function Mem-GravarIndice($arr) {
+    Mem-Garantir
+    $a = @($arr)
+    if ($a.Count -eq 0) { $json = '[]' }
+    elseif ($a.Count -eq 1) { $json = '[' + ($a[0] | ConvertTo-Json -Depth 6) + ']' }  # forca array p/ 1 item
+    else { $json = $a | ConvertTo-Json -Depth 6 }
+    [System.IO.File]::WriteAllText($script:MEM_INDICE, $json, $script:UTF8NB)
+}
+
+function Mem-NovoId([string]$tipo) {
+    if ([string]::IsNullOrWhiteSpace($tipo)) { $tipo = 'M' }
+    $pref = ($tipo.Substring(0,1)).ToUpper()
+    $max = 0
+    foreach ($it in (Mem-LerIndice)) {
+        if ($it.id -match ('^' + $pref + '(\d+)$')) {
+            $n = [int]$matches[1]; if ($n -gt $max) { $max = $n }
+        }
+    }
+    return ('{0}{1:D3}' -f $pref, ($max + 1))
+}
+
+function Mem-SalvarItem($dados) {
+    Mem-Garantir
+    $id   = [string]$dados.id
+    $tipo = [string]$dados.tipo; if ([string]::IsNullOrWhiteSpace($tipo)) { $tipo = 'M' }
+    $tipo = $tipo.Substring(0,1).ToUpper()
+    if ([string]::IsNullOrWhiteSpace($id)) { $id = Mem-NovoId $tipo }
+    if (-not (Mem-IdValido $id)) { throw 'id invalido' }
+
+    $conteudo = [string]$dados.conteudo
+    [System.IO.File]::WriteAllText((Join-Path $script:MEM_ITENS ($id + '.md')), $conteudo, $script:UTF8NB)
+
+    $palavras = @()
+    if ($dados.palavras) { $palavras = @($dados.palavras | ForEach-Object { [string]$_ }) }
+
+    $entrada = [pscustomobject]@{
+        id         = $id
+        titulo     = [string]$dados.titulo
+        resumo     = [string]$dados.resumo
+        palavras   = $palavras
+        tipo       = $tipo
+        atualizado = (Get-Date).ToString('yyyy-MM-dd HH:mm')
+    }
+    $idx = @(Mem-LerIndice | Where-Object { $_.id -ne $id })
+    $idx += $entrada
+    Mem-GravarIndice $idx
+    return $entrada
+}
+
+function Mem-LerItem([string]$id) {
+    if (-not (Mem-IdValido $id)) { return $null }
+    $p = Join-Path $script:MEM_ITENS ($id + '.md')
+    if (-not (Test-Path $p)) { return $null }
+    try { return [System.IO.File]::ReadAllText($p, [System.Text.Encoding]::UTF8) } catch { return $null }
+}
+
+function Mem-RemoverItem([string]$id) {
+    if (-not (Mem-IdValido $id)) { return $false }
+    Remove-Item (Join-Path $script:MEM_ITENS ($id + '.md')) -Force -ErrorAction SilentlyContinue
+    Mem-GravarIndice (@(Mem-LerIndice | Where-Object { $_.id -ne $id }))
+    return $true
+}
+
 # ---------- servidor HTTP ----------
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://127.0.0.1:$PORTA/")
@@ -314,6 +418,9 @@ while ($listener.IsListening) {
         $res.Headers.Add('Cache-Control', 'no-store')
 
         if ($req.HttpMethod -eq 'OPTIONS') {
+            # preflight CORS: necessario p/ POST application/json (memoria) vindo de file:// ou outra origem
+            $res.Headers.Add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+            $res.Headers.Add('Access-Control-Allow-Headers', 'Content-Type')
             $res.StatusCode = 204
             $res.Close()
             continue
@@ -343,6 +450,53 @@ while ($listener.IsListening) {
             continue
         }
 
+        # /memoria*: perfil + indice + itens (GET le, POST grava). Sempre JSON.
+        if ($rota -like '/memoria*') {
+            $corpo = ''
+            if ($req.HttpMethod -eq 'POST') {
+                try {
+                    $sr = New-Object System.IO.StreamReader($req.InputStream, [System.Text.Encoding]::UTF8)
+                    $corpo = $sr.ReadToEnd(); $sr.Close()
+                } catch {}
+            }
+            $resp = $null
+            try {
+                if ($rota -eq '/memoria' -and $req.HttpMethod -eq 'GET') {
+                    $resp = [pscustomobject]@{ ok = $true; perfil = (Mem-LerPerfil); indice = @(Mem-LerIndice) }
+                }
+                elseif ($rota -eq '/memoria/item' -and $req.HttpMethod -eq 'GET') {
+                    $id = [string]$req.QueryString['id']
+                    $c  = Mem-LerItem $id
+                    if ($null -eq $c) { $res.StatusCode = 404; $resp = [pscustomobject]@{ ok = $false; erro = 'item nao encontrado' } }
+                    else { $resp = [pscustomobject]@{ ok = $true; id = $id; conteudo = $c } }
+                }
+                elseif ($rota -eq '/memoria/perfil' -and $req.HttpMethod -eq 'POST') {
+                    Mem-GravarPerfil $corpo
+                    $resp = [pscustomobject]@{ ok = $true; perfil = (Mem-LerPerfil) }
+                }
+                elseif ($rota -eq '/memoria/item' -and $req.HttpMethod -eq 'POST') {
+                    $resp = [pscustomobject]@{ ok = $true; item = (Mem-SalvarItem ($corpo | ConvertFrom-Json)) }
+                }
+                elseif ($rota -eq '/memoria/remover' -and $req.HttpMethod -eq 'POST') {
+                    $d = $corpo | ConvertFrom-Json
+                    $resp = [pscustomobject]@{ ok = (Mem-RemoverItem ([string]$d.id)) }
+                }
+                else {
+                    $res.StatusCode = 404
+                    $resp = [pscustomobject]@{ ok = $false; erro = 'rota de memoria desconhecida' }
+                }
+            } catch {
+                $res.StatusCode = 500
+                $resp = [pscustomobject]@{ ok = $false; erro = ([string]$_.Exception.Message) }
+            }
+            $jb = [System.Text.Encoding]::UTF8.GetBytes(($resp | ConvertTo-Json -Depth 6))
+            $res.ContentType = 'application/json; charset=utf-8'
+            $res.ContentLength64 = $jb.Length
+            $res.OutputStream.Write($jb, 0, $jb.Length)
+            $res.Close()
+            continue
+        }
+
         $obj = $null
         switch ($rota) {
             '/saude'   { $obj = Get-Saude }
@@ -352,7 +506,7 @@ while ($listener.IsListening) {
             '/ping'    { $obj = [pscustomobject]@{ ok = $true; servico = 'arandu-saude'; porta = $PORTA } }
             default    {
                 $res.StatusCode = 404
-                $obj = [pscustomobject]@{ erro = 'rota desconhecida'; rotas = @('/saude','/limpeza','/agenda','/email','/ping') }
+                $obj = [pscustomobject]@{ erro = 'rota desconhecida'; rotas = @('/saude','/limpeza','/agenda','/email','/falar','/memoria','/memoria/item','/memoria/perfil','/memoria/remover','/ping') }
             }
         }
 

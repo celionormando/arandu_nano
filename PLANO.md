@@ -112,6 +112,36 @@ D:\Arandu-nano\
   modelo.txt -> adicionar no mapa NOMES_MODELO do chat.html.
 - O que mais importa: AMPLIAR o dataset (50 -> 200 -> 500+ exemplos de qualidade).
 
+## Memória que aprende (camadas, tudo no USB) — IMPLEMENTADO
+Objetivo: o Arandu aprender com o uso (perfil do usuário + conhecimento) SEM depender
+só do RAG, respeitando o contexto de 2048 tokens. Padrão: **índice + expansão sob demanda**
+(o mesmo "stub & hydrate" de um MEMORY.md): no prompt vai sempre só o ESSENCIAL; o detalhe
+entra quando é solicitado e sai depois, liberando espaço.
+- Armazenamento (no pendrive, privado, fora do git): `memoria\`
+  - `perfil.md`   -> essencial do usuário (vai SEMPRE no system prompt; manter curto)
+  - `indice.json` -> mapa [{id,titulo,resumo,palavras,tipo,atualizado}] (vai SEMPRE; barato)
+  - `itens\<id>.md` -> detalhe completo de cada item (hidratado SÓ quando a pergunta casa)
+- Persistência: rotas novas no ajudante 8099 (`saude_sistema.ps1`), pois o chat é file://
+  e o navegador não grava em disco sozinho:
+  GET `/memoria` · GET `/memoria/item?id=` · POST `/memoria/perfil` · POST `/memoria/item`
+  · POST `/memoria/remover`. IDs validados (sem path traversal); UTF-8 sem BOM.
+  (Corrigido: preflight CORS no OPTIONS — Allow-Headers Content-Type — p/ POST JSON de file://.)
+- No chat.html: carrega a memória no início; o roteador leve (`memRotear`, por palavra-chave,
+  SEM embedding) casa a pergunta com 1–2 IDs e hidrata o detalhe; injeta perfil + índice +
+  detalhe no system. Painel "Memória" (sidebar/topo) p/ ver/editar perfil e itens.
+- Aprendizado automático barato (sem 2ª passada do modelo): captura comandos do usuário
+  ("meu nome é...", "lembre-se que...", "anote que...") e grava na hora.
+- Upload de DOCUMENTOS (no painel Memória): arrastar/escolher .txt/.md/.csv/.json/.log ->
+  vira item tipo "D" no USB. O texto fica fora do prompt; na pergunta, hidrata SÓ o trecho
+  relevante (`memTrechoRelevante` quebra em blocos e escolhe os que casam, cabe no orçamento).
+  Palavras-chave do doc (até 40, `memPalavrasChave`) são só p/ roteamento -> não custam tokens.
+  PDF/Word ainda não (precisaria de parser offline/COM); por ora, colar o texto. Limite ~120k chars.
+  Limitação conhecida: termo MUITO raro num doc grande pode não ser roteado pelo índice de
+  palavras -> é aí que o RAG por embedding (camada semântica, mais cara) complementa.
+- Camadas (custo sob as premissas de RAM/velocidade/2048): perfil+conversas = baratas e
+  automáticas; fine-tune = barato em runtime (conhecimento recorrente vai p/ os pesos);
+  RAG = o mais caro (2º modelo na RAM + come contexto) -> só sob demanda.
+
 ## Status
 1. [x] Motor llamafile + interface Arandu IA (chat.html, pt-BR, voz, streaming fluido)
 2. [x] Lançador 1 clique (IA_Portatil.vbs, navegador padrão) + troca de modelo (modelo.txt)
@@ -119,6 +149,9 @@ D:\Arandu-nano\
 4. [x] Nomenclatura de famílias (Arandu/Katu/Vera/Taba) definida
 5. [x] MARCO: 1º modelo próprio treinado e implantado — **Arandu Nano 1.0** rodando na USB
 6. [ ] Ampliar dataset e retreinar o Arandu Nano (melhorar qualidade)
+7. [x] MARCO: memória em camadas (perfil + índice + itens sob demanda) gravada no USB,
+       com aprendizado automático por comando + UPLOAD de documentos (.txt/.md/...) com
+       seleção de trecho relevante — testado de ponta a ponta
 
 ## Roadmap
 1. [x] TTS leve (Web Speech API) — falar respostas.

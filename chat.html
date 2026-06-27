@@ -88,8 +88,16 @@
   #sendBtn.stop svg{fill:#fff;stroke:none}
   .hint{max-width:760px;margin:7px auto 0;padding:0 24px;font-size:11px;color:var(--muted);text-align:center}
   /* ===== Settings modal ===== */
-  #overlay,#overlayKB{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50}
-  #modal,#modalKB{background:var(--panel);border:1px solid var(--border);border-radius:14px;width:560px;max-width:92vw;max-height:88vh;overflow-y:auto}
+  #overlay,#overlayKB,#overlayMem{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50}
+  #modal,#modalKB,#modalMem{background:var(--panel);border:1px solid var(--border);border-radius:14px;width:560px;max-width:92vw;max-height:88vh;overflow-y:auto}
+  .mem-item{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+  .mem-item .mi-id{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--accent);background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;margin-right:6px}
+  .mem-item .mi-tit{font-weight:600;font-size:14px}
+  .mem-item .mi-res{font-size:12px;color:var(--muted);margin-top:2px}
+  #memToast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--accent);color:#fff;padding:9px 16px;border-radius:9px;font-size:13.5px;z-index:9999;box-shadow:0 6px 18px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .2s}
+  #mem-drop{border:1.5px dashed var(--border);border-radius:10px;padding:14px 16px;text-align:center;cursor:pointer;color:var(--text);font-size:14px;margin:4px 0 8px;transition:border-color .15s,background .15s}
+  #mem-drop:hover,#mem-drop:focus{border-color:var(--accent);outline:none}
+  #mem-drop.dragover{border-color:var(--accent);background:var(--panel2)}
   .modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
   .modal-head h2{margin:0;font-size:17px}
   .modal-body{padding:18px 22px}
@@ -173,6 +181,8 @@
     <div id="searchBox"><input type="text" placeholder="Buscar nas conversas..." oninput="filtrar(this.value)"></div>
     <button class="side-btn" onclick="abrirKB()">
       <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Base de conhecimento</button>
+    <button class="side-btn" onclick="abrirMem()">
+      <svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 0-4 4 3 3 0 0 0-2 5 3 3 0 0 0 1 5 3 3 0 0 0 5 1 3 3 0 0 0 5-1 3 3 0 0 0 1-5 3 3 0 0 0-2-5 4 4 0 0 0-4-4z"/><path d="M12 6v13"/></svg>Memória</button>
     <button class="side-btn" onclick="abrirConfig()">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>Configurações</button>
     <div class="side-label">Conversas recentes</div>
@@ -188,6 +198,8 @@
       <div id="topTitle">Nova conversa</div>
       <button class="icon-btn" id="ragBtn" onclick="toggleRAG()" title="Base de conhecimento (RAG)">
         <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></button>
+      <button class="icon-btn" id="memBtn" onclick="abrirMem()" title="Memória do Arandu (perfil + itens)">
+        <svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 0-4 4 3 3 0 0 0-2 5 3 3 0 0 0 1 5 3 3 0 0 0 5 1 3 3 0 0 0 5-1 3 3 0 0 0 1-5 3 3 0 0 0-2-5 4 4 0 0 0-4-4z"/><path d="M12 6v13"/></svg></button>
       <button class="icon-btn" id="ttsBtn" onclick="toggleVoz()" title="Ler respostas em voz alta">
         <svg viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg></button>
       <button class="icon-btn" onclick="abrirConfig()" title="Configurações">
@@ -204,6 +216,57 @@
       <div class="hint">A IA roda localmente no seu dispositivo. As respostas podem conter erros.</div>
     </div>
   </main>
+
+  <!-- ===== Memória modal ===== -->
+  <div id="overlayMem">
+    <div id="modalMem">
+      <div class="modal-head">
+        <h2>Memória do Arandu</h2>
+        <button class="icon-btn" onclick="fecharMem()"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <div class="sec-title">Essencial (vai sempre no contexto)</div>
+        <div class="field">
+          <label>Perfil — o que o Arandu sempre lembra de você</label>
+          <textarea id="mem-perfil" placeholder="Ex.: Nome: Célio · Prefere respostas curtas · Trabalha com..."></textarea>
+          <div class="desc">Mantenha curto: cada linha gasta espaço do contexto (2048 tokens). <span id="mem-perfil-c"></span></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin:-6px 0 18px"><button class="btn primary" onclick="memSalvarPerfilUI()">Salvar perfil</button></div>
+
+        <div class="sec-title">Itens de conhecimento (detalhe sob demanda)</div>
+        <div class="desc" style="margin:-6px 0 12px">Só o título/resumo fica no índice; o conteúdo completo é carregado quando a pergunta combina. Diga ao Arandu <i>"lembre-se que..."</i> e ele cria sozinho.</div>
+
+        <div id="mem-drop" tabindex="0"
+             onclick="document.getElementById('mem-file').click()"
+             ondragover="event.preventDefault();this.classList.add('dragover')"
+             ondragleave="this.classList.remove('dragover')"
+             ondrop="memDrop(event)">
+          <svg viewBox="0 0 24 24" width="22" height="22" style="vertical-align:-4px;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5-5 5 5"/><path d="M12 5v12"/></svg>
+          <b>Enviar documento</b> — arraste aqui ou clique
+          <div class="desc" style="margin-top:4px">.txt, .md, .csv, .json, .log — fica gravado no USB e é consultado por trecho relevante. (PDF/Word: cole o texto por enquanto.)</div>
+          <input type="file" id="mem-file" multiple accept=".txt,.md,.markdown,.csv,.tsv,.json,.log,.text,text/plain" style="display:none" onchange="memUploadArquivos(this.files);this.value=''">
+        </div>
+        <div class="desc" id="mem-upload-prog" style="margin:-4px 0 12px"></div>
+
+        <div id="mem-lista"></div>
+
+        <details style="margin-top:14px">
+          <summary style="cursor:pointer;color:var(--muted);font-size:13px">+ Adicionar item manualmente</summary>
+          <div class="field" style="margin-top:12px">
+            <label>Título</label>
+            <input type="text" id="mem-novo-tit" placeholder="Ex.: Contrato fornecedor X">
+          </div>
+          <div class="field">
+            <label>Conteúdo (detalhe completo)</label>
+            <textarea id="mem-novo-cont" placeholder="O texto completo que o Arandu deve consultar quando relevante..."></textarea>
+          </div>
+          <div style="display:flex;justify-content:flex-end"><button class="btn primary" onclick="memAddItemUI()">Adicionar item</button></div>
+        </details>
+
+        <div class="desc" id="mem-status" style="margin-top:14px"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== Settings modal ===== -->
   <div id="overlay">
@@ -452,6 +515,7 @@ function onSend(){
   }
   const c=cur();
   c.messages.push({role:'user',content:text});
+  memCapturar(text);   // aprendizado automático barato (comandos "lembre-se que...")
   c.messages.push({role:'assistant',content:''});
   inp.value="";inp.style.height='auto';
   save();renderList();renderChat();stream(c);
@@ -462,11 +526,26 @@ async function stream(c){
   // RAG: se ativo, busca trechos relevantes e injeta na mensagem do sistema
   // Qwen3 tem "modo pensamento" que custa velocidade na CPU; desliga com /no_think (so p/ Qwen).
   const noThink=/qwen3/i.test(modeloArquivo)?" /no_think":"";
-  const baseSys=IDENTIDADE_ARANDU+"\n\n"+cfg.system+noThink;
+  const pergunta=c.messages[idx-1]?.content||"";
+  // ---- Memória: perfil (essencial) + índice vão SEMPRE; detalhe SOB DEMANDA ----
+  let memStable="";
+  if(MEM.perfil && MEM.perfil.trim()){
+    memStable+="\n\n=== SOBRE O USUÁRIO (memória persistente) ===\n"+MEM.perfil.trim().slice(0,1200);
+  }
+  const _idxTxt=memIndiceTexto(30);
+  if(_idxTxt){
+    memStable+="\n\n=== ÍNDICE DA MEMÓRIA (consulte os DETALHES quando fornecidos abaixo) ===\n"+_idxTxt;
+  }
+  let memDetalhe="";
+  try{
+    const ids=memRotear(pergunta,2); const partes=[];
+    for(const id of ids){ const ct=await memHidratar(id); if(ct) partes.push("["+id+"]\n"+memTrechoRelevante(ct,pergunta,1100)); }
+    if(partes.length) memDetalhe="\n\n=== DETALHES RELEVANTES DA MEMÓRIA ===\n"+partes.join("\n\n");
+  }catch(e){}
+  const baseSys=IDENTIDADE_ARANDU+"\n\n"+cfg.system+noThink+memStable;
   let sysContent=baseSys;
   if(cfg.ragOn){
     try{
-      const pergunta=c.messages[idx-1]?.content||"";
       const trechos=await buscarRAG(pergunta,cfg.ragTopK);
       if(trechos.length){
         const ctx=trechos.map((t,i)=>`[${i+1}] (${rotuloFonte(t.fonte)})\n${t.texto}`).join("\n\n");
@@ -483,6 +562,7 @@ async function stream(c){
       }
     }catch(e){ /* embedding offline: segue sem RAG */ }
   }
+  sysContent+=memDetalhe;
   const msgs=[{role:'system',content:sysContent}].concat(
     c.messages.slice(0,idx).map(m=>({role:m.role,content:m.content})));
   const body={
@@ -922,10 +1002,211 @@ async function kbAutoLoad(){
   }catch(e){ /* indexedDB indisponível: ignora */ }
 }
 
+/* ============ Memória do Arandu (perfil + índice de IDs + itens) ============ */
+// Estratégia p/ contexto de 2048 tokens: perfil (essencial) e índice vão SEMPRE;
+// o detalhe de cada item é hidratado SOB DEMANDA e descartado depois. Tudo no USB,
+// persistido pelo ajudante 8099 (mesmo serviço da voz/saúde).
+const MEM_URL="http://127.0.0.1:8099";
+let MEM={perfil:"",indice:[]};
+const MEM_ITEM_CACHE={};   // detalhes já hidratados nesta sessão
+
+async function memCarregar(){
+  try{
+    const r=await fetch(MEM_URL+"/memoria",{cache:'no-store',signal:AbortSignal.timeout(2500)});
+    const j=await r.json();
+    MEM.perfil=(j&&typeof j.perfil==='string')?j.perfil:"";
+    MEM.indice=Array.isArray(j&&j.indice)?j.indice:((j&&j.indice)?[j.indice]:[]);
+  }catch(e){ /* ajudante offline: segue sem memória persistida */ }
+}
+async function memHidratar(id){
+  if(MEM_ITEM_CACHE[id]!=null) return MEM_ITEM_CACHE[id];
+  try{
+    const r=await fetch(MEM_URL+"/memoria/item?id="+encodeURIComponent(id),{cache:'no-store',signal:AbortSignal.timeout(2500)});
+    const j=await r.json();
+    if(j&&j.ok){ MEM_ITEM_CACHE[id]=j.conteudo||""; return MEM_ITEM_CACHE[id]; }
+  }catch(e){}
+  return "";
+}
+async function memGravarPerfil(txt){
+  MEM.perfil=txt||"";
+  try{ await fetch(MEM_URL+"/memoria/perfil",{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:MEM.perfil}); return true; }
+  catch(e){ return false; }
+}
+async function memSalvarItem(it){
+  try{
+    const r=await fetch(MEM_URL+"/memoria/item",{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(it)});
+    const j=await r.json();
+    if(j&&j.ok&&j.item){
+      MEM.indice=MEM.indice.filter(x=>x.id!==j.item.id); MEM.indice.push(j.item);
+      if(it.conteudo!=null) MEM_ITEM_CACHE[j.item.id]=it.conteudo;
+      return j.item;
+    }
+  }catch(e){}
+  return null;
+}
+async function memRemover(id){
+  try{ await fetch(MEM_URL+"/memoria/remover",{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}); }catch(e){}
+  MEM.indice=MEM.indice.filter(x=>x.id!==id); delete MEM_ITEM_CACHE[id];
+}
+
+// normaliza p/ casamento: minúsculo e sem acento
+function memNorm(s){ return (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
+// Roteador leve (sem embedding): casa a pergunta com itens do índice por palavras/título.
+function memRotear(pergunta,max){
+  const q=memNorm(pergunta); if(!q||!MEM.indice.length) return [];
+  const toks=new Set(q.split(/[^a-z0-9]+/).filter(w=>w.length>=4));
+  const scored=MEM.indice.map(it=>{
+    const alvo=memNorm((it.titulo||"")+" "+(it.resumo||"")+" "+((it.palavras||[]).join(" ")));
+    let s=0;
+    (it.palavras||[]).forEach(p=>{ const pn=memNorm(p); if(pn&&q.indexOf(pn)>=0) s+=3; });
+    toks.forEach(t=>{ if(alvo.indexOf(t)>=0) s+=1; });
+    return {id:it.id,s};
+  }).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
+  return scored.slice(0,max||2).map(x=>x.id);
+}
+// índice curto que vai SEMPRE no prompt (barato em tokens)
+function memIndiceTexto(maxItens){
+  if(!MEM.indice.length) return "";
+  return MEM.indice.slice(0,maxItens||30)
+    .map(it=>"["+it.id+"] "+(it.titulo||"")+(it.resumo?(" — "+it.resumo):"")).join("\n");
+}
+
+// Captura automática barata (sem custo de modelo): comandos explícitos de memória.
+async function memCapturar(text){
+  const t=(text||"").trim(); if(t.length<4) return;
+  // 1) Nome -> perfil
+  let m=t.match(/\b(?:meu nome (?:é|eh)|me chamo|pode me chamar de)\s+([A-Za-zÀ-ÿ][\wÀ-ÿ'’-]*(?:\s+[A-Za-zÀ-ÿ][\wÀ-ÿ'’-]*){0,2})/i);
+  if(m){
+    const nome=m[1].trim();
+    if(nome && memNorm(MEM.perfil).indexOf(memNorm(nome))<0){
+      await memGravarPerfil((MEM.perfil?MEM.perfil.trim()+"\n":"")+"- Nome: "+nome);
+      memToast("Anotei na memória: nome "+nome);
+    }
+    return;
+  }
+  // 2) "lembre-se/anote/memorize/guarde (que/de) ..."
+  m=t.match(/\b(?:lembre-se|lembre|anote|memorize|memoriza|guarde|grave)\s+(?:que\s+|de\s+|disso:\s*|isso:\s*)?(.{4,})/i);
+  if(m){
+    let fato=m[1].trim().replace(/^["“']|["”']$/g,"").trim();
+    if(fato.length<4) return;
+    const titulo=fato.length>52?fato.slice(0,52)+"…":fato;
+    const palavras=[...new Set(memNorm(fato).split(/[^a-z0-9]+/).filter(w=>w.length>=4))].slice(0,8);
+    const it=await memSalvarItem({titulo,resumo:"",palavras,conteudo:fato,tipo:"M"});
+    if(it) memToast("Memorizei ["+it.id+"]: "+titulo);
+  }
+}
+
+function memToast(msg){
+  let t=document.getElementById('memToast');
+  if(!t){ t=document.createElement('div'); t.id='memToast'; document.body.appendChild(t); }
+  t.textContent=msg; t.style.opacity="1";
+  clearTimeout(t._h); t._h=setTimeout(()=>{t.style.opacity="0";},2800);
+}
+
+/* ---- UI do painel de Memória ---- */
+async function abrirMem(){
+  document.getElementById('overlayMem').style.display='flex';
+  document.getElementById('mem-status').textContent="Carregando...";
+  await memCarregar();
+  document.getElementById('mem-perfil').value=MEM.perfil||"";
+  memContarPerfil(); memRenderLista();
+  document.getElementById('mem-status').textContent="";
+}
+function fecharMem(){ document.getElementById('overlayMem').style.display='none'; }
+function memContarPerfil(){
+  const v=document.getElementById('mem-perfil').value||"";
+  document.getElementById('mem-perfil-c').textContent="("+v.length+" caracteres)";
+}
+async function memSalvarPerfilUI(){
+  const ok=await memGravarPerfil(document.getElementById('mem-perfil').value||"");
+  document.getElementById('mem-status').textContent=ok?"Perfil salvo no USB. ✓":"Ajudante offline — não foi possível salvar.";
+  memToast(ok?"Perfil salvo":"Falha ao salvar");
+}
+function memRenderLista(){
+  const el=document.getElementById('mem-lista');
+  if(!MEM.indice.length){ el.innerHTML='<div style="color:var(--muted)">Nenhum item memorizado ainda.</div>'; return; }
+  el.innerHTML=MEM.indice.map(it=>
+    '<div class="mem-item"><div><div><span class="mi-id">'+esc(it.id)+'</span><span class="mi-tit">'+esc(it.titulo||"(sem título)")+'</span></div>'+
+    (it.resumo?'<div class="mi-res">'+esc(it.resumo)+'</div>':'')+'</div>'+
+    '<button class="conv-del" style="opacity:.7" title="Remover" onclick="memRemoverUI(\''+esc(it.id)+'\')">'+TRASH+'</button></div>'
+  ).join('');
+}
+async function memRemoverUI(id){
+  if(!confirm('Remover o item '+id+' da memória?'))return;
+  await memRemover(id); memRenderLista(); memToast("Item "+id+" removido");
+}
+async function memAddItemUI(){
+  const tit=document.getElementById('mem-novo-tit').value.trim();
+  const cont=document.getElementById('mem-novo-cont').value.trim();
+  if(!tit||!cont){ memToast("Preencha título e conteúdo"); return; }
+  const palavras=[...new Set(memNorm(tit+" "+cont).split(/[^a-z0-9]+/).filter(w=>w.length>=4))].slice(0,10);
+  const it=await memSalvarItem({titulo:tit,resumo:"",palavras,conteudo:cont,tipo:"M"});
+  if(it){ document.getElementById('mem-novo-tit').value=""; document.getElementById('mem-novo-cont').value=""; memRenderLista(); memToast("Item ["+it.id+"] adicionado"); }
+  else memToast("Ajudante offline — não foi possível salvar.");
+}
+
+/* ---- Upload de documentos (vira item tipo "D" no USB; consultado por trecho) ---- */
+const MEM_STOP=new Set("para pelo pela pelos pelas como mais porem porque quando onde qual quais isso esse essa este esta estes estas aquele aquela isto entre sobre apos antes ainda cada todos todas algum alguma alguns algumas outro outra outros outras seu sua seus suas meu minha nosso nossa eles elas voce voces tambem entao depois muito muita pouco assim sendo foram sera serao havia tinha pode podem deve devem estar dos das nas nos uma uns umas que nao sim".split(/\s+/));
+// extrai as palavras mais frequentes (só p/ ROTEAMENTO; não aparecem no prompt, então são "grátis")
+function memPalavrasChave(texto,n){
+  const freq={};
+  memNorm(texto).split(/[^a-z0-9]+/).forEach(w=>{ if(w.length>=4 && !MEM_STOP.has(w) && !/^\d+$/.test(w)) freq[w]=(freq[w]||0)+1; });
+  return Object.keys(freq).sort((a,b)=>freq[b]-freq[a]).slice(0,n||20);
+}
+// quebra o texto em blocos (parágrafos; subdivide blocos grandes)
+function memChunks(texto,alvo){
+  let bl=texto.split(/\n\s*\n+/).map(b=>b.trim()).filter(Boolean);
+  if(bl.length<=1) bl=texto.split(/\n+/).map(b=>b.trim()).filter(Boolean);
+  const out=[];
+  for(const b of bl){ if(b.length<=alvo*1.4){ out.push(b); } else { for(let i=0;i<b.length;i+=alvo) out.push(b.slice(i,i+alvo)); } }
+  return out.length?out:[texto];
+}
+// dado um documento grande, devolve só o(s) trecho(s) que casam com a pergunta (cabe em maxChars)
+function memTrechoRelevante(texto,pergunta,maxChars){
+  texto=(texto||"").trim();
+  if(texto.length<=maxChars) return texto;
+  const blocos=memChunks(texto,Math.max(400,Math.floor(maxChars*0.6)));
+  const toks=[...new Set(memNorm(pergunta).split(/[^a-z0-9]+/).filter(w=>w.length>=4))];
+  const scored=blocos.map((b,i)=>{ const bn=memNorm(b); let s=0; toks.forEach(t=>{ if(bn.indexOf(t)>=0) s++; }); return {b,i,s}; });
+  if(!scored.some(x=>x.s>0)) return texto.slice(0,maxChars)+" …";
+  scored.sort((a,b)=> b.s-a.s || a.i-b.i);
+  const esc=[]; let len=0;
+  for(const x of scored){ if(x.s===0) break; if(len+x.b.length+2>maxChars){ if(!esc.length) esc.push({b:x.b.slice(0,maxChars),i:x.i}); break; } esc.push(x); len+=x.b.length+2; }
+  esc.sort((a,b)=>a.i-b.i);
+  return esc.map(x=>x.b).join("\n\n");
+}
+async function memUploadArquivos(files){
+  files=[...(files||[])]; if(!files.length) return;
+  const prog=document.getElementById('mem-upload-prog');
+  let ok=0; const falhas=[];
+  for(let i=0;i<files.length;i++){
+    const f=files[i];
+    prog.textContent="Processando "+(i+1)+"/"+files.length+": "+f.name+"…";
+    if(/\.(pdf|docx?|xlsx?|pptx?|odt|rtf|png|jpe?g|gif|zip)$/i.test(f.name)){ falhas.push(f.name+" (formato não suportado ainda)"); continue; }
+    let texto="";
+    try{ texto=await f.text(); }catch(e){ falhas.push(f.name+" (erro de leitura)"); continue; }
+    texto=(texto||"").replace(/\u0000/g,"").trim();
+    if(!texto){ falhas.push(f.name+" (vazio)"); continue; }
+    let trunc=false; if(texto.length>120000){ texto=texto.slice(0,120000); trunc=true; }
+    const palavras=memPalavrasChave(texto,40);  // só p/ roteamento (não vai no prompt) -> recall melhor
+    const resumo="documento • "+texto.length.toLocaleString('pt-BR')+" caracteres"+(trunc?" (truncado)":"");
+    const it=await memSalvarItem({titulo:f.name,resumo,palavras,conteudo:texto,tipo:"D"});
+    if(it) ok++; else falhas.push(f.name+" (ajudante offline)");
+  }
+  memRenderLista();
+  prog.textContent=(ok?(ok+" documento(s) na memória. "):"")+(falhas.length?("Não entraram: "+falhas.join("; ")):"");
+  if(ok) memToast(ok+" documento(s) memorizado(s)"); else if(falhas.length) memToast("Nenhum documento adicionado");
+}
+function memDrop(ev){ ev.preventDefault(); const el=document.getElementById('mem-drop'); el.classList.remove('dragover'); const dt=ev.dataTransfer; if(dt&&dt.files&&dt.files.length) memUploadArquivos(dt.files); }
+
+document.getElementById('overlayMem').addEventListener('click',e=>{if(e.target.id==='overlayMem')fecharMem();});
+document.getElementById('mem-perfil').addEventListener('input',memContarPerfil);
+
 /* ============ Init ============ */
 renderList();renderChat();checarServidor();setInterval(checarServidor,15000);
 atualizarBotaoRAG();
 kbAutoLoad();
+memCarregar();        // carrega perfil + índice do USB (via ajudante 8099)
 atualizarBotaoVoz();
 if('speechSynthesis' in window) window.speechSynthesis.getVoices();  // dispara carga das vozes
 </script>
