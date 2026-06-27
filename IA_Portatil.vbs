@@ -28,26 +28,51 @@ modelo = base & "\" & nomeModelo
 
 ' se ja houver servidor respondendo, so abre a janela
 If Not ServidorNoAr() Then
-    ' --sleep-idle-seconds 180: apos 3 min sem uso, o servidor "dorme" e
-    ' libera a RAM de trabalho; a proxima mensagem o reacorda em ~2s.
-    cmd = """" & exe & """ --server -m """ & modelo & """" & _
-          " --host 127.0.0.1 --port 8080 -c 2048 -t 3 -fa on" & _
-          " -ctk q8_0 -ctv q8_0 -ub 256 -b 512 --gpu disable" & _
-          " --sleep-idle-seconds 180"
-    sh.CurrentDirectory = base
-    ' 0 = janela oculta (sem console preto); False = nao espera
+    ' Motor de IA: PREFERE o llama-server.exe (llama.cpp, .exe comum) -> passa no
+    ' AppLocker do Windows corporativo. Cai para o llamafile.exe (APE) se aquele
+    ' nao existir (ex.: maquina sem restricao de execucao).
+    Dim srvExe
+    srvExe = base & "\llama\llama-server.exe"
+    If fso.FileExists(srvExe) Then
+        cmd = """" & srvExe & """ -m """ & modelo & """" & _
+              " --host 127.0.0.1 --port 8080 -c 2048 -t 3 -fa on" & _
+              " -ctk q8_0 -ctv q8_0 -ub 256 -b 512 --no-webui"
+        sh.CurrentDirectory = base & "\llama"
+    Else
+        ' --sleep-idle-seconds 180: apos 3 min ocioso o servidor "dorme" e libera a RAM.
+        cmd = """" & exe & """ --server -m """ & modelo & """" & _
+              " --host 127.0.0.1 --port 8080 -c 2048 -t 3 -fa on" & _
+              " -ctk q8_0 -ctv q8_0 -ub 256 -b 512 --gpu disable" & _
+              " --sleep-idle-seconds 180"
+        sh.CurrentDirectory = base
+    End If
+    ' 0 = janela oculta (sem console preto); False = nao espera.
+    ' Em Windows corporativo, o AppLocker/antivirus pode BLOQUEAR o llamafile.exe
+    ' (formato APE) -> "Permissao negada". Tratamos o erro em vez de travar.
+    Dim errExec
+    On Error Resume Next
     sh.Run cmd, 0, False
+    errExec = Err.Number
+    On Error GoTo 0
 
-    ' espera o modelo carregar (ate ~40s), checando a porta
-    ok = False
-    For i = 1 To 40
-        WScript.Sleep 1000
-        If ServidorNoAr() Then ok = True : Exit For
-    Next
-    If Not ok Then
-        MsgBox "Nao consegui iniciar o servidor da IA." & vbCrLf & _
-               "Verifique se os arquivos estao na pasta.", vbExclamation, "Arandu IA"
-        WScript.Quit
+    If errExec <> 0 Then
+        MsgBox "Nao consegui iniciar o motor de IA neste Windows." & vbCrLf & vbCrLf & _
+               "A politica de seguranca (AppLocker/antivirus) bloqueou o llamafile.exe." & vbCrLf & _
+               "Inicie o servidor pelo WSL (Ubuntu):   ./iniciar.sh" & vbCrLf & vbCrLf & _
+               "O chat vai abrir assim mesmo; quando o servidor estiver no ar, atualize a pagina.", _
+               vbExclamation, "Arandu - motor bloqueado pelo Windows"
+    Else
+        ' espera o modelo carregar (ate ~40s), checando a porta
+        ok = False
+        For i = 1 To 40
+            WScript.Sleep 1000
+            If ServidorNoAr() Then ok = True : Exit For
+        Next
+        If Not ok Then
+            MsgBox "Nao consegui iniciar o servidor da IA." & vbCrLf & _
+                   "Verifique se os arquivos estao na pasta.", vbExclamation, "Arandu IA"
+            WScript.Quit
+        End If
     End If
 End If
 

@@ -78,6 +78,11 @@ tradução, ideias, dúvidas do dia a dia). O projeto inclui um kit para criar
 ## Como montar (após clonar)
 1. **Runtime** — baixe o `llamafile.exe`:
    https://github.com/Mozilla-Ocho/llamafile/releases (renomeie para `llamafile.exe`)
+   - **Windows corporativo (AppLocker)?** Se o Windows bloquear o `llamafile.exe`
+     ("Permissão negada" — ele é um binário APE), baixe o **llama.cpp** comum
+     (https://github.com/ggml-org/llama.cpp/releases, asset `win-cpu-x64`) e extraia
+     em uma pasta **`llama/`**. O `IA_Portatil.vbs` detecta e usa o `llama-server.exe`
+     automaticamente (é um `.exe` normal, que passa no AppLocker).
 2. **Modelo base** — baixe um GGUF e coloque na pasta:
    - Llama-3.2-1B: https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF
    - Llama-3.2-3B: https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF
