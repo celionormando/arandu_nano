@@ -35,6 +35,10 @@ tools_gif/node_modules/
 tools_gif/inspect_*.png
 tools_gif/package*.json
 
+# Dependências npm (só p/ obter libs; o que vai no USB fica em vendor/)
+node_modules/
+package-lock.json
+
 # Config local do Claude Code / preview (não portátil)
 .claude/
 

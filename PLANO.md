@@ -131,11 +131,16 @@ entra quando é solicitado e sai depois, liberando espaço.
   detalhe no system. Painel "Memória" (sidebar/topo) p/ ver/editar perfil e itens.
 - Aprendizado automático barato (sem 2ª passada do modelo): captura comandos do usuário
   ("meu nome é...", "lembre-se que...", "anote que...") e grava na hora.
-- Upload de DOCUMENTOS (no painel Memória): arrastar/escolher .txt/.md/.csv/.json/.log ->
+- Upload de DOCUMENTOS (no painel Memória): arrastar/escolher .pdf/.txt/.md/.csv/.json/.log ->
   vira item tipo "D" no USB. O texto fica fora do prompt; na pergunta, hidrata SÓ o trecho
   relevante (`memTrechoRelevante` quebra em blocos e escolhe os que casam, cabe no orçamento).
   Palavras-chave do doc (até 40, `memPalavrasChave`) são só p/ roteamento -> não custam tokens.
-  PDF/Word ainda não (precisaria de parser offline/COM); por ora, colar o texto. Limite ~120k chars.
+  Limite ~120k chars.
+- PDF digital: extraído com **pdf.js** (empacotado em `vendor/pdfjs\`, ~1,5 MB), carregado SÓ
+  quando chega um PDF (não pesa no boot). Worker pré-carregado como global -> roda na thread
+  principal quando o navegador bloqueia Web Worker (caso do file://). PDF escaneado/imagem cai
+  no aviso "sem texto extraível" -> é o caso do OCR leve (próximo passo, ONNX no onnxruntime
+  que já vem com o Piper). Word/PDF-imagem ainda não.
   Limitação conhecida: termo MUITO raro num doc grande pode não ser roteado pelo índice de
   palavras -> é aí que o RAG por embedding (camada semântica, mais cara) complementa.
 - Camadas (custo sob as premissas de RAM/velocidade/2048): perfil+conversas = baratas e
