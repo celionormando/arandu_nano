@@ -72,3 +72,25 @@ llamafile.exe -m Qwen_Qwen3-1.7B-Q4_K_M.gguf --cli \
   -p "Em uma frase: Santos Dumont era brasileiro ou frances?"
 # Esperado: "Santos Dumont era brasileiro."
 ```
+
+## Atalho: gerar a Arandu Nano 1.2 (script automatizado)
+
+Os passos 2 e 3 acima estão automatizados em [`regenerar_nano_1.2.ps1`](regenerar_nano_1.2.ps1).
+O script monta um **corpus ampliado** (`calibracao_pt.txt` + `rag/docs/*.txt`),
+roda o `llama-imatrix` e o `llama-quantize`, e salva o resultado como
+`Arandu_Nano_1.2_Q4_K_M.gguf` na raiz do projeto.
+
+```powershell
+# Pré-requisito: baixar Qwen3-1.7B-Q8_0.gguf (~1,83 GB) na raiz do projeto.
+# Fonte: https://huggingface.co/Qwen/Qwen3-1.7B-GGUF
+PowerShell -ExecutionPolicy Bypass -File treino\imatrix\regenerar_nano_1.2.ps1
+```
+
+Tempo total: 30 min – 2 h em CPU (depende de `--chunks`). Para ativar a 1.2 no
+Arandu, edite `modelo.txt` apontando para `Arandu_Nano_1.2_Q4_K_M.gguf`.
+
+> **Honestidade sobre o ganho:** a 1.2 será **incrementalmente** melhor que a 1.1
+> em pt-BR (corpus de calibração 3× maior, mesmo domínio). Não é um novo
+> fine-tune — para um salto real de qualidade, o caminho é ampliar
+> `treino/dataset_arandu.jsonl` (hoje ~40 exemplos) para 200+ e re-treinar no
+> Colab usando `treino/Arandu_Nano_Finetuning.ipynb`.
