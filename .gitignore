@@ -13,6 +13,9 @@ ferramentas/piper/
 *.onnx
 *.wav
 
+# OCR (Tesseract portátil) — binário + tessdata, baixados à parte
+ferramentas/tesseract/
+
 # Perfil do navegador (gerado em runtime pelo IA_Portatil.vbs)
 .appprofile/
 

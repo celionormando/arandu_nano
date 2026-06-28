@@ -115,6 +115,32 @@ Para regenerar o índice após adicionar/editar documentos, com o servidor RAG n
 node rag/gerar_indice.mjs
 ```
 
+## 🧠 Memória que aprende
+O Arandu **aprende com o uso** e guarda tudo **no próprio pendrive** (pasta `memoria/`,
+privada, fora do git). Abra o painel **Memória** (barra lateral ou ícone no topo):
+
+- **Perfil** — o essencial sobre você (nome, preferências). Vai **sempre** no contexto.
+  Você pode editar à mão, ou o Arandu anota sozinho quando você diz *"meu nome é…"*,
+  *"lembre-se que…"*, *"anote que…"*.
+- **Documentos** — arraste/escolha arquivos: **PDF** (com texto), **imagens** (com OCR),
+  `.txt/.md/.csv/.json/.log`. Cada documento vira um **item** no USB; na pergunta, o Arandu
+  consulta **só o trecho relevante** — assim cabe no contexto pequeno (2048 tokens) sem
+  precisar do RAG por embeddings.
+
+Como cabe em 2048 tokens: no prompt vão sempre só o **perfil** e um **índice** curto
+(título de cada item); o conteúdo completo é carregado **sob demanda** quando a pergunta
+combina, e descartado depois. PDF digital é lido offline com o **pdf.js** (já incluso em
+`vendor/pdfjs/`, carregado só quando chega um PDF).
+
+### OCR (imagens e PDF escaneado) — opcional
+Para ler **imagens** e **PDFs escaneados**, instale o **Tesseract** (portátil, como a voz):
+1. Baixe o Tesseract OCR para Windows (ex.: build do **UB Mannheim**,
+   https://github.com/UB-Mannheim/tesseract/wiki) — versão portátil/zip.
+2. Coloque em **`ferramentas/tesseract/`** de forma que existam `ferramentas/tesseract/tesseract.exe`
+   e a pasta `ferramentas/tesseract/tessdata/` com os idiomas (ex.: `por.traineddata`, `eng.traineddata`).
+3. Pronto: ao enviar uma imagem ou PDF escaneado, o ajudante (porta 8099) roda o OCR e o
+   texto entra na memória. Sem o Tesseract, o Arandu apenas avisa que o OCR não está instalado.
+
 ## 🩺 Assistente do sistema
 Além de conversar, o Arandu pode **enxergar o seu PC** — tudo **local e somente leitura**:
 

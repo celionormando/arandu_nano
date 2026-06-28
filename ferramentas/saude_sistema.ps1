@@ -292,6 +292,41 @@ function Piper-Falar([string]$texto) {
     return $null
 }
 
+# ---------- OCR de imagens (Tesseract portatil, opcional) ----------
+# Mesmo padrao do Piper: binario em ferramentas\tesseract\ (nao versionado, baixado a parte).
+# Le imagem (bytes) e devolve o texto. Idiomas via tessdata (por+eng por padrao).
+$script:OCR_DIR = Join-Path $PSScriptRoot 'tesseract'
+function Ocr-Imagem([byte[]]$bytes, [string]$lang) {
+    if ($null -eq $bytes -or $bytes.Length -eq 0) { return $null }
+    $exe = Join-Path $script:OCR_DIR 'tesseract.exe'
+    if (-not (Test-Path $exe)) { return $null }
+    if ($lang -notmatch '^[a-zA-Z]{2,}([+_][a-zA-Z]{2,})*$') { $lang = 'por+eng' }   # sanitiza
+    $img = Join-Path $env:TEMP ('arandu_ocr_' + [guid]::NewGuid().ToString('N') + '.png')
+    try {
+        [System.IO.File]::WriteAllBytes($img, $bytes)
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName  = $exe
+        $psi.Arguments = '"' + $img + '" stdout -l ' + $lang
+        $psi.WorkingDirectory      = $script:OCR_DIR
+        $psi.UseShellExecute       = $false
+        $psi.CreateNoWindow        = $true
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError  = $true
+        $psi.StandardOutputEncoding = [System.Text.Encoding]::UTF8
+        $tessdata = Join-Path $script:OCR_DIR 'tessdata'
+        if (Test-Path $tessdata) { $psi.EnvironmentVariables['TESSDATA_PREFIX'] = $tessdata }
+        $p = [System.Diagnostics.Process]::Start($psi)
+        $out = $p.StandardOutput.ReadToEnd()
+        $null = $p.StandardError.ReadToEnd()
+        if (-not $p.WaitForExit(120000)) { try { $p.Kill() } catch {}; return $null }
+        return $out
+    } catch {
+        return $null
+    } finally {
+        Remove-Item $img -Force -ErrorAction SilentlyContinue
+    }
+}
+
 # ---------- memoria do Arandu (perfil + indice + itens) ----------
 # Camada de aprendizado local: tudo gravado em <raiz>\memoria\ no proprio USB.
 #   perfil.md     -> essencial do usuario (vai SEMPRE no prompt; curto)
@@ -450,6 +485,28 @@ while ($listener.IsListening) {
             continue
         }
 
+        # /ocr: POST com a imagem (bytes) no corpo -> JSON {ok, texto}. 503 se o Tesseract nao estiver instalado.
+        if ($rota -eq '/ocr') {
+            $bytes = $null
+            try {
+                $ms = New-Object System.IO.MemoryStream
+                $req.InputStream.CopyTo($ms)
+                $bytes = $ms.ToArray(); $ms.Close()
+            } catch {}
+            $texto = Ocr-Imagem $bytes ([string]$req.QueryString['lang'])
+            if ($null -ne $texto) {
+                $jb = [System.Text.Encoding]::UTF8.GetBytes(([pscustomobject]@{ ok = $true; texto = $texto } | ConvertTo-Json -Depth 4))
+            } else {
+                $res.StatusCode = 503
+                $jb = [System.Text.Encoding]::UTF8.GetBytes(([pscustomobject]@{ ok = $false; erro = 'OCR indisponivel - instale o Tesseract em ferramentas\tesseract\ (tesseract.exe + tessdata)' } | ConvertTo-Json))
+            }
+            $res.ContentType = 'application/json; charset=utf-8'
+            $res.ContentLength64 = $jb.Length
+            $res.OutputStream.Write($jb, 0, $jb.Length)
+            $res.Close()
+            continue
+        }
+
         # /memoria*: perfil + indice + itens (GET le, POST grava). Sempre JSON.
         if ($rota -like '/memoria*') {
             $corpo = ''
@@ -506,7 +563,7 @@ while ($listener.IsListening) {
             '/ping'    { $obj = [pscustomobject]@{ ok = $true; servico = 'arandu-saude'; porta = $PORTA } }
             default    {
                 $res.StatusCode = 404
-                $obj = [pscustomobject]@{ erro = 'rota desconhecida'; rotas = @('/saude','/limpeza','/agenda','/email','/falar','/memoria','/memoria/item','/memoria/perfil','/memoria/remover','/ping') }
+                $obj = [pscustomobject]@{ erro = 'rota desconhecida'; rotas = @('/saude','/limpeza','/agenda','/email','/falar','/ocr','/memoria','/memoria/item','/memoria/perfil','/memoria/remover','/ping') }
             }
         }
 

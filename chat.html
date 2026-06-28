@@ -243,8 +243,8 @@
              ondrop="memDrop(event)">
           <svg viewBox="0 0 24 24" width="22" height="22" style="vertical-align:-4px;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5-5 5 5"/><path d="M12 5v12"/></svg>
           <b>Enviar documento</b> — arraste aqui ou clique
-          <div class="desc" style="margin-top:4px">.pdf (com texto), .txt, .md, .csv, .json, .log — fica gravado no USB e é consultado por trecho relevante. (PDF escaneado/imagem: OCR ainda não; Word: cole o texto.)</div>
-          <input type="file" id="mem-file" multiple accept=".pdf,.txt,.md,.markdown,.csv,.tsv,.json,.log,.text,application/pdf,text/plain" style="display:none" onchange="memUploadArquivos(this.files);this.value=''">
+          <div class="desc" style="margin-top:4px">.pdf, imagens (.png/.jpg) com OCR, .txt, .md, .csv, .json, .log — fica gravado no USB e é consultado por trecho relevante. (Imagem/PDF escaneado: precisa do Tesseract em ferramentas\tesseract. Word: cole o texto.)</div>
+          <input type="file" id="mem-file" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.bmp,.tif,.tiff,.txt,.md,.markdown,.csv,.tsv,.json,.log,.text,application/pdf,image/*,text/plain" style="display:none" onchange="memUploadArquivos(this.files);this.value=''">
         </div>
         <div class="desc" id="mem-upload-prog" style="margin:-4px 0 12px"></div>
 
@@ -1211,6 +1211,37 @@ async function memExtrairPDF(file){
   try{ await pdf.destroy(); }catch(e){}
   return partes.join("\n\n");
 }
+// OCR de imagem: envia os bytes ao ajudante 8099 (Tesseract). 503 = ferramenta ausente.
+async function memOCRImagem(file,lang){
+  let r;
+  try{ r=await fetch(MEM_URL+"/ocr"+(lang?("?lang="+encodeURIComponent(lang)):""),{method:'POST',headers:{'Content-Type':file.type||'application/octet-stream'},body:file}); }
+  catch(e){ throw new Error("ocr-indisponivel"); }   // ajudante offline
+  if(r.status===503) throw new Error("ocr-indisponivel");
+  if(!r.ok) throw new Error("ocr-http-"+r.status);
+  const j=await r.json();
+  if(j&&j.ok) return (j.texto||"").trim();
+  throw new Error("ocr-falhou");
+}
+// OCR de PDF escaneado: renderiza cada página (pdf.js) e manda a imagem pro OCR.
+async function memOCRPDF(file){
+  if(!(await memCarregarPDFLib())) throw new Error("pdf.js indisponível");
+  const buf=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:buf,isEvalSupported:false}).promise;
+  const n=Math.min(pdf.numPages,20);   // teto p/ não travar a CPU
+  const partes=[];
+  try{
+    for(let p=1;p<=n;p++){
+      const page=await pdf.getPage(p);
+      let escala=2; const base=page.getViewport({scale:1}); if(base.width*escala>2200) escala=2200/base.width;
+      const vp=page.getViewport({scale:escala});
+      const canvas=document.createElement('canvas'); canvas.width=Math.ceil(vp.width); canvas.height=Math.ceil(vp.height);
+      await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+      const blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
+      partes.push(await memOCRImagem(new File([blob],"pag.png",{type:"image/png"})));
+    }
+  } finally { try{ await pdf.destroy(); }catch(e){} }
+  return partes.join("\n\n");
+}
 async function memUploadArquivos(files){
   files=[...(files||[])]; if(!files.length) return;
   const prog=document.getElementById('mem-upload-prog');
@@ -1218,11 +1249,21 @@ async function memUploadArquivos(files){
   for(let i=0;i<files.length;i++){
     const f=files[i];
     prog.textContent="Processando "+(i+1)+"/"+files.length+": "+f.name+"…";
-    if(/\.(docx?|xlsx?|pptx?|odt|rtf|png|jpe?g|gif|zip|epub)$/i.test(f.name)){ falhas.push(f.name+" (formato não suportado ainda)"); continue; }
+    if(/\.(docx?|xlsx?|pptx?|odt|rtf|zip|epub)$/i.test(f.name)){ falhas.push(f.name+" (formato não suportado ainda)"); continue; }
     let texto="";
-    if(/\.pdf$/i.test(f.name)){
+    const semOCR=' (OCR indisponível — instale o Tesseract em ferramentas\\tesseract)';
+    if(/\.(png|jpe?g|jpe|webp|bmp|tiff?|gif)$/i.test(f.name)){
+      try{ texto=await memOCRImagem(f); }
+      catch(e){ falhas.push(f.name+((e&&e.message==='ocr-indisponivel')?semOCR:' (falha no OCR)')); continue; }
+      if(texto.replace(/\s+/g,"").length<2){ falhas.push(f.name+" (OCR não encontrou texto)"); continue; }
+    } else if(/\.pdf$/i.test(f.name)){
       try{ texto=await memExtrairPDF(f); }catch(e){ falhas.push(f.name+" (falha ao ler PDF: "+(e.message||"")+")"); continue; }
-      if(texto.replace(/\s+/g,"").length<20){ falhas.push(f.name+" (PDF sem texto extraível — parece escaneado; OCR ainda não)"); continue; }
+      if(texto.replace(/\s+/g,"").length<20){
+        // PDF sem texto -> provavelmente escaneado: tenta OCR renderizando as páginas
+        try{ texto=await memOCRPDF(f); }
+        catch(e){ falhas.push(f.name+((e&&e.message==='ocr-indisponivel')?(' (PDF escaneado;'+semOCR.slice(1)):' (PDF escaneado; falha no OCR)')); continue; }
+        if(texto.replace(/\s+/g,"").length<2){ falhas.push(f.name+" (PDF escaneado; OCR não encontrou texto)"); continue; }
+      }
     } else {
       try{ texto=await f.text(); }catch(e){ falhas.push(f.name+" (erro de leitura)"); continue; }
     }

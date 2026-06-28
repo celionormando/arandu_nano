@@ -131,16 +131,19 @@ entra quando é solicitado e sai depois, liberando espaço.
   detalhe no system. Painel "Memória" (sidebar/topo) p/ ver/editar perfil e itens.
 - Aprendizado automático barato (sem 2ª passada do modelo): captura comandos do usuário
   ("meu nome é...", "lembre-se que...", "anote que...") e grava na hora.
-- Upload de DOCUMENTOS (no painel Memória): arrastar/escolher .pdf/.txt/.md/.csv/.json/.log ->
+- Upload de DOCUMENTOS (no painel Memória): arrastar/escolher .pdf, imagens, .txt/.md/.csv/.json/.log ->
   vira item tipo "D" no USB. O texto fica fora do prompt; na pergunta, hidrata SÓ o trecho
   relevante (`memTrechoRelevante` quebra em blocos e escolhe os que casam, cabe no orçamento).
   Palavras-chave do doc (até 40, `memPalavrasChave`) são só p/ roteamento -> não custam tokens.
   Limite ~120k chars.
 - PDF digital: extraído com **pdf.js** (empacotado em `vendor/pdfjs\`, ~1,5 MB), carregado SÓ
   quando chega um PDF (não pesa no boot). Worker pré-carregado como global -> roda na thread
-  principal quando o navegador bloqueia Web Worker (caso do file://). PDF escaneado/imagem cai
-  no aviso "sem texto extraível" -> é o caso do OCR leve (próximo passo, ONNX no onnxruntime
-  que já vem com o Piper). Word/PDF-imagem ainda não.
+  principal quando o navegador bloqueia Web Worker (caso do file://).
+- OCR (imagens e PDF escaneado): rota `/ocr` no ajudante 8099 roda o **Tesseract** portátil
+  (ferramentas\tesseract\, baixado à parte como o Piper; idiomas via tessdata). O navegador
+  manda a imagem (PDF escaneado é rasterizado por página com o pdf.js) e recebe o texto, que
+  entra no mesmo fluxo de itens. Sem Tesseract -> 503 e aviso amigável. Descartado o
+  baidu/Unlimited-OCR (3B, 6,78 GB, exige GPU/CUDA — fere RAM/velocidade/portabilidade). Word ainda não.
   Limitação conhecida: termo MUITO raro num doc grande pode não ser roteado pelo índice de
   palavras -> é aí que o RAG por embedding (camada semântica, mais cara) complementa.
 - Camadas (custo sob as premissas de RAM/velocidade/2048): perfil+conversas = baratas e
@@ -155,7 +158,8 @@ entra quando é solicitado e sai depois, liberando espaço.
 5. [x] MARCO: 1º modelo próprio treinado e implantado — **Arandu Nano 1.0** rodando na USB
 6. [ ] Ampliar dataset e retreinar o Arandu Nano (melhorar qualidade)
 7. [x] MARCO: memória em camadas (perfil + índice + itens sob demanda) gravada no USB,
-       com aprendizado automático por comando + UPLOAD de documentos (.txt/.md/...) com
+       com aprendizado automático por comando + UPLOAD de documentos (PDF/imagem/texto):
+       pdf.js p/ PDF digital, Tesseract (rota /ocr) p/ imagem e PDF escaneado, com
        seleção de trecho relevante — testado de ponta a ponta
 
 ## Roadmap
