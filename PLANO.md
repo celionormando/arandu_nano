@@ -150,6 +150,18 @@ entra quando é solicitado e sai depois, liberando espaço.
   automáticas; fine-tune = barato em runtime (conhecimento recorrente vai p/ os pesos);
   RAG = o mais caro (2º modelo na RAM + come contexto) -> só sob demanda.
 
+## Multilíngue — IMPLEMENTADO
+- O cérebro (Qwen3) já é multilíngue: custa **zero RAM extra**, custa só ~25 tokens
+  no prompt para "trancar" o idioma. Default = **auto** (preserva comportamento atual).
+- `cfg.idioma` (auto/pt/en/es/fr/de) com seletor em Configurações; injeta `IDIOMAS[k].instr`
+  curta no system. Identidade do Arandu neutralizada ("a partir de um pendrive", sem fixar
+  o idioma; "ou equivalente em outro idioma" para "o que é o Arandu").
+- Captura automática multilíngue: regex de "meu nome é / my name is / me llamo / je
+  m'appelle / ich heisse" e "lembre-se / remember / recuerda / souviens-toi / merke dir".
+- Voz: `vozEscolhida()` prefere voz do sistema que case com o BCP-47 do idioma escolhido
+  (en-US/es-ES/fr-FR/de-DE); cai em pt-BR se não houver. Piper só tem pt-BR; outros idiomas
+  via Web Speech do SO sem peso extra no USB.
+
 ## Status
 1. [x] Motor llamafile + interface Arandu IA (chat.html, pt-BR, voz, streaming fluido)
 2. [x] Lançador 1 clique (IA_Portatil.vbs, navegador padrão) + troca de modelo (modelo.txt)
@@ -161,6 +173,8 @@ entra quando é solicitado e sai depois, liberando espaço.
        com aprendizado automático por comando + UPLOAD de documentos (PDF/imagem/texto):
        pdf.js p/ PDF digital, Tesseract (rota /ocr) p/ imagem e PDF escaneado, com
        seleção de trecho relevante — testado de ponta a ponta
+8. [x] MARCO: multilíngue (auto/pt/en/es/fr/de) — seletor em Configurações, captura
+       automática de memória nos 5 idiomas, voz do SO pelo BCP-47 do idioma escolhido
 
 ## Roadmap
 1. [x] TTS leve (Web Speech API) — falar respostas.

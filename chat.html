@@ -291,6 +291,18 @@
           <input type="checkbox" id="cfg-enter">
           <label for="cfg-enter">Enviar mensagem com Enter (Shift+Enter quebra linha)</label>
         </div>
+        <div class="field">
+          <label>Idioma das respostas</label>
+          <select id="cfg-idioma" style="width:100%;padding:9px 11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px">
+            <option value="auto">Automático — responde no idioma do usuário</option>
+            <option value="pt">Português (pt-BR)</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+          </select>
+          <div class="desc">O modelo do Arandu já fala vários idiomas (custa ~25 tokens por resposta). A voz tenta usar uma voz do sistema compatível com o idioma escolhido.</div>
+        </div>
 
         <div class="sec-title">Amostragem</div>
         <div class="field">
@@ -405,12 +417,24 @@ const LS_CFG="iaport_cfg", LS_CONV="iaport_convs";
 // Identidade fixa do Arandu — vai SEMPRE no system, independente da config do usuário,
 // do RAG ou do embedding. "Arandu" é nome próprio do projeto: nenhum modelo sabe o que é
 // sem esta injeção, então sem ela a IA inventa (fruta, app, etc.).
-const IDENTIDADE_ARANDU="Você é o Arandu, um assistente de IA de uso geral que funciona 100% local e offline, em português do Brasil, a partir de um pendrive. O Arandu NÃO é o ChatGPT, o Gemini, a Llama nem outro serviço em nuvem: é um projeto próprio e independente, executado na CPU pelo motor llamafile, sem acesso à internet. O modelo de IA ativo por baixo é o Arandu Nano 1.0. Ao perguntarem \"o que é o Arandu\" ou \"quem é você\", responda com base nesta identidade.";
+const IDENTIDADE_ARANDU="Você é o Arandu, um assistente de IA de uso geral que funciona 100% local e offline, a partir de um pendrive. O Arandu NÃO é o ChatGPT, o Gemini, a Llama nem outro serviço em nuvem: é um projeto próprio e independente, executado na CPU pelo motor llamafile, sem acesso à internet. O modelo de IA ativo por baixo é o Arandu Nano 1.0. Ao perguntarem \"o que é o Arandu\" ou \"quem é você\" (ou equivalente em outro idioma), responda com base nesta identidade.";
+// Idiomas suportados: auto = responde no idioma do usuário (preserva o comportamento padrão).
+// Códigos BCP-47 p/ a voz (Web Speech) e instrução curta p/ o modelo. Custo: ~25 tokens
+// quando explícito; 0 quando auto. O Qwen3 ja sabe varios idiomas — não pesa em RAM.
+const IDIOMAS={
+  auto:{nome:"Automático", bcp:"",      instr:"Detect the user's language and answer in that same language."},
+  pt:  {nome:"Português",  bcp:"pt-BR", instr:"Responda SEMPRE em português do Brasil, mesmo que o usuário escreva em outro idioma."},
+  en:  {nome:"English",    bcp:"en-US", instr:"Always reply in English, even if the user writes in another language."},
+  es:  {nome:"Español",    bcp:"es-ES", instr:"Responde SIEMPRE en español, aunque el usuario escriba en otro idioma."},
+  fr:  {nome:"Français",   bcp:"fr-FR", instr:"Réponds TOUJOURS en français, même si l'utilisateur écrit dans une autre langue."},
+  de:  {nome:"Deutsch",    bcp:"de-DE", instr:"Antworte IMMER auf Deutsch, auch wenn der Benutzer in einer anderen Sprache schreibt."}
+};
 const DEFAULTS={
   system:"Responda de forma clara, objetiva e prestativa.\n\nRegras importantes:\n- NÃO invente fatos, datas, números, nomes, leis ou fontes. Se não tiver certeza, diga claramente que não sabe ou que não tem certeza, em vez de preencher a lacuna com suposições.\n- Prefira respostas curtas e diretas. Não apresente palpites como se fossem fatos.\n- Se a pergunta exigir informação específica (uma lei, uma data, um dado) que você não conhece com segurança, diga isso e sugira ativar a Base de conhecimento (RAG).\n- Ao usar a Base de conhecimento, baseie-se APENAS nos trechos fornecidos e cite a fonte entre colchetes (ex.: [1]).",
   url:"http://127.0.0.1:8080", enter:true,
   temp:0.3, topp:0.9, topk:20, minp:0.05, max:512, rep:1.1, freq:0, pres:0, drymult:0.8,
   falar:false, voz:"",
+  idioma:"auto",
   ragOn:false, ragTopK:4, embedUrl:"http://127.0.0.1:8091",
   ragStrict:true, ragMinScore:0.40
 };
@@ -542,7 +566,9 @@ async function stream(c){
     for(const id of ids){ const ct=await memHidratar(id); if(ct) partes.push("["+id+"]\n"+memTrechoRelevante(ct,pergunta,1100)); }
     if(partes.length) memDetalhe="\n\n=== DETALHES RELEVANTES DA MEMÓRIA ===\n"+partes.join("\n\n");
   }catch(e){}
-  const baseSys=IDENTIDADE_ARANDU+"\n\n"+cfg.system+noThink+memStable;
+  const lang=(IDIOMAS[cfg.idioma]||IDIOMAS.auto);
+  const dirIdioma=lang.instr?("\n\n"+lang.instr):"";
+  const baseSys=IDENTIDADE_ARANDU+dirIdioma+"\n\n"+cfg.system+noThink+memStable;
   let sysContent=baseSys;
   if(cfg.ragOn){
     try{
@@ -626,6 +652,7 @@ function abrirConfig(){
   document.getElementById('cfg-system').value=cfg.system;
   document.getElementById('cfg-url').value=cfg.url;
   document.getElementById('cfg-enter').checked=cfg.enter;
+  document.getElementById('cfg-idioma').value=cfg.idioma||'auto';
   setRange('temp',cfg.temp);setRange('topp',cfg.topp);setRange('topk',cfg.topk);setRange('minp',cfg.minp);
   setRange('rep',cfg.rep);setRange('freq',cfg.freq);setRange('pres',cfg.pres);setRange('drymult',cfg.drymult);
   document.getElementById('cfg-max').value=cfg.max;
@@ -639,6 +666,7 @@ function salvarConfig(){
   cfg.system=document.getElementById('cfg-system').value;
   cfg.url=document.getElementById('cfg-url').value.trim()||DEFAULTS.url;
   cfg.enter=document.getElementById('cfg-enter').checked;
+  cfg.idioma=document.getElementById('cfg-idioma').value||'auto';
   cfg.temp=+document.getElementById('cfg-temp').value;
   cfg.topp=+document.getElementById('cfg-topp').value;
   cfg.topk=+document.getElementById('cfg-topk').value;
@@ -679,6 +707,16 @@ function carregarVozes(){
 function vozEscolhida(){
   const vozes=window.speechSynthesis.getVoices();
   if(cfg.voz){const v=vozes.find(x=>x.name===cfg.voz);if(v)return v;}
+  // se o usuario escolheu um idioma, prefere voz do sistema que case com ele
+  const lang=(IDIOMAS[cfg.idioma]||IDIOMAS.auto).bcp;
+  if(lang){
+    const cod=lang.toLowerCase().replace("_","-");
+    const pref=cod.split("-")[0];
+    const exato=vozes.find(v=>v.lang && v.lang.toLowerCase().replace("_","-")===cod);
+    if(exato) return exato;
+    const mesmaFamilia=vozes.find(v=>v.lang && v.lang.toLowerCase().startsWith(pref));
+    if(mesmaFamilia) return mesmaFamilia;
+  }
   return vozes.find(v=>/pt[-_]?br/i.test(v.lang)) || vozes.find(v=>/^pt/i.test(v.lang)) || null;
 }
 function limparParaVoz(t){
@@ -775,7 +813,8 @@ function ttsWebSpeech(texto){             // fallback: voz do sistema
   if(!('speechSynthesis' in window)) return;
   const u=new SpeechSynthesisUtterance(texto);
   const v=vozEscolhida();
-  if(v){u.voice=v;u.lang=v.lang;}else{u.lang="pt-BR";}
+  const langCfg=(IDIOMAS[cfg.idioma]||IDIOMAS.auto).bcp || "pt-BR";
+  if(v){u.voice=v;u.lang=v.lang;}else{u.lang=langCfg;}
   u.rate=1.05; u.onstart=ttsEstado; u.onend=ttsEstado;
   speechSynthesis.speak(u);
 }
@@ -1074,8 +1113,8 @@ function memIndiceTexto(maxItens){
 // Captura automática barata (sem custo de modelo): comandos explícitos de memória.
 async function memCapturar(text){
   const t=(text||"").trim(); if(t.length<4) return;
-  // 1) Nome -> perfil
-  let m=t.match(/\b(?:meu nome (?:é|eh)|me chamo|pode me chamar de)\s+([A-Za-zÀ-ÿ][\wÀ-ÿ'’-]*(?:\s+[A-Za-zÀ-ÿ][\wÀ-ÿ'’-]*){0,2})/i);
+  // 1) Nome -> perfil (pt / en / es / fr / de)
+  let m=t.match(/\b(?:meu nome (?:é|eh)|me chamo|pode me chamar de|my name is|call me|me llamo|mi nombre es|je m['’]appelle|mon nom est|ich heisse|ich heiße|mein name ist)\s+([A-Za-zÀ-ÿ][\wÀ-ÿ'’-]*(?:\s+[A-Za-zÀ-ÿ][\wÀ-ÿ'’-]*){0,2})/i);
   if(m){
     const nome=m[1].trim();
     if(nome && memNorm(MEM.perfil).indexOf(memNorm(nome))<0){
@@ -1085,7 +1124,7 @@ async function memCapturar(text){
     return;
   }
   // 2) "lembre-se/anote/memorize/guarde (que/de) ..."
-  m=t.match(/\b(?:lembre-se|lembre|anote|memorize|memoriza|guarde|grave)\s+(?:que\s+|de\s+|disso:\s*|isso:\s*)?(.{4,})/i);
+  m=t.match(/\b(?:lembre-se|lembre|anote|memorize|memoriza|guarde|grave|remember|note|please remember|recuerda|recuérdate|anota|apunta|memoriza|souviens-toi|note bien|merke dir|merk dir|notiere)\s+(?:que\s+|de\s+|disso:\s*|isso:\s*|that\s+|of\s+|de\s+|que\s+|dass\s+|:\s*)?(.{4,})/i);
   if(m){
     let fato=m[1].trim().replace(/^["“']|["”']$/g,"").trim();
     if(fato.length<4) return;

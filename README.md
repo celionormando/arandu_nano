@@ -30,6 +30,7 @@
 - 🔌 **Clica e roda** — baixe, extraia e dê um clique; cabe num pendrive
 - 📚 **Base de conhecimento offline (RAG)** — responde a partir dos *seus* documentos, sem inventar
 - 🗣️ **Voz (TTS)** — voz do sistema ou **voz neural pt-BR offline** (Piper) para soar mais natural; histórico e streaming
+- 🌐 **Multilíngue** — automático (responde no idioma do usuário) ou fixo: pt-BR, en, es, fr, de
 - 🩺 **Assistente do sistema** — vê a saúde do PC (RAM/disco/CPU), sugere arquivos para limpar e, no Windows, lê agenda e e-mails do Outlook local — tudo offline
 - 💸 **Livre e aberto** (Apache-2.0)
 
