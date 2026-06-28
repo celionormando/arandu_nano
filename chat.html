@@ -564,7 +564,7 @@ async function stream(c){
   try{
     const ids=memRotear(pergunta,2); const partes=[];
     for(const id of ids){ const ct=await memHidratar(id); if(ct) partes.push("["+id+"]\n"+memTrechoRelevante(ct,pergunta,1100)); }
-    if(partes.length) memDetalhe="\n\n=== DETALHES RELEVANTES DA MEMÓRIA ===\n"+partes.join("\n\n");
+    if(partes.length) memDetalhe="\n\n=== MEMÓRIA DO USUÁRIO (use estes trechos como fonte ao responder) ===\nOs trechos abaixo vieram de documentos/anotações que o usuário salvou na memória do Arandu (no pendrive). TRATE como informação CONFIÁVEL fornecida pelo usuário: responda a pergunta usando estes trechos, cite a fonte entre colchetes (ex.: [D001]). Se o trecho não cobrir todos os detalhes pedidos, responda o que ele cobre e diga o que ficou de fora.\n\n"+partes.join("\n\n");
   }catch(e){}
   const lang=(IDIOMAS[cfg.idioma]||IDIOMAS.auto);
   const dirIdioma=lang.instr?("\n\n"+lang.instr):"";
@@ -1206,8 +1206,23 @@ function memTrechoRelevante(texto,pergunta,maxChars){
   if(texto.length<=maxChars) return texto;
   const blocos=memChunks(texto,Math.max(400,Math.floor(maxChars*0.6)));
   const toks=[...new Set(memNorm(pergunta).split(/[^a-z0-9]+/).filter(w=>w.length>=4))];
-  const scored=blocos.map((b,i)=>{ const bn=memNorm(b); let s=0; toks.forEach(t=>{ if(bn.indexOf(t)>=0) s++; }); return {b,i,s}; });
-  if(!scored.some(x=>x.s>0)) return texto.slice(0,maxChars)+" …";
+  // peso TF-IDF leve: termo raro vale mais que termo onipresente; assim "qual a multa" prioriza
+  // o bloco que fala de multa, mas "o que é falência" num doc todo de falência -> blocos quase
+  // empatados -> cai no desempate por posição (intro primeiro), que costuma explicar o tema.
+  const df={}; toks.forEach(t=>{ df[t]=blocos.filter(b=>memNorm(b).indexOf(t)>=0).length; });
+  const scored=blocos.map((b,i)=>{ const bn=memNorm(b); let s=0;
+    toks.forEach(t=>{ if(bn.indexOf(t)>=0){ const peso=1/(1+(df[t]||0)/Math.max(1,blocos.length)); s+=peso; } });
+    return {b,i,s};
+  });
+  // pergunta GENÉRICA: se mais de 70% dos blocos têm algum match das palavras da pergunta,
+  // a pergunta provavelmente é "o que é X" num doc todo sobre X -> qualquer trecho serve por
+  // similaridade, mas a INTRODUÇÃO costuma ser a parte mais explicativa do tema.
+  const casam=scored.filter(x=>x.s>0).length;
+  if(!scored.some(x=>x.s>0) || casam/blocos.length>0.70){
+    const out=[]; let len=0;
+    for(const b of blocos){ if(len+b.length+2>maxChars){ if(!out.length) out.push(b.slice(0,maxChars)); break; } out.push(b); len+=b.length+2; }
+    return out.join("\n\n") || (texto.slice(0,maxChars)+" …");
+  }
   scored.sort((a,b)=> b.s-a.s || a.i-b.i);
   const esc=[]; let len=0;
   for(const x of scored){ if(x.s===0) break; if(len+x.b.length+2>maxChars){ if(!esc.length) esc.push({b:x.b.slice(0,maxChars),i:x.i}); break; } esc.push(x); len+=x.b.length+2; }
