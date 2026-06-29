@@ -66,6 +66,12 @@
   .bubble ul,.bubble ol{margin:6px 0;padding-left:22px}
   .bubble h1,.bubble h2,.bubble h3{margin:14px 0 6px;line-height:1.3}
   .bubble a{color:var(--accent)}
+  .bubble details.pensador{margin:6px 0 10px;border-left:2px solid var(--border);padding:2px 0 2px 10px;font-size:13px;color:var(--muted)}
+  .bubble details.pensador summary{cursor:pointer;color:var(--accent);font-weight:600;padding:3px 0;list-style:none;user-select:none}
+  .bubble details.pensador summary::-webkit-details-marker{display:none}
+  .bubble details.pensador summary::before{content:"▸ ";color:var(--muted);font-weight:normal}
+  .bubble details.pensador[open] summary::before{content:"▾ "}
+  .bubble details.pensador div{padding:6px 0 2px;line-height:1.5;white-space:pre-wrap}
   .bubble table{border-collapse:collapse;margin:8px 0}
   .bubble th,.bubble td{border:1px solid var(--border);padding:6px 10px}
   .empty{text-align:center;color:var(--muted);margin-top:16vh}
@@ -291,6 +297,10 @@
           <input type="checkbox" id="cfg-enter">
           <label for="cfg-enter">Enviar mensagem com Enter (Shift+Enter quebra linha)</label>
         </div>
+        <div class="field check">
+          <input type="checkbox" id="cfg-pensador">
+          <label for="cfg-pensador">Modo pensador — mostra o raciocínio do Arandu num bloco "💭 Pensamento" colapsável <small style="color:var(--muted)">(deixa as respostas bem mais lentas na CPU)</small></label>
+        </div>
         <div class="field">
           <label>Idioma das respostas</label>
           <select id="cfg-idioma" style="width:100%;padding:9px 11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px">
@@ -435,14 +445,40 @@ const DEFAULTS={
   temp:0.3, topp:0.9, topk:20, minp:0.05, max:512, rep:1.1, freq:0, pres:0, drymult:0.8,
   falar:false, voz:"",
   idioma:"auto",
+  pensador:false,   // false = injeta /no_think no Qwen3 (rápido); true = modelo pensa antes (mais lento, mostra <think> num colapsável)
   ragOn:false, ragTopK:4, embedUrl:"http://127.0.0.1:8091",
   ragStrict:true, ragMinScore:0.40
 };
+// Frases de "pensando" enquanto a primeira palavra não chega. Arandu = sabedoria (tupi-guarani);
+// imagens poéticas de escuta/natureza + algumas confissões técnicas honestas.
+const HINTS=[
+  "Arandu está filosofando…",
+  "Ouvindo o conselho dos antigos…",
+  "Tecendo a resposta no tear da memória…",
+  "Lendo o vento das ideias…",
+  "Acendendo a fogueira do pensamento…",
+  "Caminhando devagar na trilha das palavras…",
+  "Costurando ideias com fibras de tucum…",
+  "Olhando o céu pra ver o que faz sentido…",
+  "Voltando da floresta com a resposta…",
+  "Consultando o silêncio entre as palavras…",
+  "Esperando o pensamento decantar…",
+  "Pisando leve nas ideias…",
+  "Decifrando o desenho da pergunta…",
+  "Soprando vida na resposta…",
+  "Pensando offline, na CPU mesmo…",
+  "Procurando a resposta no pendrive…",
+  "Cabe num USB, mas pensa com calma…",
+  "Mastigando a pergunta…",
+  "Pequeno, mas tentando ajudar…"
+];
+function pickHint(){ return HINTS[Math.floor(Math.random()*HINTS.length)]; }
 let cfg=Object.assign(structuredClone(DEFAULTS), load(LS_CFG,{}));  // mescla p/ ter chaves novas
 let convs=load(LS_CONV,[]);
 let currentId=null;
 let abortCtl=null;
 let streamEl=null, streamRaf=false, streamTexto="";   // streaming otimizado
+let streamHint="", streamHintTimer=null;               // frases enquanto espera o 1o token / dentro de <think>
 
 function load(k,def){try{const v=JSON.parse(localStorage.getItem(k));return v??structuredClone(def);}catch(e){return structuredClone(def);}}
 function save(){localStorage.setItem(LS_CFG,JSON.stringify(cfg));localStorage.setItem(LS_CONV,JSON.stringify(convs));}
@@ -452,7 +488,10 @@ function cur(){return convs.find(c=>c.id===currentId);}
 /* ============ Markdown mínimo (offline) ============ */
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function md(src){
-  src=src.replace(/<think>[\s\S]*?<\/think>/gi,"").trim();  // remove raciocinio do Qwen3, se houver
+  // <think>...</think> do Qwen3: vira um colapsável (cfg.pensador) ou some (default).
+  // Sentinela ARANDU_THINK_X_END (sem null byte: o sentinel \0 de cima é p/ code blocks).
+  const pensamentos=[];
+  src=src.replace(/<think>([\s\S]*?)<\/think>/gi,(m,p)=>{ pensamentos.push(p.trim()); return cfg.pensador?("@@ARANDUTHINK"+(pensamentos.length-1)+"END@@"):""; }).trim();
   src=src.replace(/\r\n/g,"\n");
   const blocks=[];
   src=src.replace(/```(\w*)\n?([\s\S]*?)```/g,(m,lang,code)=>{
@@ -477,6 +516,11 @@ function md(src){
     if(/^<(ul|ol|pre|h\d|table)/.test(p))return p;
     return '<p>'+p.replace(/\n/g,'<br>')+'</p>';
   }).join('\n');
+  // Reinjeta o pensamento como <details> (só aparece quando cfg.pensador está ligado).
+  src=src.replace(/@@ARANDUTHINK(\d+)END@@/g,(m,i)=>{
+    const p=pensamentos[+i]||""; if(!p) return "";
+    return '<details class="pensador"><summary>💭 Pensamento</summary><div>'+esc(p).replace(/\n/g,'<br>')+'</div></details>';
+  });
   src=src.replace(/ (\d+) /g,(m,i)=>blocks[+i]);
   return src;
 }
@@ -549,7 +593,8 @@ async function stream(c){
   const idx=c.messages.length-1;
   // RAG: se ativo, busca trechos relevantes e injeta na mensagem do sistema
   // Qwen3 tem "modo pensamento" que custa velocidade na CPU; desliga com /no_think (so p/ Qwen).
-  const noThink=/qwen3/i.test(modeloArquivo)?" /no_think":"";
+  // /no_think instrui o Qwen3 a NÃO pensar -> rápido na CPU. Modo pensador desliga isso.
+  const noThink=(/qwen3/i.test(modeloArquivo) && !cfg.pensador)?" /no_think":"";
   const pergunta=c.messages[idx-1]?.content||"";
   // ---- Memória: perfil (essencial) + índice vão SEMPRE; detalhe SOB DEMANDA ----
   let memStable="";
@@ -600,6 +645,7 @@ async function stream(c){
   };
   setStop(true);abortCtl=new AbortController();if(cfg.falar) ttsStart();
   streamEl=document.querySelectorAll('.bubble')[idx];   // referencia fixa (sem requerys por token)
+  iniciarHint();   // mostra "Arandu está filosofando..." enquanto não chega o 1º token
   let aborted=false;
   try{
     const r=await fetch(cfg.url.replace(/\/$/,'')+"/v1/chat/completions",{
@@ -622,6 +668,7 @@ async function stream(c){
     if(e.name==='AbortError'){aborted=true;}
     else c.messages[idx].content+=(c.messages[idx].content?"\n\n":"")+"Erro: "+e.message+"\n\n(O servidor está rodando? Inicie o iniciar.bat.)";
   }finally{
+    pararHint();
     abortCtl=null;streamEl=null;setStop(false);save();renderChat();
     if(cfg.falar){ if(aborted) ttsStop(); else ttsFlush(); }
   }
@@ -635,10 +682,34 @@ function agendarRender(texto){
   requestAnimationFrame(()=>{
     streamRaf=false;
     if(streamEl){
-      streamEl.textContent=streamTexto+" ▌";
+      let visivel;
+      if(!streamTexto){
+        visivel=streamHint+" 💭";          // ainda não chegou o 1º token
+      } else if(streamTexto.startsWith("<think>")){
+        const fim=streamTexto.indexOf("</think>");
+        if(fim<0) visivel=streamHint+" 💭";  // modelo pensando (cfg.pensador on)
+        else visivel=streamTexto.slice(fim+8).trim()+" ▌";   // já saiu do <think>
+      } else {
+        visivel=streamTexto+" ▌";
+      }
+      streamEl.textContent=visivel;
       const ch=document.getElementById('chat');ch.scrollTop=ch.scrollHeight;
     }
   });
+}
+function iniciarHint(){
+  streamHint=pickHint();
+  // escreve direto (sem esperar rAF) p/ a hint aparecer instantaneamente mesmo
+  // se a aba estiver em background e o requestAnimationFrame estiver throttled.
+  if(streamEl) streamEl.textContent=streamHint+" 💭";
+  streamHintTimer=setInterval(()=>{
+    if(!streamEl) return pararHint();
+    streamHint=pickHint();
+    if(!streamTexto || streamTexto.startsWith("<think>")) streamEl.textContent=streamHint+" 💭";
+  }, 2200);
+}
+function pararHint(){
+  if(streamHintTimer){ clearInterval(streamHintTimer); streamHintTimer=null; }
 }
 function setStop(on){
   const b=document.getElementById('sendBtn');b.classList.toggle('stop',on);
@@ -652,6 +723,7 @@ function abrirConfig(){
   document.getElementById('cfg-system').value=cfg.system;
   document.getElementById('cfg-url').value=cfg.url;
   document.getElementById('cfg-enter').checked=cfg.enter;
+  document.getElementById('cfg-pensador').checked=!!cfg.pensador;
   document.getElementById('cfg-idioma').value=cfg.idioma||'auto';
   setRange('temp',cfg.temp);setRange('topp',cfg.topp);setRange('topk',cfg.topk);setRange('minp',cfg.minp);
   setRange('rep',cfg.rep);setRange('freq',cfg.freq);setRange('pres',cfg.pres);setRange('drymult',cfg.drymult);
@@ -666,6 +738,7 @@ function salvarConfig(){
   cfg.system=document.getElementById('cfg-system').value;
   cfg.url=document.getElementById('cfg-url').value.trim()||DEFAULTS.url;
   cfg.enter=document.getElementById('cfg-enter').checked;
+  cfg.pensador=document.getElementById('cfg-pensador').checked;
   cfg.idioma=document.getElementById('cfg-idioma').value||'auto';
   cfg.temp=+document.getElementById('cfg-temp').value;
   cfg.topp=+document.getElementById('cfg-topp').value;
