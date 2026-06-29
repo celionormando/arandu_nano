@@ -496,8 +496,8 @@ const FIX_PT={
   'aplicación':'aplicação','condición':'condição','obligación':'obrigação','elección':'eleição',
   'recuperación':'recuperação','administración':'administração','autorización':'autorização',
   'también':'também','según':'segundo','después':'depois','años':'anos','día':'dia','años':'anos',
-  // francês -> português
-  'après':'após','aussi':'também','mais':'mas','très':'muito','même':'mesmo','où':'onde',
+  // francês -> português  (NÃO incluir 'mais' nem 'mas': são pt-BR válidos!)
+  'après':'após','aussi':'também','très':'muito','même':'mesmo','où':'onde',
   // italiano comum
   'però':'porém','così':'assim'
 };
@@ -525,6 +525,12 @@ function md(src){
   //  - palavras em outros idiomas latinos que vazam no pt-BR (code-switching do Qwen3-1.7B)
   src=src.replace(/([a-zà-ÿ]{2,})([A-ZÀ-Ÿ]{3,})([a-zà-ÿ]*)/g,(m,a,b,c)=>a+b.toLowerCase()+c);
   src=corrigirIdiomaPT(src);
+  // Remove citações [D001] / [M001] etc. que o modelo às vezes vaza na resposta
+  // (o usuário não precisa ver IDs internos). Trata inline e linha sozinha.
+  src=src.replace(/^[ \t]*\[\s*[DM]\d{1,6}\s*\][ \t]*$\n?/gm,"");   // linha só com o ID -> some
+  src=src.replace(/\s*\[\s*[DM]\d{1,6}\s*\]\s*/g," ");              // inline -> espaço
+  // limpa pontuação órfã que ficou após remoção: "(  )", "  ,", "  ." etc.
+  src=src.replace(/\(\s*\)/g,"").replace(/\s+([,.;:!?])/g,"$1").replace(/[ \t]{2,}/g," ");
   src=src.replace(/\r\n/g,"\n");
   const blocks=[];
   src=src.replace(/```(\w*)\n?([\s\S]*?)```/g,(m,lang,code)=>{
@@ -642,7 +648,7 @@ async function stream(c){
   try{
     const ids=memRotear(pergunta,2); const partes=[];
     for(const id of ids){ const ct=await memHidratar(id); if(ct) partes.push("["+id+"]\n"+memTrechoRelevante(ct,pergunta,1100)); }
-    if(partes.length) memDetalhe="\n\n=== MEMÓRIA DO USUÁRIO (use estes trechos como fonte ao responder) ===\nOs trechos abaixo vieram de documentos/anotações que o usuário salvou na memória do Arandu (no pendrive). TRATE como informação CONFIÁVEL fornecida pelo usuário: responda a pergunta usando estes trechos, cite a fonte entre colchetes (ex.: [D001]). Se o trecho não cobrir todos os detalhes pedidos, responda o que ele cobre e diga o que ficou de fora.\n\n"+partes.join("\n\n");
+    if(partes.length) memDetalhe="\n\n=== MEMÓRIA DO USUÁRIO (use estes trechos como fonte ao responder) ===\nOs trechos abaixo vieram de documentos/anotações que o usuário salvou na memória do Arandu (no pendrive). TRATE como informação CONFIÁVEL fornecida pelo usuário: responda a pergunta usando estes trechos. NÃO escreva códigos como [D001] ou [M001] na resposta — o usuário não precisa ver isso. Se o trecho não cobrir todos os detalhes pedidos, responda o que ele cobre e diga o que ficou de fora.\n\n"+partes.join("\n\n");
   }catch(e){}
   const lang=(IDIOMAS[cfg.idioma]||IDIOMAS.auto);
   const dirIdioma=lang.instr?("\n\n"+lang.instr):"";
