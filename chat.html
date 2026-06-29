@@ -432,8 +432,8 @@ const IDENTIDADE_ARANDU="Você é o Arandu, um assistente de IA de uso geral que
 // Códigos BCP-47 p/ a voz (Web Speech) e instrução curta p/ o modelo. Custo: ~25 tokens
 // quando explícito; 0 quando auto. O Qwen3 ja sabe varios idiomas — não pesa em RAM.
 const IDIOMAS={
-  auto:{nome:"Automático", bcp:"",      instr:"Detect the user's language and answer in that same language."},
-  pt:  {nome:"Português",  bcp:"pt-BR", instr:"Responda SEMPRE em português do Brasil, mesmo que o usuário escreva em outro idioma."},
+  auto:{nome:"Automático", bcp:"",      instr:"Detect the user's language and answer ONLY in that exact language — never mix words from other languages (no Spanish, French or English words sneaking into a Portuguese answer)."},
+  pt:  {nome:"Português",  bcp:"pt-BR", instr:"Responda SEMPRE em português do Brasil, sem misturar palavras de outros idiomas (nada de espanhol, francês ou inglês na resposta). Use APENAS palavras do português."},
   en:  {nome:"English",    bcp:"en-US", instr:"Always reply in English, even if the user writes in another language."},
   es:  {nome:"Español",    bcp:"es-ES", instr:"Responde SIEMPRE en español, aunque el usuario escriba en otro idioma."},
   fr:  {nome:"Français",   bcp:"fr-FR", instr:"Réponds TOUJOURS en français, même si l'utilisateur écrit dans une autre langue."},
@@ -487,11 +487,44 @@ function cur(){return convs.find(c=>c.id===currentId);}
 
 /* ============ Markdown mínimo (offline) ============ */
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+// Corrige tokens em ES/FR que vazam no meio do pt-BR (code-switching do Qwen3-1.7B).
+// Conservador: só substitui palavras-inteiras (\b) e só quando o idioma escolhido é pt ou auto.
+// Lista pequena de propósito — só os erros confirmados/recorrentes; aumenta com o uso real.
+const FIX_PT={
+  // espanhol -> português
+  'habilitación':'habilitação','información':'informação','operación':'operação','situación':'situação',
+  'aplicación':'aplicação','condición':'condição','obligación':'obrigação','elección':'eleição',
+  'recuperación':'recuperação','administración':'administração','autorización':'autorização',
+  'también':'também','según':'segundo','después':'depois','años':'anos','día':'dia','años':'anos',
+  // francês -> português
+  'après':'após','aussi':'também','mais':'mas','très':'muito','même':'mesmo','où':'onde',
+  // italiano comum
+  'però':'porém','così':'assim'
+};
+function corrigirIdiomaPT(texto){
+  const idi=cfg.idioma||'auto';
+  if(idi!=='pt' && idi!=='auto') return texto;
+  return texto.replace(/[A-Za-zÀ-ÿ'’]+/g,p=>{
+    const k=p.toLowerCase().replace(/’/g,"'");
+    const r=FIX_PT[k];
+    if(!r) return p;
+    // preserva caixa do original: 1ª maiúscula -> capitaliza; tudo maiúsculo -> mantém
+    if(/^[A-ZÀ-Ÿ]+$/.test(p)) return r.toUpperCase();
+    if(/^[A-ZÀ-Ÿ]/.test(p)) return r.charAt(0).toUpperCase()+r.slice(1);
+    return r;
+  });
+}
 function md(src){
   // <think>...</think> do Qwen3: vira um colapsável (cfg.pensador) ou some (default).
   // Sentinela ARANDU_THINK_X_END (sem null byte: o sentinel \0 de cima é p/ code blocks).
   const pensamentos=[];
   src=src.replace(/<think>([\s\S]*?)<\/think>/gi,(m,p)=>{ pensamentos.push(p.trim()); return cfg.pensador?("@@ARANDUTHINK"+(pensamentos.length-1)+"END@@"):""; }).trim();
+  // Limpeza de tokens "ruins" do modelo pequeno em pt-BR (NÃO afeta siglas legítimas):
+  //  - "edITAL", "vencIDO" -> exige 2+ minúsculas SEGUIDAS de 3+ maiúsculas -> tudo minúsculo
+  //    (escapa "macOS"=só 2 maiús; "iPhone"=só 1 minús; "HTML"=sem minús antes)
+  //  - palavras em outros idiomas latinos que vazam no pt-BR (code-switching do Qwen3-1.7B)
+  src=src.replace(/([a-zà-ÿ]{2,})([A-ZÀ-Ÿ]{3,})([a-zà-ÿ]*)/g,(m,a,b,c)=>a+b.toLowerCase()+c);
+  src=corrigirIdiomaPT(src);
   src=src.replace(/\r\n/g,"\n");
   const blocks=[];
   src=src.replace(/```(\w*)\n?([\s\S]*?)```/g,(m,lang,code)=>{
@@ -792,10 +825,17 @@ function vozEscolhida(){
   }
   return vozes.find(v=>/pt[-_]?br/i.test(v.lang)) || vozes.find(v=>/^pt/i.test(v.lang)) || null;
 }
+// Pronúncia em pt-BR de letras isoladas — o Piper lê "D." como "quê" (caos) se a letra
+// for cuspida solta. Trocar por "dê," faz a voz pronunciar o nome correto da letra.
+const PRON_LETRA_PT={A:'á',B:'bê',C:'cê',D:'dê',E:'é',F:'éfe',G:'gê',H:'agá',I:'i',J:'jota',K:'cá',L:'éle',M:'ême',N:'êne',O:'ó',P:'pê',Q:'quê',R:'érre',S:'ésse',T:'tê',U:'u',V:'vê',W:'dáblio',X:'xis',Y:'ípsilon',Z:'zê'};
 function limparParaVoz(t){
-  return t.replace(/```[\s\S]*?```/g,". (bloco de código). ")
-          .replace(/[*_`#>]/g,"").replace(/\[(.*?)\]\(.*?\)/g,"$1")
-          .replace(/\s+/g," ").trim();
+  t = t.replace(/```[\s\S]*?```/g,". (bloco de código). ")
+       .replace(/[*_`#>]/g,"").replace(/\[(.*?)\]\(.*?\)/g,"$1");
+  // letra isolada + ponto (alternativa "A.", "B." etc.) -> "á,", "bê,", ... só quando idioma é pt
+  if((cfg.idioma||'auto')==='pt' || (cfg.idioma||'auto')==='auto'){
+    t = t.replace(/(^|\n|[\s(\[])([A-Z])\.(\s|$)/g,(m,pre,l,pos)=>pre+(PRON_LETRA_PT[l]||l)+","+(pos||" "));
+  }
+  return t.replace(/\s+/g," ").trim();
 }
 /* ===== Voz natural (Piper) — fala SINCRONIZADA, sentenca a sentenca ===== */
 const VOZ_URL="http://127.0.0.1:8099/falar";
