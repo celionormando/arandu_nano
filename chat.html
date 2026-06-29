@@ -837,6 +837,9 @@ const PRON_LETRA_PT={A:'á',B:'bê',C:'cê',D:'dê',E:'é',F:'éfe',G:'gê',H:'a
 function limparParaVoz(t){
   t = t.replace(/```[\s\S]*?```/g,". (bloco de código). ")
        .replace(/[*_`#>]/g,"").replace(/\[(.*?)\]\(.*?\)/g,"$1");
+  // IDs da memoria ([D001]/[M001]) vazam aqui em texto cru — remover para o Piper nao tentar pronunciar
+  t = t.replace(/\s*\[\s*[DM]\d{1,6}\s*\]\s*/g," ")
+       .replace(/\(\s*\)/g,"").replace(/\s+([,.;:!?])/g,"$1");
   // letra isolada + ponto (alternativa "A.", "B." etc.) -> "á,", "bê,", ... só quando idioma é pt
   if((cfg.idioma||'auto')==='pt' || (cfg.idioma||'auto')==='auto'){
     t = t.replace(/(^|\n|[\s(\[])([A-Z])\.(\s|$)/g,(m,pre,l,pos)=>pre+(PRON_LETRA_PT[l]||l)+","+(pos||" "));
@@ -870,16 +873,24 @@ function ttsFeed(delta){
   ttsBuf += delta;
   const ABREV=/(^|\s)(sr|sra|srta|dr|dra|prof|profa|exmo|exma|sto|sta|ltda|av|pe|fl|art)\.$/i;
   const re=/([.!?…]+["')\]]?\s)|([;]\s)|(\n+)/g;   // fim de frase (nao parte 3.5 / 10:30)
-  let last=0, m;
+  // AGRUPA sentencas ate ~80 chars antes de enfileirar — Piper soa melhor e mais rapido em
+  // lotes medios do que em rajadas de sentencas curtas (cada chamada e' um spawn novo).
+  let inicio=0, m;
   while((m=re.exec(ttsBuf))!==null){
+    if(m[1] && m[1].trim()==='.' && ABREV.test(ttsBuf.slice(inicio, m.index+1))) continue;
     const fim=m.index+m[0].length;
-    if(m[1] && m[1].trim()==='.' && ABREV.test(ttsBuf.slice(last, m.index+1))) continue;  // nao corta em Dr./Sr.
-    const sent=ttsBuf.slice(last, fim).trim();
-    if(sent) ttsEnfileira(sent);
-    last=fim;
+    if(fim-inicio>=80){   // so envia quando ja juntou pelo menos ~80 chars
+      const s=ttsBuf.slice(inicio,fim).trim();
+      if(s) ttsEnfileira(s);
+      inicio=fim;
+    }
   }
-  ttsBuf=ttsBuf.slice(last);
-  if(ttsBuf.length>280){ const v=ttsBuf.lastIndexOf(', '); if(v>40){ const s=ttsBuf.slice(0,v+1).trim(); if(s) ttsEnfileira(s); ttsBuf=ttsBuf.slice(v+2); } }
+  ttsBuf=ttsBuf.slice(inicio);
+  // protecao: buffer muito grande sem fim-de-frase -> quebra em ESPACO (NUNCA dentro de palavra)
+  if(ttsBuf.length>500){
+    const sp=ttsBuf.lastIndexOf(' ', 480);
+    if(sp>80){ const s=ttsBuf.slice(0,sp).trim(); if(s) ttsEnfileira(s); ttsBuf=ttsBuf.slice(sp+1); }
+  }
 }
 function ttsFlush(){                                     // fim do streaming: fala o resto
   ttsStreaming=false;
