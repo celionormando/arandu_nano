@@ -209,6 +209,11 @@ entra quando é solicitado e sai depois, liberando espaço.
        seleção de trecho relevante — testado de ponta a ponta
 8. [x] MARCO: multilíngue (auto/pt/en/es/fr/de) — seletor em Configurações, captura
        automática de memória nos 5 idiomas, voz do SO pelo BCP-47 do idioma escolhido
+9. [x] MARCO: **Katu Mini 2.0** (G2 — Raciocínio) entra como modelo coexistente,
+       baseado em DeepSeek-R1-Distill-Qwen-1.5B. Mesma RAM/portabilidade que o
+       Nano 1.1; alterna via `Usar_Katu_Mini.bat`. Combinado com o Modo Pensador
+       que já existe (`<think>` colapsável). Próximo: Katu Pro (mais qualidade)
+       e Vera (G3 multimodal) quando houver modelo pequeno com visão.
 
 ## Roadmap
 1. [x] TTS leve (Web Speech API) — falar respostas.

@@ -12,9 +12,12 @@ Modelos de entrada, rápidos e de baixo custo computacional.
 
 ## Família Katu — Geração 2.0: Raciocínio e Desempenho
 Modelos avançados para raciocínio lógico, análise e cruzamento de dados.
-- Katu Mini 2.0
-- Katu Pro 2.0
-- Katu Pro 2.5
+Pensam antes de responder (geram um bloco de raciocínio interno).
+
+- **Katu Mini 2.0** — disponível (DeepSeek-R1-Distill-Qwen-1.5B). Mesma RAM
+  do Arandu Nano 1.1; foco em raciocínio. Coexiste, ativado pelo `Usar_Katu_Mini.bat`.
+- Katu Pro 2.0 — planejado
+- Katu Pro 2.5 — planejado
 
 ## Família Vera — Geração 3.0: Alta Capacidade e Visão
 Modelos multimodais: leem documentos complexos, imagens e visão computacional.
@@ -35,7 +38,9 @@ nomeie o .gguf e adicione a entrada no mapa.
 | Arquivo GGUF | Nome exibido | Observação |
 |---|---|---|
 | Qwen_Qwen3-1.7B-Q4_K_M.gguf | Arandu Nano 1.1 | Qwen3-1.7B, **padrão atual** (non-thinking) |
+| Arandu_Nano_1.1_Q4_0.gguf | Arandu Nano 1.1 Q4_0 | mesmo modelo, quant Q4_0 c/ repack AVX-512/AVX2 (~20% mais tok/s) |
 | arandu-nano-1.0-Q4_K_M.gguf | Arandu Nano 1.0 | fine-tune próprio sobre Llama-1B (versão anterior) |
+| DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf | **Katu Mini 2.0** | **G2 — Raciocínio** (pensa antes; mesma RAM do Nano 1.1) |
 | Llama-3.2-1B-Instruct-Q4_K_M.gguf | Llama 1B (base) | base, rápido/leve |
 | Llama-3.2-3B-Instruct-Q4_K_M.gguf | Llama 3B (base) | base, mais qualidade |
 

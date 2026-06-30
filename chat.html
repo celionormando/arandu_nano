@@ -982,8 +982,10 @@ if('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged=carregarV
 // Mapa: arquivo GGUF -> nome do MODELO DO PROJETO (familias Arandu/Katu/Vera/Taba).
 // Ao criar um modelo proprio, adicione o nome do arquivo aqui.
 const NOMES_MODELO={
-  "Qwen_Qwen3-1.7B-Q4_K_M.gguf":"Arandu Nano 1.1",      // Qwen3-1.7B (Arandu Nano 1.1 - padrao)
+  "Qwen_Qwen3-1.7B-Q4_K_M.gguf":"Arandu Nano 1.1",      // Qwen3-1.7B (Arandu Nano 1.1 - padrao, eficiencia)
+  "Arandu_Nano_1.1_Q4_0.gguf":"Arandu Nano 1.1 Q4_0",   // mesmo modelo, quant Q4_0 c/ repack AVX (~20%% mais tok/s)
   "arandu-nano-1.0-Q4_K_M.gguf":"Arandu Nano 1.0",      // modelo proprio (fine-tunado)
+  "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf":"Katu Mini 2.0",  // G2 - Raciocinio (pensa antes de responder)
   "Llama-3.2-1B-Instruct-Q4_K_M.gguf":"Llama 1B (base)",
   "Llama-3.2-3B-Instruct-Q4_K_M.gguf":"Llama 3B (base)"
 };
