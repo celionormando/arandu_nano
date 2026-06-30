@@ -139,7 +139,7 @@ chmod +x iniciar.sh desligar.sh
    RAM. Não aparece janela preta (é proposital).
 3. O **navegador abre sozinho** com a tela do chat. Digite e pergunte.
 
-<!-- IMG: tela inicial do chat -->
+![Tela inicial do Arandu — chat vazio, sidebar com Memória/Configurações e mini-painel de saúde no topo direito](img/01-tela-inicial.png)
 
 ### Sinais de "está tudo bem"
 
@@ -161,7 +161,7 @@ chmod +x iniciar.sh desligar.sh
 A interface é familiar: barra lateral com **conversas recentes**, topo com
 **título** e ícones, centro com o **chat**, embaixo um **campo de mensagem**.
 
-<!-- IMG: chat com conversa em andamento -->
+![Conversa de exemplo — pergunta do usuário e resposta do Arandu com formatação markdown (negrito, lista)](img/02-chat-conversa.png)
 
 ### Atalhos úteis
 
@@ -227,7 +227,7 @@ Clique em **"Memória"** na barra lateral. Você pode:
 - **Adicionar um item** clicando em "+ Adicionar item manualmente".
 - **Remover** qualquer item com o ícone de lixeira.
 
-<!-- IMG: painel de Memória aberto -->
+![Painel Memória do Arandu — perfil editável, zona de upload de documentos e o item D001 listado](img/03-painel-memoria.png)
 
 ### Como o Arandu consulta a memória
 
@@ -460,7 +460,7 @@ instale o Tesseract"*, é porque a pasta acima não foi montada corretamente.
 
 Botão de engrenagem ⚙️ no topo.
 
-<!-- IMG: painel de Configurações -->
+![Painel Configurações — Mensagem do sistema, Modo pensador, seletor de Idioma e sliders de Amostragem (temperatura, Top-P, Top-K, Min-P)](img/04-configuracoes.png)
 
 ### Geral
 
@@ -765,7 +765,7 @@ chmod +x iniciar.sh desligar.sh
    black window appears (by design).
 3. The **browser opens automatically** with the chat. Type and ask.
 
-<!-- IMG: empty chat -->
+![Arandu welcome screen — empty chat, sidebar with Memory/Settings and the health mini-panel on the top right](img/01-tela-inicial.png)
 
 ### Signs everything's fine
 
@@ -787,7 +787,7 @@ chmod +x iniciar.sh desligar.sh
 Familiar layout: sidebar with **recent conversations**, top bar with **title**
 and icons, center is the **chat**, bottom is the **message field**.
 
-<!-- IMG: chat with conversation -->
+![Example conversation — user question and the Arandu's reply with markdown formatting (bold, list)](img/02-chat-conversa.png)
 
 ### Useful shortcuts
 
@@ -851,7 +851,7 @@ Click **"Memória"** in the sidebar. You can:
 - **Add an item** via "+ Adicionar item manualmente".
 - **Remove** any item with the trash icon.
 
-<!-- IMG: Memory panel -->
+![Arandu's Memory panel — editable profile, document upload area and the D001 item listed](img/03-painel-memoria.png)
 
 ### How Arandu uses the memory
 
@@ -1065,7 +1065,7 @@ Optional. Needed only for **images** and **scanned PDFs**.
 
 Gear icon ⚙️ in the top bar.
 
-<!-- IMG: Settings panel -->
+![Settings panel — System message, Thinker mode, Language selector and the Sampling sliders (temperature, Top-P, Top-K, Min-P)](img/04-configuracoes.png)
 
 ### General
 
