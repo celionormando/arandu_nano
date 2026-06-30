@@ -275,6 +275,9 @@ No painel **Memória**, há uma área **"Enviar documento — arraste aqui ou cl
 - Termo muito raro num documento grande pode não ser roteado pelo índice de
   palavras — nesse caso o RAG por embeddings é mais robusto.
 
+> 📎 **Quer testar?** Baixe o [PDF de exemplo](exemplo-memoria.pdf), arraste no
+> painel **Memória** do Arandu e faça perguntas sobre o conteúdo.
+
 ---
 
 ## 7. Base de conhecimento (RAG)
@@ -897,6 +900,9 @@ In the **Memória** panel, drop files in *"Enviar documento — arraste aqui ou 
 - Max per file: ~120,000 characters (truncated above).
 - Very rare terms in large documents may not match the keyword index — RAG
   with embeddings is more robust for that.
+
+> 📎 **Want to try?** Download the [sample PDF](exemplo-memoria.pdf), drop it
+> into the **Memória** panel and ask questions about its content.
 
 ---
 
