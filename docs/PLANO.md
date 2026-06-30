@@ -1,16 +1,19 @@
-# Arandu IA — Plano do Projeto (IA Portátil na USB)
+# Rendeia — Plano do Projeto (IA Portátil na USB)
 
 ## Objetivo
-Plataforma de IA de chat chamada **Arandu IA**, que roda 100% LOCAL e OFFLINE
+Plataforma de IA de chat chamada **Rendeia**, que roda 100% LOCAL e OFFLINE
 direto do pendrive (D:\Arandu-nano\), em português do Brasil, com o MÍNIMO de RAM
 sem perder velocidade. FOCO: portabilidade na USB (sem instalar nada no PC) e
 evolução com modelos próprios (fine-tuning).
 
-## Identidade do Arandu
-- O **Arandu** é um **assistente de IA de USO GERAL** (conversa, redação,
-  resumos, tradução, ideias, dúvidas do dia a dia).
+## Identidade
+- A **Rendeia** é a plataforma. **Arandu** (G1 — Eficiência) é a primeira
+  família de modelos da Rendeia: assistente de IA de **USO GERAL** (conversa,
+  redação, resumos, tradução, ideias, dúvidas do dia a dia).
 - NÃO é especializado em contratações/PDTI. SEM vínculo a InfraSA, GPCTI ou
   qualquer organização. Identidade neutra.
+- Famílias seguintes (G2/G3/G4 — Katu, Vera, Taba) coexistem; o usuário alterna
+  pelos `.bat`.
 
 ## Hardware alvo
 - Notebook 16 GB de RAM (sobrou ~2,4 GB livres no teste); 4 núcleos físicos /
@@ -21,28 +24,31 @@ evolução com modelos próprios (fine-tuning).
   Open source (Apache-2.0), construído sobre o llama.cpp.
 - Releases: https://github.com/Mozilla-Ocho/llamafile/releases
 
-## Nomenclatura dos modelos (famílias) — ver NOMENCLATURA_MODELOS.md
-- **Arandu** (G1.0 Fundação/Eficiência): Nano, Mini, Base, Base 1.5
-- **Katu**  (G2.0 Raciocínio): Mini, Pro, Pro 2.5
-- **Vera**  (G3.0 Multimodal/Visão): Base, Omni
-- **Taba**  (G4.0 Agentes): Base, Omni
-A interface mostra o NOME DO PROJETO (mapa NOMES_MODELO no chat.html), nunca o
-arquivo técnico.
+## Nomenclatura — ver NOMENCLATURA_MODELOS.md (estrutura completa)
+**Marca:** Rendeia → **famílias** (por geração) → **tiers** (por tamanho, consistente):
+- **Arandu** (G1.0 Fundação/Eficiência) — tiers: Mirim, Eté, Guaçu
+- **Katu**  (G2.0 Raciocínio) — tiers: Mirim, Eté, Guaçu
+- **Vera**  (G3.0 Multimodal/Visão) — tiers: Eté, Guaçu (planejado)
+- **Taba**  (G4.0 Agentes) — tiers: Eté, Guaçu (planejado)
+
+Tiers em tupi-guarani: **Mirim** (pequeno), **Eté** (verdadeiro/médio),
+**Guaçu** (grande). A interface mostra o NOME DO MODELO (mapa NOMES_MODELO no
+chat.html), nunca o arquivo técnico.
 
 ## Modelo ATIVO
-- **Qwen_Qwen3-1.7B-Q4_K_M.gguf** — PADRÃO atual, exibido como "Arandu Nano 1.1".
+- **Qwen_Qwen3-1.7B-Q4_K_M.gguf** — PADRÃO atual, exibido como "Arandu Mirim 1.1".
   Qwen3-1.7B (~1,2 GB), ~12 tok/s, em modo non-thinking (/no_think injetado pelo
   chat.html só p/ Qwen). Escolhido após teste A/B: melhor qualidade que o 1B
   (e-mail, contas, explicações) mantendo velocidade e RAM. Troca: Usar_Nano_1.1.bat.
 - **arandu-nano-1.0-Q4_K_M.gguf** — 1º modelo PRÓPRIO (fine-tune do Llama-1B), ~0,8 GB,
-  ~14-17 tok/s. Exibido como "Arandu Nano 1.0". Troca: Usar_Nano_1.0.bat.
-- Numeração: o 3º número marca a evolução da linha de entrada (Nano 1.0 -> 1.1 -> ...).
-  "Mini"/"Base" ficam reservados para portes maiores (3-4B+) no futuro.
-- **Iniciar_Arandu.vbs** abre direto no **Nano 1.1** (sem menu): garante o modelo padrão
+  ~14-17 tok/s. Exibido como "Arandu Mirim 1.0". Troca: Usar_Nano_1.0.bat.
+- Numeração: o 3º número marca a evolução da linha (Mirim 1.0 -> 1.1 -> ...).
+  Tiers **Eté** e **Guaçu** ficam reservados para portes maiores (3-4B+) no futuro.
+- **Iniciar_Arandu.vbs** abre direto no **Arandu Mirim 1.1** (sem menu): garante o modelo padrão
   em modelo.txt e só reinicia o servidor se a versão estiver diferente. Para trocar de
-  modelo manualmente, use os .bat (Usar_Nano_1.0.bat etc.).
+  modelo manualmente, use os .bat (Usar_Nano_1.0.bat etc. — nomes legados de arquivo).
 - Modelos de base disponíveis para fallback/treino:
-  - Llama-3.2-1B-Instruct-Q4_K_M.gguf  (base do Arandu Nano)
+  - Llama-3.2-1B-Instruct-Q4_K_M.gguf  (base do Arandu Mirim)
   - Llama-3.2-3B-Instruct-Q4_K_M.gguf  (mais qualidade, ~6 tok/s)
 - DESCARTADOS: Phi-3.5-mini, 3B-Q3_K_L e Gemma-2-2B (este incompatível com
   flash-attn por causa do "attention softcapping" — só roda bem sem -fa, perdendo
@@ -55,7 +61,7 @@ D:\Arandu-nano\
   ├── Llama-3.2-1B-Instruct-Q4_K_M.gguf   (base, ~0,8 GB)
   ├── Llama-3.2-3B-Instruct-Q4_K_M.gguf   (base qualidade, ~2,0 GB)
   ├── modelo.txt                          (define o modelo ativo - 1 linha)
-  ├── chat.html                           (interface Arandu IA, pt-BR, offline, com VOZ)
+  ├── chat.html                           (interface Rendeia, pt-BR, offline, com VOZ)
   ├── IA_Portatil.vbs                     (Windows: abre navegador padrão, lê modelo.txt)
   ├── IA_Arandu_RAG.vbs                   (Windows: chat + embedding/RAG)
   ├── iniciar.sh / iniciar_rag.sh         (Linux/macOS: navegador padrão)
@@ -147,7 +153,7 @@ reprocessava TODO o prefixo do zero — perda evitável.
 - O que mais importa: AMPLIAR o dataset (50 -> 200 -> 500+ exemplos de qualidade).
 
 ## Memória que aprende (camadas, tudo no USB) — IMPLEMENTADO
-Objetivo: o Arandu aprender com o uso (perfil do usuário + conhecimento) SEM depender
+Objetivo: a Rendeia aprender com o uso (perfil do usuário + conhecimento) SEM depender
 só do RAG, respeitando o contexto de 2048 tokens. Padrão: **índice + expansão sob demanda**
 (o mesmo "stub & hydrate" de um MEMORY.md): no prompt vai sempre só o ESSENCIAL; o detalhe
 entra quando é solicitado e sai depois, liberando espaço.
@@ -197,19 +203,19 @@ entra quando é solicitado e sai depois, liberando espaço.
   via Web Speech do SO sem peso extra no USB.
 
 ## Status
-1. [x] Motor llamafile + interface Arandu IA (chat.html, pt-BR, voz, streaming fluido)
+1. [x] Motor llamafile + interface Rendeia (chat.html, pt-BR, voz, streaming fluido)
 2. [x] Lançador 1 clique (IA_Portatil.vbs, navegador padrão) + troca de modelo (modelo.txt)
 3. [x] Otimizações (KV q8_0, flash attn, -t 3) e benchmarks documentados
 4. [x] Nomenclatura de famílias (Arandu/Katu/Vera/Taba) definida
-5. [x] MARCO: 1º modelo próprio treinado e implantado — **Arandu Nano 1.0** rodando na USB
-6. [ ] Ampliar dataset e retreinar o Arandu Nano (melhorar qualidade)
+5. [x] MARCO: 1º modelo próprio treinado e implantado — **Arandu Mirim 1.0** rodando na USB
+6. [ ] Ampliar dataset e retreinar o Arandu Mirim (melhorar qualidade)
 7. [x] MARCO: memória em camadas (perfil + índice + itens sob demanda) gravada no USB,
        com aprendizado automático por comando + UPLOAD de documentos (PDF/imagem/texto):
        pdf.js p/ PDF digital, Tesseract (rota /ocr) p/ imagem e PDF escaneado, com
        seleção de trecho relevante — testado de ponta a ponta
 8. [x] MARCO: multilíngue (auto/pt/en/es/fr/de) — seletor em Configurações, captura
        automática de memória nos 5 idiomas, voz do SO pelo BCP-47 do idioma escolhido
-9. [x] MARCO: **Katu Mini 2.0** (G2 — Raciocínio) entra como modelo coexistente,
+9. [x] MARCO: **Katu Mirim 2.0** (G2 — Raciocínio) entra como modelo coexistente,
        baseado em DeepSeek-R1-Distill-Qwen-1.5B. Mesma RAM/portabilidade que o
        Nano 1.1; alterna via `Usar_Katu_Mini.bat`. Combinado com o Modo Pensador
        que já existe (`<think>` colapsável). Próximo: Katu Pro (mais qualidade)
@@ -217,7 +223,7 @@ entra quando é solicitado e sai depois, liberando espaço.
 
 ## Roadmap
 1. [x] TTS leve (Web Speech API) — falar respostas.
-2. [ ] Ampliar dataset -> Arandu Nano 1.x melhor; depois Arandu Mini/Base.
+2. [ ] Ampliar dataset -> Arandu Mirim 1.x melhor; depois Arandu Mini/Base.
 3. [ ] TTS de alta qualidade OFFLINE: Piper (vozes pt-BR ~60 MB, cabe na USB).
 4. [ ] Voz de ENTRADA (falar com a IA): whisperfile (STT offline) ou Web Speech.
 5. [ ] RAG (conhecimento via documentos): CAMADA acima da API (embeddings ->

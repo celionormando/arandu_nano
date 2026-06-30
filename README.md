@@ -1,13 +1,13 @@
-<h1 align="center">🌱 Arandu IA</h1>
+<h1 align="center">🕸️ Rendeia</h1>
 
 <p align="center">
-  <strong>Uma IA que conversa com você 100% offline — em português, na CPU, direto de um pendrive.</strong><br>
+  <strong>Tecendo ideias localmente — uma IA que conversa com você 100% offline, em português, na CPU, direto de um pendrive.</strong><br>
   Sem internet. Sem instalar nada. Sem que uma palavra saia do seu computador.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/licença-Apache--2.0-blue" alt="Licença Apache-2.0">
-  <img src="https://img.shields.io/github/v/release/celionormando/arandu_nano?include_prereleases&label=download" alt="Release">
+  <img src="https://img.shields.io/github/v/release/rendeia/arandu_nano?include_prereleases&label=download" alt="Release">
   <img src="https://img.shields.io/badge/plataforma-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey" alt="Plataformas">
   <img src="https://img.shields.io/badge/CPU-only-success" alt="CPU-only">
   <img src="https://img.shields.io/badge/RAM-~1.2%20GB-success" alt="RAM">
@@ -15,14 +15,16 @@
 </p>
 
 <p align="center">
-  <img src="docs/demo.gif" alt="Arandu em ação — assistente de IA offline em português" width="760">
+  <img src="docs/demo.gif" alt="Rendeia em ação — assistente de IA offline em português" width="760">
 </p>
 
-> **Arandu** vem do tupi-guarani e significa *sabedoria* — **Ára** (tempo, cosmos)
-> + **Andu** (sentir, ouvir). Um nome ancestral brasileiro para uma IA que mantém
-> os pés no chão: útil, acessível e que respeita a sua privacidade.
+> **Rendeia** une *renda* (a tradição artesã brasileira de tecer, tramar) e
+> *ideia*. A marca abriga famílias de modelos com nomes em tupi-guarani:
+> **Arandu** (sabedoria), **Katu** (bom/justo), **Vera** (verdadeiro),
+> **Taba** (aldeia). Uma IA que mantém os pés no chão: útil, acessível e que
+> respeita a sua privacidade.
 
-## ✨ Por que o Arandu
+## ✨ Por que a Rendeia
 
 - 🔒 **Privacidade total** — roda 100% local; nada é enviado para nuvem alguma
 - 💻 **Leve** — funciona na CPU com ~1,2 GB de RAM (sem placa de vídeo)
@@ -31,7 +33,7 @@
 - 📚 **Base de conhecimento offline (RAG)** — responde a partir dos *seus* documentos, sem inventar
 - 🗣️ **Voz (TTS)** — voz do sistema ou **voz neural pt-BR offline** (Piper) para soar mais natural; histórico e streaming
 - 🌐 **Multilíngue** — automático (responde no idioma do usuário) ou fixo: pt-BR, en, es, fr, de
-- 🧠 **Katu Mini 2.0** (G2 — Raciocínio) — modelo opcional que pensa antes de responder, mesma RAM do Nano 1.1
+- 🧠 **Katu Mirim 2.0** (G2 — Raciocínio) — modelo opcional que pensa antes de responder, mesma RAM do Arandu Mirim 1.1
 - 🩺 **Assistente do sistema** — vê a saúde do PC (RAM/disco/CPU), sugere arquivos para limpar e, no Windows, lê agenda e e-mails do Outlook local — tudo offline
 - 💸 **Livre e aberto** (Apache-2.0)
 
@@ -39,7 +41,7 @@
 
 Baixe o pacote pronto, extraia e clique em `IA_Portatil.vbs`:
 
-👉 **[Download — Arandu Nano 1.1](https://github.com/celionormando/arandu_nano/releases/latest)**
+👉 **[Download — Rendeia · Arandu Mirim 1.1](https://github.com/rendeia/arandu_nano/releases/latest)**
 
 Passo a passo (e o aviso do SmartScreen) no `GUIA_DO_TESTADOR.md` dentro do pacote.
 
@@ -64,7 +66,7 @@ tradução, ideias, dúvidas do dia a dia). O projeto inclui um kit para criar
 | Arquivo | Função |
 |---|---|
 | `chat.html` | Interface web em pt-BR (offline): streaming, histórico, voz (TTS) |
-| `Iniciar_Arandu.vbs` | Lançador padrão — abre direto no **Arandu Nano 1.1** (sem menu) |
+| `Iniciar_Arandu.vbs` | Lançador padrão — abre direto no **Arandu Mirim 1.1** (sem menu) |
 | `IA_Portatil.vbs` | Lançador 1 clique: sobe o servidor oculto e abre o navegador padrão |
 | `iniciar.sh` | Lançador Linux/macOS: sobe o servidor e abre o navegador padrão |
 | `iniciar_rag.sh` | Lançador Linux/macOS com RAG (chat + embeddings) |
@@ -106,7 +108,7 @@ tradução, ideias, dúvidas do dia a dia). O projeto inclui um kit para criar
 Os lançadores abrem a interface no navegador padrão do sistema.
 
 ## Base de conhecimento (RAG)
-O Arandu pode responder com base em **documentos que você fornece** (offline):
+A Rendeia pode responder com base em **documentos que você fornece** (offline):
 1. Baixe o embedding `bge-m3-Q4_K_M.gguf` (repo `gpustack/bge-m3-GGUF`) e coloque em `rag/`.
 2. Inicie pelo **`IA_Arandu_RAG.vbs`** no Windows ou **`./iniciar_rag.sh`** no Linux/macOS
    (sobe chat + servidor de embedding na porta 8091).
@@ -127,11 +129,11 @@ node rag/gerar_indice.mjs
 ```
 
 ## 🧠 Memória que aprende
-O Arandu **aprende com o uso** e guarda tudo **no próprio pendrive** (pasta `memoria/`,
+A Rendeia **aprende com o uso** e guarda tudo **no próprio pendrive** (pasta `memoria/`,
 privada, fora do git). Abra o painel **Memória** (barra lateral ou ícone no topo):
 
 - **Perfil** — o essencial sobre você (nome, preferências). Vai **sempre** no contexto.
-  Você pode editar à mão, ou o Arandu anota sozinho quando você diz *"meu nome é…"*,
+  Você pode editar à mão, ou a Rendeia anota sozinho quando você diz *"meu nome é…"*,
   *"lembre-se que…"*, *"anote que…"*.
 - **Documentos** — arraste/escolha arquivos: **PDF** (com texto), **imagens** (com OCR),
   `.txt/.md/.csv/.json/.log`. Cada documento vira um **item** no USB; na pergunta, o Arandu
@@ -150,17 +152,17 @@ Para ler **imagens** e **PDFs escaneados**, instale o **Tesseract** (portátil, 
 2. Coloque em **`ferramentas/tesseract/`** de forma que existam `ferramentas/tesseract/tesseract.exe`
    e a pasta `ferramentas/tesseract/tessdata/` com os idiomas (ex.: `por.traineddata`, `eng.traineddata`).
 3. Pronto: ao enviar uma imagem ou PDF escaneado, o ajudante (porta 8099) roda o OCR e o
-   texto entra na memória. Sem o Tesseract, o Arandu apenas avisa que o OCR não está instalado.
+   texto entra na memória. Sem o Tesseract, a Rendeia apenas avisa que o OCR não está instalado.
 
 ## 🩺 Assistente do sistema
-Além de conversar, o Arandu pode **enxergar o seu PC** — tudo **local e somente leitura**:
+Além de conversar, a Rendeia pode **enxergar o seu PC** — tudo **local e somente leitura**:
 
 - **Saúde** — RAM, disco, CPU e tempo ligado, num painel completo e num **mini painel**
   fixo no canto superior direito do chat (aparece sozinho quando o ajudante está no ar).
 - **Limpeza** — lista os arquivos que podem ser liberados (temporários, cache, lixeira…)
-  com tamanho. O Arandu **mede e sugere; nunca apaga** — você decide e confirma.
+  com tamanho. A Rendeia **mede e sugere; nunca apaga** — você decide e confirma.
 - **Agenda e e-mail (Windows)** — lê os próximos compromissos e os e-mails recentes do
-  **Outlook** local (via COM) e o Arandu resume. Só metadados; **o conteúdo das mensagens
+  **Outlook** local (via COM) e a Rendeia resume. Só metadados; **o conteúdo das mensagens
   não é aberto**.
 
 Como funciona: um pequeno **ajudante** roda ao lado (porta 8099) e responde por HTTP ao
@@ -176,7 +178,7 @@ Linux/macOS, com o **mesmo contrato**, então o painel é idêntico em todo SO. 
 Abre junto com o chat (`IA_Portatil.vbs` / `./iniciar.sh`) ou sozinho pelo `Painel_Saude.vbs`.
 Detalhes e arquitetura em [`ferramentas/README.md`](ferramentas/README.md).
 
-## Criar seu próprio modelo (Arandu Nano)
+## Criar seu próprio modelo (Arandu Mirim)
 Veja `treino/README.md`: notebook no Google Colab (GPU grátis) que faz
 fine-tuning LoRA sobre o Llama-3.2-1B e exporta um `.gguf` Q4_K_M.
 
@@ -197,7 +199,7 @@ Taba (G4 agentes). Detalhes em [`docs/NOMENCLATURA_MODELOS.md`](docs/NOMENCLATUR
 
 ## Para testar (pacote pronto)
 Quem só quer **experimentar** não precisa montar nada: use o `.zip` da página de
-[Releases](https://github.com/celionormando/arandu_nano/releases) — baixe,
+[Releases](https://github.com/rendeia/arandu_nano/releases) — baixe,
 extraia e clique em `IA_Portatil.vbs`. Passo a passo em `GUIA_DO_TESTADOR.md`.
 
 Para **gerar** esse pacote a partir do projeto (mantenedores):
@@ -207,7 +209,7 @@ powershell -ExecutionPolicy Bypass -File empacotar.ps1 -ComRAG    # completo (co
 ```
 
 ## Licença e créditos
-O código do **Arandu** (interface, lançadores, scripts, RAG) é distribuído sob a
+O código da **Rendeia** (interface, lançadores, scripts, RAG) é distribuído sob a
 licença **Apache-2.0** — veja `LICENSE`.
 
 O Arandu **redistribui** componentes de terceiros, cada um sob a própria licença:

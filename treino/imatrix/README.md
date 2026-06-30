@@ -1,6 +1,6 @@
 # Quantização com imatrix (matriz de importância)
 
-O `Qwen_Qwen3-1.7B-Q4_K_M.gguf` distribuído no Arandu Nano 1.1 foi
+O `Qwen_Qwen3-1.7B-Q4_K_M.gguf` distribuído no Arandu Mirim 1.1 foi
 re-quantizado com uma **matriz de importância (imatrix)** calibrada em
 **português do Brasil**. Isso preserva com mais precisão os pesos mais
 relevantes do modelo durante a quantização de 4 bits.
@@ -73,7 +73,7 @@ llamafile.exe -m Qwen_Qwen3-1.7B-Q4_K_M.gguf --cli \
 # Esperado: "Santos Dumont era brasileiro."
 ```
 
-## Atalho: gerar a Arandu Nano 1.2 (script automatizado)
+## Atalho: gerar a Arandu Mirim 1.2 (script automatizado)
 
 Os passos 2 e 3 acima estão automatizados em [`regenerar_nano_1.2.ps1`](regenerar_nano_1.2.ps1).
 O script monta um **corpus ampliado** (`calibracao_pt.txt` + `rag/docs/*.txt`),

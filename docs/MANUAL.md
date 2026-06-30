@@ -1,17 +1,17 @@
-# 📖 Arandu IA — Manual de uso
+# 📖 Rendeia — Manual de uso
 
 <p align="center">
-  <strong>Manual completo de instalação, configuração e uso do Arandu.</strong><br>
+  <strong>Manual completo de instalação, configuração e uso da Rendeia.</strong><br>
   IA conversacional 100% offline, em português, na CPU, direto do pendrive.
 </p>
 
 <p align="center">
-  🇧🇷 <a href="#-arandu-ia--manual-pt-br">Português (Brasil)</a> · 🇺🇸 <a href="#-arandu-ia--user-manual-english">English</a>
+  🇧🇷 <a href="#-rendeia--manual-pt-br">Português (Brasil)</a> · 🇺🇸 <a href="#-rendeia--user-manual-english">English</a>
 </p>
 
 ---
 
-# 🇧🇷 Arandu IA — Manual (pt-BR)
+# 🇧🇷 Rendeia — Manual (pt-BR)
 
 > Este manual cobre desde a primeira execução até as funções avançadas. Se você é
 > só **testador** e quer ir direto, leia o [GUIA_DO_TESTADOR.md](../GUIA_DO_TESTADOR.md)
@@ -20,11 +20,11 @@
 
 ## Sumário
 
-1. [O que é o Arandu](#1-o-que-é-o-arandu)
+1. [O que é a Rendeia](#1-o-que-é-a-rendeia)
 2. [Instalação](#2-instalação)
 3. [Primeira execução](#3-primeira-execução)
 4. [Conversando — uso básico](#4-conversando--uso-básico)
-5. [Memória — ensinando o Arandu](#5-memória--ensinando-o-arandu)
+5. [Memória — ensinando a Rendeia](#5-memória--ensinando-a-rendeia)
 6. [Upload de documentos (PDF, imagens, texto)](#6-upload-de-documentos)
 7. [Base de conhecimento (RAG)](#7-base-de-conhecimento-rag)
 8. [Voz (TTS)](#8-voz-tts)
@@ -40,7 +40,7 @@
 
 ---
 
-## 1. O que é o Arandu
+## 1. O que é a Rendeia
 
 O **Arandu** é um assistente de IA que roda **100% no seu computador**, sem
 internet, sem instalar nada, direto de um pendrive (ou pasta local). Conversa em
@@ -80,7 +80,7 @@ português do Brasil; também responde em inglês, espanhol, francês e alemão.
 
 ### 2.1 Caminho fácil: pacote pronto (Windows)
 
-1. Baixe o `.zip` em [Releases](https://github.com/celionormando/arandu_nano/releases/latest).
+1. Baixe o `.zip` em [Releases](https://github.com/rendeia/arandu_nano/releases/latest).
 2. **Extraia** numa pasta qualquer (Área de Trabalho, pendrive…).
 3. Abra a pasta — você verá `IA_Portatil.vbs` e `Iniciar_Arandu.vbs`.
 
@@ -89,7 +89,7 @@ Não há instalador. Para remover, é só apagar a pasta.
 ### 2.2 A partir do código (qualquer SO)
 
 ```sh
-git clone https://github.com/celionormando/arandu_nano.git
+git clone https://github.com/rendeia/arandu_nano.git
 cd arandu_nano
 ```
 
@@ -100,7 +100,7 @@ Depois você precisa baixar à parte (não vão no Git por causa do tamanho):
    `llamafile.exe` e coloque na raiz do projeto.
 
 2. **Modelo** — escolha um GGUF Q4_K_M e coloque na raiz:
-   - **Arandu Nano 1.1** (recomendado, pt-BR otimizado):
+   - **Arandu Mirim 1.1** (recomendado, pt-BR otimizado):
      <https://huggingface.co/celionormando/Arandu-Nano-1.1-GGUF>
    - Alternativas para comparar: Llama-3.2-1B/3B em
      <https://huggingface.co/bartowski>
@@ -139,11 +139,11 @@ chmod +x iniciar.sh desligar.sh
    RAM. Não aparece janela preta (é proposital).
 3. O **navegador abre sozinho** com a tela do chat. Digite e pergunte.
 
-![Tela inicial do Arandu — chat vazio, sidebar com Memória/Configurações e mini-painel de saúde no topo direito](img/01-tela-inicial.png)
+![Tela inicial da Rendeia — chat vazio, sidebar com Memória/Configurações e mini-painel de saúde no topo direito](img/01-tela-inicial.png)
 
 ### Sinais de "está tudo bem"
 
-- No canto inferior esquerdo da barra lateral, **"Conectado · Arandu Nano 1.1"**
+- No canto inferior esquerdo da barra lateral, **"Conectado · Arandu Mirim 1.1"**
   com bolinha verde.
 - No canto superior direito do chat, um **mini-painel** com RAM, CPU e disco
   (sinal de que o ajudante está no ar).
@@ -161,7 +161,7 @@ chmod +x iniciar.sh desligar.sh
 A interface é familiar: barra lateral com **conversas recentes**, topo com
 **título** e ícones, centro com o **chat**, embaixo um **campo de mensagem**.
 
-![Conversa de exemplo — pergunta do usuário e resposta do Arandu com formatação markdown (negrito, lista)](img/02-chat-conversa.png)
+![Conversa de exemplo — pergunta do usuário e resposta da Rendeia com formatação markdown (negrito, lista)](img/02-chat-conversa.png)
 
 ### Atalhos úteis
 
@@ -183,7 +183,7 @@ começa, a frase é substituída.
 
 ### O que esperar de qualidade
 
-O Arandu Nano 1.1 é um modelo **pequeno** (1,7 bilhão de parâmetros). Acerta
+O Arandu Mirim 1.1 é um modelo **pequeno** (1,7 bilhão de parâmetros). Acerta
 muito em conversas comuns, mas:
 
 - Pode errar **fatos específicos** (datas, números, leis, nomes). Para isso,
@@ -194,9 +194,9 @@ muito em conversas comuns, mas:
 
 ---
 
-## 5. Memória — ensinando o Arandu
+## 5. Memória — ensinando a Rendeia
 
-O Arandu **aprende com você** e guarda tudo **no pendrive**, em `memoria/`.
+A Rendeia **aprende com você** e guarda tudo **no pendrive**, em `memoria/`.
 Privado, fora do Git por padrão.
 
 A memória tem 3 camadas:
@@ -209,7 +209,7 @@ A memória tem 3 camadas:
 
 ### Como ensinar (jeito automático)
 
-Diga ao Arandu coisas como:
+Diga à Rendeia coisas como:
 
 - *"Meu nome é Célio."*
 - *"Lembre-se que a reunião com a equipe é toda terça às 10h."*
@@ -227,9 +227,9 @@ Clique em **"Memória"** na barra lateral. Você pode:
 - **Adicionar um item** clicando em "+ Adicionar item manualmente".
 - **Remover** qualquer item com o ícone de lixeira.
 
-![Painel Memória do Arandu — perfil editável, zona de upload de documentos e o item D001 listado](img/03-painel-memoria.png)
+![Painel Memória da Rendeia — perfil editável, zona de upload de documentos e o item D001 listado](img/03-painel-memoria.png)
 
-### Como o Arandu consulta a memória
+### Como a Rendeia consulta a memória
 
 A cada pergunta:
 
@@ -276,7 +276,7 @@ No painel **Memória**, há uma área **"Enviar documento — arraste aqui ou cl
   palavras — nesse caso o RAG por embeddings é mais robusto.
 
 > 📎 **Quer testar?** Baixe o [PDF de exemplo](exemplo-memoria.pdf), arraste no
-> painel **Memória** do Arandu e faça perguntas sobre o conteúdo.
+> painel **Memória** da Rendeia e faça perguntas sobre o conteúdo.
 
 ---
 
@@ -297,7 +297,7 @@ documentos. Recomendado quando a memória (item 5) não é suficiente.
 
 ### Modo estrito
 
-Por padrão, o Arandu responde **somente** com base nos trechos da base de
+Por padrão, a Rendeia responde **somente** com base nos trechos da base de
 conhecimento — se o tema não está coberto, ele diz *"Não encontrei isso na
 base de conhecimento"* em vez de inventar. Pode desligar nas Configurações da
 base se preferir.
@@ -393,7 +393,7 @@ no início da resposta (clique para abrir).
 
 ## 11. Assistente do sistema
 
-O Arandu enxerga o seu PC — **somente leitura**.
+A Rendeia enxerga o seu PC — **somente leitura**.
 
 | Função | Windows | Linux | macOS |
 |---|:---:|:---:|:---:|
@@ -414,13 +414,13 @@ Duplo clique em `Painel_Saude.vbs` abre uma página separada com os medidores
 detalhados, a lista de **arquivos limpáveis** (com tamanho), a **agenda dos
 próximos 14 dias** e os **e-mails recentes**.
 
-Os botões **"Pedir análise / Resumir com Arandu"** enviam os dados para o
+Os botões **"Pedir análise / Resumir com a Rendeia"** enviam os dados para o
 modelo, que devolve um resumo em português. **Os números vêm sempre do
 código** — o modelo só narra (à prova de alucinação).
 
 ### Princípio
 
-> O Arandu **mede e sugere; nunca apaga**. Toda exclusão é decidida e
+> A Rendeia **mede e sugere; nunca apaga**. Toda exclusão é decidida e
 > confirmada por você. O ajudante só escuta em `127.0.0.1` (não acessível
 > pela rede).
 
@@ -501,18 +501,18 @@ correspondente:
 
 | Arquivo | Modelo | Geração |
 |---|---|---|
-| `Usar_Nano_1.1.bat` | Arandu Nano 1.1 (Qwen3-1.7B + imatrix, Q4_K_M) — padrão | G1 |
-| `Usar_Nano_Q4_0.bat` | Arandu Nano 1.1 Q4_0 — **15-25% mais rápido em CPUs com AVX2/AVX-512** | G1 |
-| `Usar_Nano_1.0.bat` | Arandu Nano 1.0 (Llama-1B fine-tune próprio) | G1 |
-| **`Usar_Katu_Mini.bat`** | **Katu Mini 2.0 (DeepSeek-R1-Distill-Qwen-1.5B) — pensa antes de responder** | **G2** |
+| `Usar_Nano_1.1.bat` | Arandu Mirim 1.1 (Qwen3-1.7B + imatrix, Q4_K_M) — padrão | G1 |
+| `Usar_Nano_Q4_0.bat` | Arandu Mirim 1.1 Q4_0 — **15-25% mais rápido em CPUs com AVX2/AVX-512** | G1 |
+| `Usar_Nano_1.0.bat` | Arandu Mirim 1.0 (Llama-1B fine-tune próprio) | G1 |
+| **`Usar_Katu_Mini.bat`** | **Katu Mirim 2.0 (DeepSeek-R1-Distill-Qwen-1.5B) — pensa antes de responder** | **G2** |
 | `Usar_1B_Rapido.bat` | Llama-3.2-1B base | — |
 | `Usar_3B_Qualidade.bat` | Llama-3.2-3B base (mais lento, mais qualidade) | — |
 
-> **Quando usar o Katu Mini 2.0?** Para problemas que precisam de **raciocínio**
+> **Quando usar o Katu Mirim 2.0?** Para problemas que precisam de **raciocínio**
 > (matemática, lógica, análise, depurar uma situação passo a passo). Ele gera um
 > bloco `<think>...</think>` interno antes da resposta — combine com o
 > **[Modo pensador](#10-modo-pensador)** em Configurações para ver o raciocínio
-> num bloco colapsável. Mesma RAM do Arandu Nano 1.1; um pouco mais lento porque
+> num bloco colapsável. Mesma RAM do Arandu Mirim 1.1; um pouco mais lento porque
 > gera mais tokens (o raciocínio). Para conversa do dia-a-dia, mantenha o Nano.
 > Baixe o `.gguf` (Q4_K_M) em
 > [unsloth/DeepSeek-R1-Distill-Qwen-1.5B-GGUF](https://huggingface.co/unsloth/DeepSeek-R1-Distill-Qwen-1.5B-GGUF).
@@ -538,7 +538,7 @@ Aguarde até **40 segundos** na primeira execução. Se não abrir, abra o
 
 - Verifique se o `llamafile.exe` foi **desbloqueado** (botão direito → Propriedades → marcar
   "Desbloquear" → OK).
-- Se o antivírus bloqueou: adicione a pasta do Arandu como exceção.
+- Se o antivírus bloqueou: adicione a pasta da Rendeia como exceção.
 - Se o AppLocker bloqueou: use a alternativa do `llama-server.exe` (veja [§ 2.3](#23-windows-corporativo-applocker-bloqueou-o-exe)).
 - Se nada funcionar, rode pelo WSL Ubuntu: `./iniciar.sh`.
 
@@ -547,7 +547,7 @@ Aguarde até **40 segundos** na primeira execução. Se não abrir, abra o
 Normal em PCs antigos. A 1ª resposta após uma pausa é a mais lenta. Para
 ganhos reais:
 
-- Use o **Arandu Nano 1.1** (padrão) em vez do 3B.
+- Use o **Arandu Mirim 1.1** (padrão) em vez do 3B.
 - Verifique que a configuração tem `-t 3` (3 threads — testado como ideal
   para 4 cores).
 - Desligue o **Modo pensador** se estiver ligado.
@@ -594,7 +594,7 @@ Confira o caminho exato: `ferramentas/tesseract/tesseract.exe` e
 
 ## 15. Privacidade e segurança
 
-- **Nada sai do seu PC.** O Arandu roda local. Nenhuma chamada à internet é
+- **Nada sai do seu PC.** A Rendeia roda local. Nenhuma chamada à internet é
   feita pelo motor (`llamafile`) nem pelo ajudante.
 - **Memória no USB.** A pasta `memoria/` fica no próprio pendrive/pasta —
   privada, fora do Git por padrão.
@@ -603,7 +603,7 @@ Confira o caminho exato: `ferramentas/tesseract/tesseract.exe` e
 - **Outlook só leitura.** Quando você usa agenda/e-mail, só **metadados** são
   lidos (assunto, remetente, data, horário). **O conteúdo das mensagens não
   é aberto.**
-- **Nunca apaga.** Para limpeza de arquivos, o Arandu **mede e sugere; você
+- **Nunca apaga.** Para limpeza de arquivos, a Rendeia **mede e sugere; você
   decide e confirma.**
 
 ### Onde ficam os seus dados
@@ -611,7 +611,7 @@ Confira o caminho exato: `ferramentas/tesseract/tesseract.exe` e
 | Dado | Onde |
 |---|---|
 | Histórico de conversas | `localStorage` do navegador (do perfil que abriu o `chat.html`) |
-| Perfil do Arandu sobre você | `memoria/perfil.md` (no USB) |
+| Perfil da Rendeia sobre você | `memoria/perfil.md` (no USB) |
 | Itens/documentos enviados | `memoria/itens/<id>.md` (no USB) |
 | Base de conhecimento (RAG) | `IndexedDB` do navegador |
 | Configurações | `localStorage` do navegador |
@@ -644,7 +644,7 @@ powershell -ExecutionPolicy Bypass -File empacotar.ps1 -ComRAG    # completo (co
 
 ## 17. Licenças e créditos
 
-O código do **Arandu** (interface, lançadores, scripts, RAG) é distribuído sob
+O código da **Rendeia** (interface, lançadores, scripts, RAG) é distribuído sob
 a licença **Apache-2.0** — veja [`LICENSE`](../LICENSE).
 
 | Componente | Autor | Licença |
@@ -666,20 +666,20 @@ a licença **Apache-2.0** — veja [`LICENSE`](../LICENSE).
 
 ---
 
-# 🇺🇸 Arandu IA — User Manual (English)
+# 🇺🇸 Rendeia — User Manual (English)
 
-> This manual covers the Arandu from first run to advanced features. If you're
+> This manual covers Rendeia from first run to advanced features. If you're
 > just **testing**, jump to [GUIA_DO_TESTADOR.md](../GUIA_DO_TESTADOR.md)
 > (3 minutes, Portuguese). If you're a **developer**, start with
 > [PLANO.md](PLANO.md).
 
 ## Table of contents
 
-1. [What is Arandu](#1-what-is-arandu)
+1. [What is Rendeia](#1-what-is-rendeia)
 2. [Installation](#2-installation-1)
 3. [First run](#3-first-run)
 4. [Chatting — basic use](#4-chatting--basic-use)
-5. [Memory — teaching Arandu](#5-memory--teaching-arandu)
+5. [Memory — teaching Rendeia](#5-memory--teaching-rendeia)
 6. [Document upload (PDF, images, text)](#6-document-upload)
 7. [Knowledge base (RAG)](#7-knowledge-base-rag)
 8. [Voice (TTS)](#8-voice-tts)
@@ -695,7 +695,7 @@ a licença **Apache-2.0** — veja [`LICENSE`](../LICENSE).
 
 ---
 
-## 1. What is Arandu
+## 1. What is Rendeia
 
 **Arandu** is an AI assistant that runs **100% on your machine**, no internet,
 no installation, straight from a USB stick (or local folder). Optimized for
@@ -735,7 +735,7 @@ Brazilian Portuguese; also speaks English, Spanish, French, and German.
 
 ### 2.1 Easy path: ready-made package (Windows)
 
-1. Download the `.zip` from [Releases](https://github.com/celionormando/arandu_nano/releases/latest).
+1. Download the `.zip` from [Releases](https://github.com/rendeia/arandu_nano/releases/latest).
 2. **Extract** to any folder (Desktop, USB stick…).
 3. Open the folder — you'll see `IA_Portatil.vbs` and `Iniciar_Arandu.vbs`.
 
@@ -744,7 +744,7 @@ No installer. To uninstall, just delete the folder.
 ### 2.2 From source (any OS)
 
 ```sh
-git clone https://github.com/celionormando/arandu_nano.git
+git clone https://github.com/rendeia/arandu_nano.git
 cd arandu_nano
 ```
 
@@ -755,7 +755,7 @@ Then download separately (not in Git due to size):
    `llamafile.exe` and place at the project root.
 
 2. **Model** — pick a GGUF Q4_K_M and place at the root:
-   - **Arandu Nano 1.1** (recommended, pt-BR optimized):
+   - **Arandu Mirim 1.1** (recommended, pt-BR optimized):
      <https://huggingface.co/celionormando/Arandu-Nano-1.1-GGUF>
    - Alternatives: Llama-3.2-1B/3B at <https://huggingface.co/bartowski>
 
@@ -793,11 +793,11 @@ chmod +x iniciar.sh desligar.sh
    black window appears (by design).
 3. The **browser opens automatically** with the chat. Type and ask.
 
-![Arandu welcome screen — empty chat, sidebar with Memory/Settings and the health mini-panel on the top right](img/01-tela-inicial.png)
+![Rendeia welcome screen — empty chat, sidebar with Memory/Settings and the health mini-panel on the top right](img/01-tela-inicial.png)
 
 ### Signs everything's fine
 
-- Bottom of the sidebar: **"Conectado · Arandu Nano 1.1"** with a green dot.
+- Bottom of the sidebar: **"Conectado · Arandu Mirim 1.1"** with a green dot.
 - Top right of the chat: a **mini-panel** with RAM, CPU, and disk (means the
   helper is up).
 
@@ -815,7 +815,7 @@ chmod +x iniciar.sh desligar.sh
 Familiar layout: sidebar with **recent conversations**, top bar with **title**
 and icons, center is the **chat**, bottom is the **message field**.
 
-![Example conversation — user question and the Arandu's reply with markdown formatting (bold, list)](img/02-chat-conversa.png)
+![Example conversation — user question and the Rendeia's reply with markdown formatting (bold, list)](img/02-chat-conversa.png)
 
 ### Useful shortcuts
 
@@ -836,18 +836,18 @@ When the actual text starts, the phrase is replaced.
 
 ### Quality expectations
 
-Arandu Nano 1.1 is a **small** model (1.7 billion parameters). Solid for
+Arandu Mirim 1.1 is a **small** model (1.7 billion parameters). Solid for
 everyday conversation, but:
 
 - May get **specific facts wrong** (dates, numbers, laws, names). For that,
-  use the [memory](#5-memory--teaching-arandu) or the [RAG](#7-knowledge-base-rag).
+  use the [memory](#5-memory--teaching-rendeia) or the [RAG](#7-knowledge-base-rag).
 - May mix languages in long answers. The system has automatic corrections for
   the most common cases.
 - Not good for complex code or advanced math.
 
 ---
 
-## 5. Memory — teaching Arandu
+## 5. Memory — teaching Rendeia
 
 Arandu **learns from you** and saves everything **on the USB**, in `memoria/`.
 Private, outside of Git by default.
@@ -879,9 +879,9 @@ Click **"Memória"** in the sidebar. You can:
 - **Add an item** via "+ Adicionar item manualmente".
 - **Remove** any item with the trash icon.
 
-![Arandu's Memory panel — editable profile, document upload area and the D001 item listed](img/03-painel-memoria.png)
+![Rendeia's Memory panel — editable profile, document upload area and the D001 item listed](img/03-painel-memoria.png)
 
-### How Arandu uses the memory
+### How Rendeia uses the memory
 
 Per question:
 
@@ -948,7 +948,7 @@ documents. Use when the memory (§ 5) isn't enough.
 
 ### Strict mode
 
-Default: Arandu answers **only** from the knowledge base — if the topic isn't
+Default: Rendeia answers **only** from the knowledge base — if the topic isn't
 covered, it says *"Não encontrei isso na base de conhecimento"* instead of
 making things up. You can turn this off in the knowledge base settings.
 
@@ -1031,7 +1031,7 @@ block at the top of the response (click to expand).
 
 ## 11. System assistant
 
-Arandu sees your PC — **read-only**.
+Rendeia sees your PC — **read-only**.
 
 | Function | Windows | Linux | macOS |
 |---|:---:|:---:|:---:|
@@ -1051,7 +1051,7 @@ Double-click `Painel_Saude.vbs` for a separate page with detailed gauges, a
 list of **cleanable files** (with sizes), the **next 14 days** of calendar,
 and **recent emails**.
 
-The **"Pedir análise / Resumir com Arandu"** buttons send data to the model,
+The **"Pedir análise / Resumir com a Rendeia"** buttons send data to the model,
 which returns a summary in Portuguese. **Numbers always come from code** — the
 model only narrates (alucinação-proof).
 
@@ -1126,18 +1126,18 @@ Edit `modelo.txt` (one line, the `.gguf` filename). Reset via the matching
 
 | File | Model | Generation |
 |---|---|---|
-| `Usar_Nano_1.1.bat` | Arandu Nano 1.1 (Qwen3-1.7B + imatrix, Q4_K_M) — default | G1 |
-| `Usar_Nano_Q4_0.bat` | Arandu Nano 1.1 Q4_0 — **15-25% faster on CPUs with AVX2/AVX-512** | G1 |
-| `Usar_Nano_1.0.bat` | Arandu Nano 1.0 (Llama-1B own fine-tune) | G1 |
-| **`Usar_Katu_Mini.bat`** | **Katu Mini 2.0 (DeepSeek-R1-Distill-Qwen-1.5B) — thinks before answering** | **G2** |
+| `Usar_Nano_1.1.bat` | Arandu Mirim 1.1 (Qwen3-1.7B + imatrix, Q4_K_M) — default | G1 |
+| `Usar_Nano_Q4_0.bat` | Arandu Mirim 1.1 Q4_0 — **15-25% faster on CPUs with AVX2/AVX-512** | G1 |
+| `Usar_Nano_1.0.bat` | Arandu Mirim 1.0 (Llama-1B own fine-tune) | G1 |
+| **`Usar_Katu_Mini.bat`** | **Katu Mirim 2.0 (DeepSeek-R1-Distill-Qwen-1.5B) — thinks before answering** | **G2** |
 | `Usar_1B_Rapido.bat` | Llama-3.2-1B base | — |
 | `Usar_3B_Qualidade.bat` | Llama-3.2-3B base (slower, more quality) | — |
 
-> **When to use Katu Mini 2.0?** For problems that need **reasoning** (math,
+> **When to use Katu Mirim 2.0?** For problems that need **reasoning** (math,
 > logic, analysis, step-by-step debugging). It produces an internal
 > `<think>...</think>` block before answering — pair with the
 > **[Thinker mode](#10-thinker-mode)** in Settings to see the reasoning in a
-> collapsible block. Same RAM as Arandu Nano 1.1; a bit slower because it
+> collapsible block. Same RAM as Arandu Mirim 1.1; a bit slower because it
 > generates more tokens (the reasoning). For everyday chat, stick with the Nano.
 > Download the `.gguf` (Q4_K_M) at
 > [unsloth/DeepSeek-R1-Distill-Qwen-1.5B-GGUF](https://huggingface.co/unsloth/DeepSeek-R1-Distill-Qwen-1.5B-GGUF).
@@ -1163,7 +1163,7 @@ manually — the engine may already be up.
 
 - Check `llamafile.exe` is **unblocked** (right-click → Properties → check
   "Unblock" → OK).
-- Antivirus blocked: add the Arandu folder as an exception.
+- Antivirus blocked: add the Rendeia folder as an exception.
 - AppLocker blocked: use the `llama-server.exe` alternative ([§ 2.3](#23-corporate-windows-applocker-blocks-exe)).
 - Worst case, run from WSL Ubuntu: `./iniciar.sh`.
 
@@ -1171,7 +1171,7 @@ manually — the engine may already be up.
 
 Normal on older PCs. First response after a pause is the slowest. To improve:
 
-- Use **Arandu Nano 1.1** (default) instead of the 3B.
+- Use **Arandu Mirim 1.1** (default) instead of the 3B.
 - Confirm config has `-t 3` (3 threads — ideal for 4 cores).
 - Turn off **Thinker mode** if on.
 
@@ -1232,7 +1232,7 @@ the `/ocr` route returns 503.
 | Data | Where |
 |---|---|
 | Conversation history | Browser `localStorage` |
-| Arandu's profile of you | `memoria/perfil.md` (on the USB) |
+| Rendeia's profile of you | `memoria/perfil.md` (on the USB) |
 | Items/documents uploaded | `memoria/itens/<id>.md` (on the USB) |
 | Knowledge base (RAG) | Browser `IndexedDB` |
 | Settings | Browser `localStorage` |

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arandu IA</title>
+<title>Rendeia</title>
 <style>
   :root{
     --bg:#0d0e10; --panel:#161718; --panel2:#212225; --border:#2a2c30;
@@ -180,7 +180,7 @@
 
   <!-- ===== Sidebar ===== -->
   <aside id="sidebar">
-    <div class="brand">Arandu IA</div>
+    <div class="brand">Rendeia</div>
     <button class="side-btn" onclick="novaConversa()">
       <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Nova conversa</button>
     <button class="side-btn" onclick="toggleBusca()">
@@ -428,7 +428,7 @@ const LS_CFG="iaport_cfg", LS_CONV="iaport_convs";
 // Identidade fixa do Arandu — vai SEMPRE no system, independente da config do usuário,
 // do RAG ou do embedding. "Arandu" é nome próprio do projeto: nenhum modelo sabe o que é
 // sem esta injeção, então sem ela a IA inventa (fruta, app, etc.).
-const IDENTIDADE_ARANDU="Você é o Arandu, um assistente de IA de uso geral que funciona 100% local e offline, a partir de um pendrive. O Arandu NÃO é o ChatGPT, o Gemini, a Llama nem outro serviço em nuvem: é um projeto próprio e independente, executado na CPU pelo motor llamafile, sem acesso à internet. O modelo de IA ativo por baixo é o Arandu Nano 1.0. Ao perguntarem \"o que é o Arandu\" ou \"quem é você\" (ou equivalente em outro idioma), responda com base nesta identidade.";
+const IDENTIDADE_ARANDU="Você é o Arandu, modelo de IA da família G1 (Eficiência) da plataforma Rendeia. Funciona 100% local e offline, a partir de um pendrive. A Rendeia NÃO é o ChatGPT, o Gemini, a Llama nem outro serviço em nuvem: é um projeto próprio e independente, executado na CPU pelo motor llamafile, sem acesso à internet. Outras famílias da Rendeia: Katu (G2 - raciocínio), Vera (G3 - multimodal), Taba (G4 - agentes). Ao perguntarem \"o que é o Arandu\", \"o que é a Rendeia\" ou \"quem é você\" (ou equivalente em outro idioma), responda com base nesta identidade.";
 // Idiomas suportados: auto = responde no idioma do usuário (preserva o comportamento padrão).
 // Códigos BCP-47 p/ a voz (Web Speech) e instrução curta p/ o modelo. Custo: ~25 tokens
 // quando explícito; 0 quando auto. O Qwen3 ja sabe varios idiomas — não pesa em RAM.
@@ -606,7 +606,7 @@ function filtrar(v){renderList(v);}
 function renderChat(){
   const el=document.getElementById('chat');const c=cur();
   if(!c||c.messages.length===0){
-    el.innerHTML='<div class="empty"><h2>Arandu IA</h2><p>Como posso ajudar? Converse em português com a IA que roda no seu pendrive.</p></div>';
+    el.innerHTML='<div class="empty"><h2>Rendeia</h2><p>Como posso ajudar? Converse em português com a IA que roda no seu pendrive.</p></div>';
     return;
   }
   let html='<div class="wrap">';
@@ -982,10 +982,10 @@ if('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged=carregarV
 // Mapa: arquivo GGUF -> nome do MODELO DO PROJETO (familias Arandu/Katu/Vera/Taba).
 // Ao criar um modelo proprio, adicione o nome do arquivo aqui.
 const NOMES_MODELO={
-  "Qwen_Qwen3-1.7B-Q4_K_M.gguf":"Arandu Nano 1.1",      // Qwen3-1.7B (Arandu Nano 1.1 - padrao, eficiencia)
-  "Arandu_Nano_1.1_Q4_0.gguf":"Arandu Nano 1.1 Q4_0",   // mesmo modelo, quant Q4_0 c/ repack AVX (~20%% mais tok/s)
-  "arandu-nano-1.0-Q4_K_M.gguf":"Arandu Nano 1.0",      // modelo proprio (fine-tunado)
-  "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf":"Katu Mini 2.0",  // G2 - Raciocinio (pensa antes de responder)
+  "Qwen_Qwen3-1.7B-Q4_K_M.gguf":"Arandu Mirim 1.1",     // Qwen3-1.7B (Arandu Mirim 1.1 - padrao, familia G1 eficiencia)
+  "Arandu_Nano_1.1_Q4_0.gguf":"Arandu Mirim 1.1 Q4_0",  // mesmo modelo, quant Q4_0 c/ repack AVX (~20%% mais tok/s)
+  "arandu-nano-1.0-Q4_K_M.gguf":"Arandu Mirim 1.0",     // modelo proprio (fine-tune sobre Llama-1B)
+  "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf":"Katu Mirim 2.0", // G2 - Raciocinio (pensa antes de responder)
   "Llama-3.2-1B-Instruct-Q4_K_M.gguf":"Llama 1B (base)",
   "Llama-3.2-3B-Instruct-Q4_K_M.gguf":"Llama 3B (base)"
 };

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Arandu — Painel de Saúde do Sistema</title>
+<title>Rendeia — Painel de Saúde do Sistema</title>
 <style>
   :root{
     --bg:#0d0e10; --panel:#161718; --panel2:#212225; --border:#2a2c30;
@@ -78,19 +78,19 @@
 <div class="wrap">
   <header>
     <div>
-      <h1>🩺 Arandu · Saúde do Sistema</h1>
+      <h1>🩺 Rendeia · Saúde do Sistema</h1>
       <div class="sub">Diagnóstico local do seu PC — 100% offline, somente leitura.</div>
     </div>
     <div class="spacer"></div>
     <div class="status-pills">
       <span class="pill"><span class="dot" id="dotAju"></span> Ajudante</span>
-      <span class="pill"><span class="dot" id="dotIA"></span> Arandu (IA)</span>
+      <span class="pill"><span class="dot" id="dotIA"></span> Rendeia (IA)</span>
     </div>
   </header>
 
   <div class="toolbar">
     <button class="btn" id="btnAtualizar">↻ Atualizar</button>
-    <button class="btn primary" id="btnAnalisar">💬 Pedir análise ao Arandu</button>
+    <button class="btn primary" id="btnAnalisar">💬 Pedir análise à Rendeia</button>
     <div class="spacer"></div>
   </div>
 
@@ -100,11 +100,11 @@
   <div class="grid" id="cards"></div>
 
   <!-- Análise da IA -->
-  <div id="analise"><div class="who">Arandu diz:</div><div id="analiseTxt"></div></div>
+  <div id="analise"><div class="who">Rendeia diz:</div><div id="analiseTxt"></div></div>
 
   <!-- Limpeza -->
   <div class="section-title">🧹 Arquivos que podem ser liberados</div>
-  <div class="section-note">O Arandu <b>não apaga nada</b> automaticamente — apenas mede e sugere. Você decide e confirma cada limpeza.</div>
+  <div class="section-note">A Rendeia <b>não apaga nada</b> automaticamente — apenas mede e sugere. Você decide e confirma cada limpeza.</div>
   <table id="tabLimpeza">
     <thead><tr><th>Local</th><th>O que é</th><th class="num">Tamanho</th><th>Segurança</th></tr></thead>
     <tbody></tbody>
@@ -115,28 +115,28 @@
   <div class="section-note">Lido só quando você pede. Os dados <b>não saem do seu PC</b>. Pode iniciar o Outlook em segundo plano.</div>
   <div class="toolbar compact">
     <button class="btn" id="btnAgenda">📥 Carregar agenda (14 dias)</button>
-    <button class="btn primary" id="btnAgendaResumo" disabled>💬 Resumir com Arandu</button>
+    <button class="btn primary" id="btnAgendaResumo" disabled>💬 Resumir com a Rendeia</button>
   </div>
   <div id="agendaMsg" class="muted-box"></div>
   <table id="tabAgenda" hidden>
     <thead><tr><th>Quando</th><th>Compromisso</th><th>Local</th></tr></thead>
     <tbody></tbody>
   </table>
-  <div id="agendaResumo" class="resumo"><div class="who">Arandu · resumo da agenda</div><div id="agendaResumoTxt"></div></div>
+  <div id="agendaResumo" class="resumo"><div class="who">Rendeia · resumo da agenda</div><div id="agendaResumoTxt"></div></div>
 
   <!-- E-mail (Outlook local) -->
   <div class="section-title">✉️ E-mails recentes <span class="src">Outlook local</span></div>
   <div class="section-note">Mostra remetente, assunto e horário — <b>não abre o conteúdo</b> das mensagens. Tudo local.</div>
   <div class="toolbar compact">
     <button class="btn" id="btnEmail">📥 Carregar e-mails</button>
-    <button class="btn primary" id="btnEmailResumo" disabled>💬 Resumir com Arandu</button>
+    <button class="btn primary" id="btnEmailResumo" disabled>💬 Resumir com a Rendeia</button>
   </div>
   <div id="emailMsg" class="muted-box"></div>
   <table id="tabEmail" hidden>
     <thead><tr><th>Quando</th><th>De</th><th>Assunto</th></tr></thead>
     <tbody></tbody>
   </table>
-  <div id="emailResumo" class="resumo"><div class="who">Arandu · resumo dos e-mails</div><div id="emailResumoTxt"></div></div>
+  <div id="emailResumo" class="resumo"><div class="who">Rendeia · resumo dos e-mails</div><div id="emailResumoTxt"></div></div>
 </div>
 
 <footer>
@@ -267,7 +267,7 @@ async function analisar(){
   const alvo = document.getElementById("analiseTxt");
   box.style.display = "block";
   if(!ok){
-    alvo.innerHTML = `<span class="err">O Arandu (IA) não está rodando na porta 8080. Inicie o chat normal do Arandu e tente de novo.</span>`;
+    alvo.innerHTML = `<span class="err">O Rendeia (IA) não está rodando na porta 8080. Inicie o chat normal do Arandu e tente de novo.</span>`;
     return;
   }
   alvo.textContent = "Analisando…";
@@ -340,7 +340,7 @@ function fmtQuando(iso, diaTodo){
 
 async function streamArandu(sys, user, alvo){
   const ok = await detectarModelo();
-  if(!ok){ alvo.innerHTML = `<span class="err">O Arandu (IA) não está na porta 8080. Abra o chat do Arandu e tente de novo.</span>`; return; }
+  if(!ok){ alvo.innerHTML = `<span class="err">O Rendeia (IA) não está na porta 8080. Abra o chat do Arandu e tente de novo.</span>`; return; }
   const noThink = /qwen3/i.test(modeloArquivo) ? " /no_think" : "";
   alvo.textContent = "Pensando…";
   try{

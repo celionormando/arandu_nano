@@ -1,4 +1,4 @@
-# Treino — Arandu Nano 1.0 (modelo próprio)
+# Treino — Arandu Mirim 1.0 (modelo próprio)
 
 Kit para criar/fine-tunar o **primeiro modelo do projeto** sobre o Llama-3.2-1B
 (open source), gerando um `.gguf` que roda no llamafile na USB.
@@ -20,7 +20,7 @@ suficiente para LoRA de modelos 1B–7B. Treinar na CPU do notebook é inviável
 6. Copie para `D:\Arandu-nano\`, renomeie para `arandu-nano-1.0-Q4_K_M.gguf`.
 7. Edite `D:\Arandu-nano\modelo.txt` com esse nome (1 linha).
 8. Em `chat.html`, no mapa `NOMES_MODELO`, adicione:
-   `"arandu-nano-1.0-Q4_K_M.gguf":"Arandu Nano 1.0"`
+   `"arandu-nano-1.0-Q4_K_M.gguf":"Arandu Mirim 1.0"`
 9. Rode o `IA_Portatil.vbs` — agora é o seu modelo próprio rodando.
 
 ## O dataset é o que mais importa

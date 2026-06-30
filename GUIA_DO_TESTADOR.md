@@ -1,6 +1,6 @@
-# Guia rápido do testador — Arandu Nano 1.1
+# Guia rápido do testador — Arandu Mirim 1.1
 
-Obrigado por testar o **Arandu**! É um assistente de IA que roda **100% no seu
+Obrigado por testar a **Rendeia**! É um assistente de IA que roda **100% no seu
 computador**, sem internet, sem instalar nada e sem enviar seus dados para
 lugar nenhum. Tudo acontece dentro da pasta que você baixou.
 
