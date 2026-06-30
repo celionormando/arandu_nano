@@ -36,6 +36,10 @@ dist/
 
 # Rascunhos de divulgação (uso local; não expor no repo público)
 divulgacao/
+docs/divulgacao/
+
+# Pasta pessoal do usuário (nunca versionar)
+Particular/
 
 # Build do GIF de demo — versiona só o gerador, não o node_modules/PNGs
 tools_gif/node_modules/
