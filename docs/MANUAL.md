@@ -504,18 +504,14 @@ correspondente:
 | `Usar_Nano_1.1.bat` | Arandu Mirim 1.1 (Qwen3-1.7B + imatrix, Q4_K_M) — padrão | G1 |
 | `Usar_Nano_Q4_0.bat` | Arandu Mirim 1.1 Q4_0 — **15-25% mais rápido em CPUs com AVX2/AVX-512** | G1 |
 | `Usar_Nano_1.0.bat` | Arandu Mirim 1.0 (Llama-1B fine-tune próprio) | G1 |
-| **`Usar_Katu_Mini.bat`** | **Katu Mirim 2.0 (DeepSeek-R1-Distill-Qwen-1.5B) — pensa antes de responder** | **G2** |
 | `Usar_1B_Rapido.bat` | Llama-3.2-1B base | — |
 | `Usar_3B_Qualidade.bat` | Llama-3.2-3B base (mais lento, mais qualidade) | — |
 
-> **Quando usar o Katu Mirim 2.0?** Para problemas que precisam de **raciocínio**
-> (matemática, lógica, análise, depurar uma situação passo a passo). Ele gera um
-> bloco `<think>...</think>` interno antes da resposta — combine com o
-> **[Modo pensador](#10-modo-pensador)** em Configurações para ver o raciocínio
-> num bloco colapsável. Mesma RAM do Arandu Mirim 1.1; um pouco mais lento porque
-> gera mais tokens (o raciocínio). Para conversa do dia-a-dia, mantenha o Nano.
-> Baixe o `.gguf` (Q4_K_M) em
-> [unsloth/DeepSeek-R1-Distill-Qwen-1.5B-GGUF](https://huggingface.co/unsloth/DeepSeek-R1-Distill-Qwen-1.5B-GGUF).
+> 🧠 **Família Katu (G2 — Raciocínio)** vive em repo próprio:
+> [**rendeia/Katu**](https://github.com/rendeia/Katu). Lá você encontra o
+> `Usar_Katu_Mirim.bat`, o passo a passo de integração e os links pros `.gguf`.
+> Modelos da família Katu pensam antes de responder (geram `<think>` interno).
+> Coexiste com Arandu — integração leva ~5 min.
 
 > **Quer a variante Q4_0?** Gere com:
 > ```powershell
@@ -1129,18 +1125,14 @@ Edit `modelo.txt` (one line, the `.gguf` filename). Reset via the matching
 | `Usar_Nano_1.1.bat` | Arandu Mirim 1.1 (Qwen3-1.7B + imatrix, Q4_K_M) — default | G1 |
 | `Usar_Nano_Q4_0.bat` | Arandu Mirim 1.1 Q4_0 — **15-25% faster on CPUs with AVX2/AVX-512** | G1 |
 | `Usar_Nano_1.0.bat` | Arandu Mirim 1.0 (Llama-1B own fine-tune) | G1 |
-| **`Usar_Katu_Mini.bat`** | **Katu Mirim 2.0 (DeepSeek-R1-Distill-Qwen-1.5B) — thinks before answering** | **G2** |
 | `Usar_1B_Rapido.bat` | Llama-3.2-1B base | — |
 | `Usar_3B_Qualidade.bat` | Llama-3.2-3B base (slower, more quality) | — |
 
-> **When to use Katu Mirim 2.0?** For problems that need **reasoning** (math,
-> logic, analysis, step-by-step debugging). It produces an internal
-> `<think>...</think>` block before answering — pair with the
-> **[Thinker mode](#10-thinker-mode)** in Settings to see the reasoning in a
-> collapsible block. Same RAM as Arandu Mirim 1.1; a bit slower because it
-> generates more tokens (the reasoning). For everyday chat, stick with the Nano.
-> Download the `.gguf` (Q4_K_M) at
-> [unsloth/DeepSeek-R1-Distill-Qwen-1.5B-GGUF](https://huggingface.co/unsloth/DeepSeek-R1-Distill-Qwen-1.5B-GGUF).
+> 🧠 **Katu family (G2 — Reasoning)** lives in its own repo:
+> [**rendeia/Katu**](https://github.com/rendeia/Katu). There you'll find
+> `Usar_Katu_Mirim.bat`, integration walkthrough and the `.gguf` links.
+> Katu-family models think before answering (internal `<think>` block).
+> Coexists with Arandu — integration takes ~5 min.
 
 > **Want the Q4_0 variant?** Generate with:
 > ```powershell

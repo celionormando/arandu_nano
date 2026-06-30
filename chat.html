@@ -985,7 +985,10 @@ const NOMES_MODELO={
   "Qwen_Qwen3-1.7B-Q4_K_M.gguf":"Arandu Mirim 1.1",     // Qwen3-1.7B (Arandu Mirim 1.1 - padrao, familia G1 eficiencia)
   "Arandu_Nano_1.1_Q4_0.gguf":"Arandu Mirim 1.1 Q4_0",  // mesmo modelo, quant Q4_0 c/ repack AVX (~20%% mais tok/s)
   "arandu-nano-1.0-Q4_K_M.gguf":"Arandu Mirim 1.0",     // modelo proprio (fine-tune sobre Llama-1B)
-  "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf":"Katu Mirim 2.0", // G2 - Raciocinio (pensa antes de responder)
+  // Katu Mirim 2.0 (G2 - Raciocinio) vive em https://github.com/rendeia/Katu
+  // Para usar, siga integrar-rendeia.md desse repo: baixe o .gguf, copie o Usar_Katu_Mirim.bat
+  // e adicione a entrada do GGUF aqui (linha abaixo, descomentar):
+  // "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf":"Katu Mirim 2.0",
   "Llama-3.2-1B-Instruct-Q4_K_M.gguf":"Llama 1B (base)",
   "Llama-3.2-3B-Instruct-Q4_K_M.gguf":"Llama 3B (base)"
 };

@@ -36,8 +36,12 @@ Modelos de entrada, rápidos e de baixo custo computacional.
 Modelos avançados para raciocínio lógico, análise e cruzamento de dados.
 Pensam antes de responder (geram um bloco `<think>` interno).
 
+> A família Katu vive em **repo próprio** — código, lançadores e doc específicos:
+> 👉 [github.com/rendeia/Katu](https://github.com/rendeia/Katu)
+
 - **Katu Mirim 2.0** — disponível (DeepSeek-R1-Distill-Qwen-1.5B). Mesma RAM do
-  Arandu Mirim 1.1; foco em raciocínio. Coexiste, ativado pelo `Usar_Katu_Mini.bat`.
+  Arandu Mirim 1.1; foco em raciocínio. Integração na plataforma: ~5 min,
+  passo a passo em [rendeia/Katu/integrar-rendeia.md](https://github.com/rendeia/Katu/blob/main/integrar-rendeia.md).
 - Katu Eté 2.x — planejado
 - Katu Guaçu 2.x — planejado
 
@@ -63,7 +67,6 @@ nomeie o `.gguf` e adicione a entrada no mapa.
 | `Qwen_Qwen3-1.7B-Q4_K_M.gguf` | **Arandu Mirim 1.1** | Qwen3-1.7B, **padrão atual** (non-thinking) |
 | `Arandu_Nano_1.1_Q4_0.gguf` | Arandu Mirim 1.1 Q4_0 | mesmo modelo, quant Q4_0 c/ repack AVX-512/AVX2 (~20% mais tok/s) |
 | `arandu-nano-1.0-Q4_K_M.gguf` | Arandu Mirim 1.0 | fine-tune próprio sobre Llama-1B (versão anterior) |
-| `DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf` | **Katu Mirim 2.0** | **G2 — Raciocínio** (pensa antes; mesma RAM do Arandu Mirim 1.1) |
 | `Llama-3.2-1B-Instruct-Q4_K_M.gguf` | Llama 1B (base) | base, rápido/leve |
 | `Llama-3.2-3B-Instruct-Q4_K_M.gguf` | Llama 3B (base) | base, mais qualidade |
 
@@ -71,6 +74,12 @@ nomeie o `.gguf` e adicione a entrada no mapa.
 > (`Qwen_Qwen3-1.7B-Q4_K_M.gguf`, `Arandu_Nano_1.1_Q4_0.gguf`) — o que muda é
 > apenas o **nome exibido** na interface. Renomear arquivos quebraria scripts
 > e cache; o mapa em `NOMES_MODELO` faz a tradução.
+
+> **Famílias em repos separados:** modelos de famílias além do Arandu (Katu, Vera,
+> Taba) vivem em seus próprios repos sob o owner `rendeia/`. Para usá-los na
+> plataforma, baixe o `.gguf` (do HF), o `.bat` (do repo da família) e adicione
+> a entrada correspondente em `NOMES_MODELO` do `chat.html`. O passo a passo
+> mora no `integrar-rendeia.md` de cada repo de família.
 
 O nome técnico do modelo NÃO aparece na interface — só o nome do projeto.
 
