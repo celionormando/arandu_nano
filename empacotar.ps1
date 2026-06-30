@@ -32,7 +32,6 @@ $base = @(
     "chat.html",
     "llamafile.exe",
     "Qwen_Qwen3-1.7B-Q4_K_M.gguf",
-    "system_prompt.txt",
     "IA_Portatil.vbs",
     "Desligar_IA.bat",
     "iniciar.sh",

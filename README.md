@@ -75,7 +75,7 @@ tradução, ideias, dúvidas do dia a dia). O projeto inclui um kit para criar
 | `Painel_Saude.html` | Painel do assistente: saúde do sistema, limpeza, agenda e e-mail |
 | `Painel_Saude.vbs` | Lançador 1 clique do painel (Windows) |
 | `ferramentas/` | Ajudante do sistema: `saude_sistema.ps1` (Windows) e `saude_sistema.py` (Linux/macOS) |
-| `iniciar.bat` / `iniciar_original.bat` | Alternativas com console |
+| `iniciar.bat` | Alternativa com console (debug) |
 | `treino/` | Kit de fine-tuning (notebook Colab + datasets) |
 | `treino/imatrix/` | Calibração pt-BR + guia de re-quantização com **imatrix** |
 | `NOMENCLATURA_MODELOS.md` | Famílias de modelos (Arandu/Katu/Vera/Taba) |

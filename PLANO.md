@@ -62,7 +62,7 @@ D:\Arandu-nano\
   ├── desligar.sh                         (Linux/macOS: encerra servidores)
   ├── Usar_1B_Rapido.bat / Usar_3B_Qualidade.bat (trocam o modelo ativo)
   ├── Desligar_IA.bat
-  ├── iniciar.bat / iniciar_original.bat  (alternativas com console)
+  ├── iniciar.bat                         (alternativa com console, p/ debug)
   ├── NOMENCLATURA_MODELOS.md
   ├── treino\                             (kit de fine-tuning - ver abaixo)
   └── PLANO.md

@@ -40,6 +40,4 @@ REM  Flags de economia de RAM sem perder velocidade:
 REM   -c 2048   contexto / -t 3 threads (1 nucleo livre = mais rapido aqui) / -fa on
 REM   -ctk/-ctv q8_0  KV cache 8-bit (~metade da RAM do contexto)
 REM   Se faltar RAM ("failed to create context"): troque -c 2048 por -c 1024.
-REM
-REM  Quer a interface original do llamafile (em ingles)? Use iniciar_original.bat
 REM ------------------------------------------------------------
