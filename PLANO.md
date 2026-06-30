@@ -85,6 +85,17 @@ D:\Arandu-nano\
   --cache-reuse 256                  PROMPT CACHING (v1.3): reusa prefixo entre turnos via KV shift
   --slot-save-path "cache"           persiste slot KV em disco -> sobrevive ao --sleep-idle-seconds 180
 
+### Otimização B (v1.3): Q4_0 com repack AVX2/AVX-512
+- Script: `treino/imatrix/regenerar_nano_q4_0.ps1` (re-quantiza Q8_0 -> Q4_0 com
+  imatrix pt-BR; verifica CPU e avisa o ganho esperado).
+- Atalho: `Usar_Nano_Q4_0.bat` (define modelo.txt para Arandu_Nano_1.1_Q4_0.gguf).
+- Em CPUs com AVX-512 (ex.: Intel 11th gen+ ou Zen4+), o llama.cpp faz repack
+  automatico do Q4_0 para Q4_0_8_8 na carga -> ganho de 20-25% em tok/s.
+  Em CPUs so com AVX2, repack para Q4_0_4_8 -> ganho de 15-20%. Sem AVX2,
+  pode ser igual ou PIOR -> nao vale.
+- Trade-off honesto: perplexidade ~3-5% pior que Q4_K_M. A imatrix pt-BR
+  compensa boa parte. Coexiste com a versao Q4_K_M; o usuario alterna via .bat.
+
 ### Sobre o prompt caching (Otimização A, v1.3)
 O system prompt do Arandu é fixo + perfil + índice da memória (~400-600 tokens),
 seguido do histórico de conversa e da pergunta. A cada turno, o llama-server

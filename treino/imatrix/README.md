@@ -94,3 +94,22 @@ Arandu, edite `modelo.txt` apontando para `Arandu_Nano_1.2_Q4_K_M.gguf`.
 > fine-tune — para um salto real de qualidade, o caminho é ampliar
 > `treino/dataset_arandu.jsonl` (hoje ~40 exemplos) para 200+ e re-treinar no
 > Colab usando `treino/Arandu_Nano_Finetuning.ipynb`.
+
+## Variante rápida: Q4_0 com repack AVX2/AVX-512 (Otimização B)
+
+CPUs Intel/AMD modernos rendem **15–25% mais tok/s** com Q4_0 do que com Q4_K_M
+porque o llama.cpp faz **repack automático** dos pesos na carga, reordenando
+para casar com a microarquitetura (Q4_0_8_8 em AVX-512, Q4_0_4_8 em AVX2).
+
+```powershell
+# Pré-requisito: Qwen3-1.7B-Q8_0.gguf na raiz (mesmo do regenerar_nano_1.2)
+PowerShell -ExecutionPolicy Bypass -File treino\imatrix\regenerar_nano_q4_0.ps1
+```
+
+O script detecta seu CPU e avisa o ganho esperado. Saída: `Arandu_Nano_1.1_Q4_0.gguf`
+na raiz. Para ativar, edite `modelo.txt` ou use `Usar_Nano_Q4_0.bat`.
+
+> **Trade-off honesto:** Q4_0 tem **qualidade ligeiramente menor** que Q4_K_M
+> (perplexidade ~3–5% pior). A imatrix pt-BR compensa boa parte. Se você notar
+> respostas piores em pt-BR, volte para `Usar_Nano_1.1.bat`. CPUs **sem AVX2**
+> não ganham — pode até ficar pior; o script avisa.

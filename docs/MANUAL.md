@@ -501,10 +501,19 @@ correspondente:
 
 | Arquivo | Modelo |
 |---|---|
-| `Usar_Nano_1.1.bat` | Arandu Nano 1.1 (Qwen3-1.7B + imatrix) — padrão |
+| `Usar_Nano_1.1.bat` | Arandu Nano 1.1 (Qwen3-1.7B + imatrix, Q4_K_M) — padrão |
+| `Usar_Nano_Q4_0.bat` | Arandu Nano 1.1 Q4_0 — **15-25% mais rápido em CPUs com AVX2/AVX-512** |
 | `Usar_Nano_1.0.bat` | Arandu Nano 1.0 (Llama-1B fine-tune próprio) |
 | `Usar_1B_Rapido.bat` | Llama-3.2-1B base |
 | `Usar_3B_Qualidade.bat` | Llama-3.2-3B base (mais lento, mais qualidade) |
+
+> **Quer a variante Q4_0?** Gere com:
+> ```powershell
+> PowerShell -ExecutionPolicy Bypass -File treino\imatrix\regenerar_nano_q4_0.ps1
+> ```
+> O script verifica seu CPU e avisa o ganho esperado. Qualidade fica
+> ligeiramente menor (~3-5% pior perplexidade) — vale o teste pra ver se
+> compensa. Detalhes em [`treino/imatrix/README.md`](../treino/imatrix/README.md).
 
 ---
 
@@ -1107,10 +1116,19 @@ Edit `modelo.txt` (one line, the `.gguf` filename). Reset via the matching
 
 | File | Model |
 |---|---|
-| `Usar_Nano_1.1.bat` | Arandu Nano 1.1 (Qwen3-1.7B + imatrix) — default |
+| `Usar_Nano_1.1.bat` | Arandu Nano 1.1 (Qwen3-1.7B + imatrix, Q4_K_M) — default |
+| `Usar_Nano_Q4_0.bat` | Arandu Nano 1.1 Q4_0 — **15-25% faster on CPUs with AVX2/AVX-512** |
 | `Usar_Nano_1.0.bat` | Arandu Nano 1.0 (Llama-1B own fine-tune) |
 | `Usar_1B_Rapido.bat` | Llama-3.2-1B base |
 | `Usar_3B_Qualidade.bat` | Llama-3.2-3B base (slower, more quality) |
+
+> **Want the Q4_0 variant?** Generate with:
+> ```powershell
+> PowerShell -ExecutionPolicy Bypass -File treino\imatrix\regenerar_nano_q4_0.ps1
+> ```
+> The script checks your CPU and warns about expected gains. Quality is
+> slightly lower (~3-5% worse perplexity) — worth a test to see if it pays off.
+> Details in [`treino/imatrix/README.md`](../treino/imatrix/README.md).
 
 ---
 
