@@ -46,7 +46,7 @@ Passo a passo (e o aviso do SmartScreen) no `GUIA_DO_TESTADOR.md` dentro do paco
 
 - 📘 **[Manual completo (pt-BR + EN)](docs/MANUAL.md)** — instalação, uso e configuração detalhados, com troubleshooting
 - 🚀 [GUIA_DO_TESTADOR.md](GUIA_DO_TESTADOR.md) — quick-start de 3 minutos pra quem só quer experimentar o pacote pronto
-- 🛠️ [PLANO.md](PLANO.md) — doc técnica (decisões de arquitetura, otimizações)
+- 🛠️ [docs/PLANO.md](docs/PLANO.md) — doc técnica (decisões de arquitetura, otimizações)
 - 🩺 [ferramentas/README.md](ferramentas/README.md) — ajudante do sistema (porta 8099, voz Piper, OCR)
 - 🎓 [treino/README.md](treino/README.md) e [treino/imatrix/README.md](treino/imatrix/README.md) — fine-tuning e re-quantização
 
@@ -78,8 +78,9 @@ tradução, ideias, dúvidas do dia a dia). O projeto inclui um kit para criar
 | `iniciar.bat` | Alternativa com console (debug) |
 | `treino/` | Kit de fine-tuning (notebook Colab + datasets) |
 | `treino/imatrix/` | Calibração pt-BR + guia de re-quantização com **imatrix** |
-| `NOMENCLATURA_MODELOS.md` | Famílias de modelos (Arandu/Katu/Vera/Taba) |
-| `PLANO.md` | Documentação completa do projeto |
+| `docs/NOMENCLATURA_MODELOS.md` | Famílias de modelos (Arandu/Katu/Vera/Taba) |
+| `docs/PLANO.md` | Documentação técnica do projeto |
+| `docs/MANUAL.md` | Manual de uso (pt-BR + EN) |
 
 > **Não versionados** (grandes demais para o GitHub): os modelos `.gguf` e o
 > `llamafile.exe`. Veja abaixo como obtê-los.
@@ -191,7 +192,7 @@ fine-tuning LoRA sobre o Llama-3.2-1B e exporta um `.gguf` Q4_K_M.
 
 ## Famílias de modelos
 Arandu (G1 eficiência) → Katu (G2 raciocínio) → Vera (G3 multimodal) →
-Taba (G4 agentes). Detalhes em `NOMENCLATURA_MODELOS.md`.
+Taba (G4 agentes). Detalhes em [`docs/NOMENCLATURA_MODELOS.md`](docs/NOMENCLATURA_MODELOS.md).
 
 ## Para testar (pacote pronto)
 Quem só quer **experimentar** não precisa montar nada: use o `.zip` da página de

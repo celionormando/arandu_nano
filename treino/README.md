@@ -43,5 +43,5 @@ Dicas:
 - Mais exemplos bons = modelo melhor. Aumente o `dataset.jsonl` aos poucos.
 
 ## Próximas gerações (nomenclatura)
-Ver `..\NOMENCLATURA_MODELOS.md`. Arandu (G1 eficiência) → Katu (G2 raciocínio)
+Ver [`../docs/NOMENCLATURA_MODELOS.md`](../docs/NOMENCLATURA_MODELOS.md). Arandu (G1 eficiência) → Katu (G2 raciocínio)
 → Vera (G3 multimodal) → Taba (G4 agentes).

@@ -16,7 +16,7 @@
 > Este manual cobre desde a primeira execução até as funções avançadas. Se você é
 > só **testador** e quer ir direto, leia o [GUIA_DO_TESTADOR.md](../GUIA_DO_TESTADOR.md)
 > (3 minutos). Se você é **desenvolvedor** querendo entender a arquitetura, comece
-> pelo [PLANO.md](../PLANO.md).
+> pelo [PLANO.md](PLANO.md).
 
 ## Sumário
 
@@ -617,11 +617,11 @@ em "Configurações → Privacidade").
 
 | Doc | Para quê |
 |---|---|
-| [PLANO.md](../PLANO.md) | Visão técnica completa do projeto |
+| [PLANO.md](PLANO.md) | Visão técnica completa do projeto |
 | [ferramentas/README.md](../ferramentas/README.md) | Arquitetura do ajudante (porta 8099) |
 | [treino/README.md](../treino/README.md) | Fine-tuning no Colab |
 | [treino/imatrix/README.md](../treino/imatrix/README.md) | Re-quantização com imatrix pt-BR |
-| [NOMENCLATURA_MODELOS.md](../NOMENCLATURA_MODELOS.md) | Convenção de nomes (Arandu/Katu/Vera/Taba) |
+| [NOMENCLATURA_MODELOS.md](NOMENCLATURA_MODELOS.md) | Convenção de nomes (Arandu/Katu/Vera/Taba) |
 
 ### Empacotar uma release
 
@@ -661,7 +661,7 @@ a licença **Apache-2.0** — veja [`LICENSE`](../LICENSE).
 > This manual covers the Arandu from first run to advanced features. If you're
 > just **testing**, jump to [GUIA_DO_TESTADOR.md](../GUIA_DO_TESTADOR.md)
 > (3 minutes, Portuguese). If you're a **developer**, start with
-> [PLANO.md](../PLANO.md).
+> [PLANO.md](PLANO.md).
 
 ## Table of contents
 
@@ -1228,11 +1228,11 @@ Delete the `memoria/` folder (and, in the browser, clear site data for the
 
 | Doc | Purpose |
 |---|---|
-| [PLANO.md](../PLANO.md) | Full technical overview |
+| [PLANO.md](PLANO.md) | Full technical overview |
 | [ferramentas/README.md](../ferramentas/README.md) | Helper architecture (port 8099) |
 | [treino/README.md](../treino/README.md) | Fine-tuning on Colab |
 | [treino/imatrix/README.md](../treino/imatrix/README.md) | Re-quantization with pt-BR imatrix |
-| [NOMENCLATURA_MODELOS.md](../NOMENCLATURA_MODELOS.md) | Naming convention (Arandu/Katu/Vera/Taba) |
+| [NOMENCLATURA_MODELOS.md](NOMENCLATURA_MODELOS.md) | Naming convention (Arandu/Katu/Vera/Taba) |
 
 ### Package a release
 

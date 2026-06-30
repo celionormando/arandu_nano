@@ -63,9 +63,13 @@ D:\Arandu-nano\
   ├── Usar_1B_Rapido.bat / Usar_3B_Qualidade.bat (trocam o modelo ativo)
   ├── Desligar_IA.bat
   ├── iniciar.bat                         (alternativa com console, p/ debug)
-  ├── NOMENCLATURA_MODELOS.md
   ├── treino\                             (kit de fine-tuning - ver abaixo)
-  └── PLANO.md
+  └── docs\
+      ├── PLANO.md                        (este arquivo)
+      ├── MANUAL.md                       (manual completo bilíngue pt-BR + EN)
+      ├── NOMENCLATURA_MODELOS.md         (famílias Arandu/Katu/Vera/Taba)
+      ├── img\                            (prints usados no MANUAL)
+      └── exemplo-memoria.pdf             (PDF para testar o upload de documentos)
 
 ## Como usar
 - Windows: duplo clique em IA_Portatil.vbs -> sobe o servidor ESCONDIDO
