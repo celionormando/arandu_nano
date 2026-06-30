@@ -42,6 +42,14 @@ Baixe o pacote pronto, extraia e clique em `IA_Portatil.vbs`:
 
 Passo a passo (e o aviso do SmartScreen) no `GUIA_DO_TESTADOR.md` dentro do pacote.
 
+## 📖 Documentação
+
+- 📘 **[Manual completo (pt-BR + EN)](docs/MANUAL.md)** — instalação, uso e configuração detalhados, com troubleshooting
+- 🚀 [GUIA_DO_TESTADOR.md](GUIA_DO_TESTADOR.md) — quick-start de 3 minutos pra quem só quer experimentar o pacote pronto
+- 🛠️ [PLANO.md](PLANO.md) — doc técnica (decisões de arquitetura, otimizações)
+- 🩺 [ferramentas/README.md](ferramentas/README.md) — ajudante do sistema (porta 8099, voz Piper, OCR)
+- 🎓 [treino/README.md](treino/README.md) e [treino/imatrix/README.md](treino/imatrix/README.md) — fine-tuning e re-quantização
+
 > Só quer o **modelo** (GGUF) para usar no seu próprio llama.cpp/llamafile?
 > 🤗 **[Baixe no Hugging Face](https://huggingface.co/celionormando/Arandu-Nano-1.1-GGUF)** (Q4_K_M com imatrix pt-BR).
 
