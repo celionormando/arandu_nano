@@ -38,6 +38,7 @@ open_url() {
 }
 
 if ! server_up; then
+  mkdir -p "$BASE/cache"   # prompt caching: --slot-save-path requer a pasta existir
   "$EXE" --server \
     -m "$BASE/$MODEL" \
     --host 127.0.0.1 \
@@ -50,7 +51,9 @@ if ! server_up; then
     -ub 256 \
     -b 512 \
     --gpu disable \
-    --sleep-idle-seconds 180 > "$BASE/llamafile-chat.log" 2>&1 &
+    --sleep-idle-seconds 180 \
+    --cache-reuse 256 \
+    --slot-save-path "$BASE/cache" > "$BASE/llamafile-chat.log" 2>&1 &
 
   i=0
   while [ "$i" -lt 40 ]; do

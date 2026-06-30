@@ -23,11 +23,15 @@ embed  = base & "\rag\bge-m3-Q4_K_M.gguf"
 
 sh.CurrentDirectory = base
 
-' 1) servidor de CHAT (8080)
+' garante a pasta de cache (prompt caching: --slot-save-path)
+If Not fso.FolderExists(base & "\cache") Then fso.CreateFolder(base & "\cache")
+
+' 1) servidor de CHAT (8080) — com prompt caching (v1.3)
 If Not PortaNoAr(8080) Then
     sh.Run """" & exe & """ --server -m """ & modelo & """ --host 127.0.0.1 --port 8080 " & _
            "-c 2048 -t 3 -fa on -ctk q8_0 -ctv q8_0 -ub 256 -b 512 --gpu disable " & _
-           "--sleep-idle-seconds 180", 0, False
+           "--sleep-idle-seconds 180 " & _
+           "--cache-reuse 256 --slot-save-path """ & base & "\cache""", 0, False
 End If
 
 ' 2) servidor de EMBEDDING (8091)

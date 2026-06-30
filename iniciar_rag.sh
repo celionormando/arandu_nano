@@ -40,6 +40,7 @@ open_url() {
 }
 
 if ! port_up 8080; then
+  mkdir -p "$BASE/cache"   # prompt caching: --slot-save-path requer a pasta existir
   "$EXE" --server \
     -m "$BASE/$MODEL" \
     --host 127.0.0.1 \
@@ -52,7 +53,9 @@ if ! port_up 8080; then
     -ub 256 \
     -b 512 \
     --gpu disable \
-    --sleep-idle-seconds 180 > "$BASE/llamafile-chat.log" 2>&1 &
+    --sleep-idle-seconds 180 \
+    --cache-reuse 256 \
+    --slot-save-path "$BASE/cache" > "$BASE/llamafile-chat.log" 2>&1 &
 fi
 
 if ! port_up 8091; then

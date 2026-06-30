@@ -23,6 +23,10 @@ ferramentas/tesseract/
 # Criada em runtime pelo ajudante (saude_sistema.ps1); nunca versionar.
 memoria/
 
+# Prompt cache do llama-server (--slot-save-path) — slots de KV em disco.
+# Acelera o "acordar" depois do --sleep-idle-seconds. Gerado em runtime.
+cache/
+
 # Saídas de treino locais
 treino/saida/
 treino/*_gguf/

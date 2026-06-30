@@ -28,22 +28,33 @@ modelo = base & "\" & nomeModelo
 
 ' se ja houver servidor respondendo, so abre a janela
 If Not ServidorNoAr() Then
+    ' Garante a pasta de cache (prompt caching: --slot-save-path) — se nao existir,
+    ' o llama-server falha ao salvar slots. Criada sob demanda; ignorada pelo Git.
+    If Not fso.FolderExists(base & "\cache") Then fso.CreateFolder(base & "\cache")
+
     ' Motor de IA: PREFERE o llama-server.exe (llama.cpp, .exe comum) -> passa no
     ' AppLocker do Windows corporativo. Cai para o llamafile.exe (APE) se aquele
     ' nao existir (ex.: maquina sem restricao de execucao).
-    Dim srvExe
-    srvExe = base & "\llama\llama-server.exe"
+    '
+    ' Otimizacao A (v1.3): prompt caching
+    '   --cache-reuse 256        reusa prefixo do prompt entre turnos via KV shift
+    '   --slot-save-path "cache" persiste o slot em disco -> sobrevive ao sleep-idle
+    Dim srvExe, cacheDir
+    srvExe   = base & "\llama\llama-server.exe"
+    cacheDir = base & "\cache"
     If fso.FileExists(srvExe) Then
         cmd = """" & srvExe & """ -m """ & modelo & """" & _
               " --host 127.0.0.1 --port 8080 -c 2048 -t 3 -fa on" & _
-              " -ctk q8_0 -ctv q8_0 -ub 256 -b 512 --no-webui"
+              " -ctk q8_0 -ctv q8_0 -ub 256 -b 512 --no-webui" & _
+              " --cache-reuse 256 --slot-save-path """ & cacheDir & """"
         sh.CurrentDirectory = base & "\llama"
     Else
         ' --sleep-idle-seconds 180: apos 3 min ocioso o servidor "dorme" e libera a RAM.
         cmd = """" & exe & """ --server -m """ & modelo & """" & _
               " --host 127.0.0.1 --port 8080 -c 2048 -t 3 -fa on" & _
               " -ctk q8_0 -ctv q8_0 -ub 256 -b 512 --gpu disable" & _
-              " --sleep-idle-seconds 180"
+              " --sleep-idle-seconds 180" & _
+              " --cache-reuse 256 --slot-save-path """ & cacheDir & """"
         sh.CurrentDirectory = base
     End If
     ' 0 = janela oculta (sem console preto); False = nao espera.

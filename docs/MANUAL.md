@@ -533,6 +533,12 @@ ganhos reais:
   para 4 cores).
 - Desligue o **Modo pensador** se estiver ligado.
 
+> ⚡ **Prompt caching (v1.3+):** os lançadores já passam `--cache-reuse 256` e
+> `--slot-save-path cache/` ao servidor. A pasta `cache/` é criada
+> automaticamente no primeiro uso e persiste o estado entre reinícios. A 2ª
+> pergunta em diante (e principalmente após o servidor "acordar" do modo de
+> economia) fica perceptivelmente mais rápida.
+
 ### A voz fala estranho
 
 - Verifique se o Piper está em `ferramentas/piper/` (veja [§ 8](#8-voz-tts)).
@@ -1130,6 +1136,11 @@ Normal on older PCs. First response after a pause is the slowest. To improve:
 - Use **Arandu Nano 1.1** (default) instead of the 3B.
 - Confirm config has `-t 3` (3 threads — ideal for 4 cores).
 - Turn off **Thinker mode** if on.
+
+> ⚡ **Prompt caching (v1.3+):** launchers now pass `--cache-reuse 256` and
+> `--slot-save-path cache/` to the server. The `cache/` folder is auto-created
+> on first use and persists state across restarts. The 2nd question onwards
+> (especially after the server "wakes up" from idle) is noticeably faster.
 
 ### Voice sounds strange
 

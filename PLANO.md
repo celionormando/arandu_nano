@@ -82,6 +82,25 @@ D:\Arandu-nano\
   -c 2048   contexto / -t 3 threads (1 núcleo livre = mais rápido aqui) / -fa on
   -ctk q8_0 -ctv q8_0  (KV cache 8-bit, ~metade da RAM do contexto, sem perder qualidade)
   -ub 256 -b 512  (batch menor) / --gpu disable (só CPU)
+  --cache-reuse 256                  PROMPT CACHING (v1.3): reusa prefixo entre turnos via KV shift
+  --slot-save-path "cache"           persiste slot KV em disco -> sobrevive ao --sleep-idle-seconds 180
+
+### Sobre o prompt caching (Otimização A, v1.3)
+O system prompt do Arandu é fixo + perfil + índice da memória (~400-600 tokens),
+seguido do histórico de conversa e da pergunta. A cada turno, o llama-server
+reprocessava TODO o prefixo do zero — perda evitável.
+
+- `--cache-reuse 256` habilita o KV-shift entre requisições: o servidor procura
+  o prefixo comum entre o prompt novo e o último cacheado e reaproveita.
+- `--slot-save-path cache/` salva o slot no disco (uma pasta com arquivos
+  binários). Importante porque o `--sleep-idle-seconds 180` descarrega o
+  servidor após 3 min ociosos — sem a flag, ao acordar perde TUDO. Com ela,
+  recarrega do disco.
+- Efeito esperado: **time-to-first-token cai 1-3s do 2º turno em diante**
+  (especialmente após o servidor acordar). Tokens/segundo não muda.
+- Zero risco à qualidade: KV cache é exatamente o mesmo computado normalmente,
+  só evita recomputar.
+- Custo: alguns MB em disco em `cache/` (ignorado pelo Git).
 
 ## Conclusões dos testes (com dados reais)
 1. RAM já no PISO: ~400 MB comprometidos (pesos via mmap, descartáveis). Não dá
