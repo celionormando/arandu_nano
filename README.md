@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/plataforma-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey" alt="Plataformas">
   <img src="https://img.shields.io/badge/CPU-only-success" alt="CPU-only">
   <img src="https://img.shields.io/badge/RAM-~1.2%20GB-success" alt="RAM">
-  <a href="https://huggingface.co/celionormando/Arandu-Nano-1.1-GGUF"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-modelo-yellow" alt="Modelo no Hugging Face"></a>
+  <a href="https://huggingface.co/rendeia/Arandu-Nano-1.1-GGUF"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-modelo-yellow" alt="Modelo no Hugging Face"></a>
 </p>
 
 <p align="center">
@@ -54,7 +54,7 @@ Passo a passo (e o aviso do SmartScreen) no `GUIA_DO_TESTADOR.md` dentro do paco
 - 🎓 [treino/README.md](treino/README.md) e [treino/imatrix/README.md](treino/imatrix/README.md) — fine-tuning e re-quantização
 
 > Só quer o **modelo** (GGUF) para usar no seu próprio llama.cpp/llamafile?
-> 🤗 **[Baixe no Hugging Face](https://huggingface.co/celionormando/Arandu-Nano-1.1-GGUF)** (Q4_K_M com imatrix pt-BR).
+> 🤗 **[Baixe no Hugging Face](https://huggingface.co/rendeia/Arandu-Nano-1.1-GGUF)** (Q4_K_M com imatrix pt-BR).
 
 ---
 

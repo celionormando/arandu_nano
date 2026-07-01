@@ -101,7 +101,7 @@ Depois você precisa baixar à parte (não vão no Git por causa do tamanho):
 
 2. **Modelo** — escolha um GGUF Q4_K_M e coloque na raiz:
    - **Arandu Mirim 1.1** (recomendado, pt-BR otimizado) —
-     [baixar no Hugging Face](https://huggingface.co/celionormando/Arandu-Nano-1.1-GGUF)
+     [baixar no Hugging Face](https://huggingface.co/rendeia/Arandu-Nano-1.1-GGUF)
      *(o repo mantém o nome legado `Arandu-Nano-1.1-GGUF` por compatibilidade; o modelo
      é o Arandu Mirim 1.1 da nomenclatura atual)*
    - Alternativas para comparar: Llama-3.2-1B/3B em
@@ -754,7 +754,7 @@ Then download separately (not in Git due to size):
 
 2. **Model** — pick a GGUF Q4_K_M and place at the root:
    - **Arandu Mirim 1.1** (recommended, pt-BR optimized) —
-     [download on Hugging Face](https://huggingface.co/celionormando/Arandu-Nano-1.1-GGUF)
+     [download on Hugging Face](https://huggingface.co/rendeia/Arandu-Nano-1.1-GGUF)
      *(the repo keeps the legacy name `Arandu-Nano-1.1-GGUF` for compatibility;
      the model itself is Arandu Mirim 1.1 in the current naming)*
    - Alternatives: Llama-3.2-1B/3B at
